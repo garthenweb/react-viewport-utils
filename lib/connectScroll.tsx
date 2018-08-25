@@ -2,7 +2,15 @@ import * as React from 'react';
 import raf from 'raf';
 import shallowEqual from 'shallowequal';
 
-import { Consumer, createInitScrollState, IScroll } from './Provider';
+import {
+  Consumer,
+  createInitScrollState,
+  IScroll,
+  SCROLL_DIR_UP,
+  SCROLL_DIR_DOWN,
+  SCROLL_DIR_RIGHT,
+  SCROLL_DIR_LEFT,
+} from './Provider';
 
 export default function connectScroll() {
   return WrappedComponent =>
@@ -48,10 +56,20 @@ export default function connectScroll() {
       };
 
       render() {
+        const { xDir, yDir, ...scroll } = this.state.scroll;
         return (
           <React.Fragment>
             <Consumer>{this.storeContext}</Consumer>
-            <WrappedComponent {...this.props} scroll={this.state.scroll} />
+            <WrappedComponent
+              {...this.props}
+              scroll={{
+                ...scroll,
+                isScrollingUp: yDir === SCROLL_DIR_UP,
+                isScrollingDown: yDir === SCROLL_DIR_DOWN,
+                isScrollingLeft: xDir === SCROLL_DIR_LEFT,
+                isScrollingRight: xDir === SCROLL_DIR_RIGHT,
+              }}
+            />
           </React.Fragment>
         );
       }

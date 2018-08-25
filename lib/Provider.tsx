@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
-const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
-const SCROLL_DIR_LEFT = Symbol('SCROLL_DIR_LEFT');
-const SCROLL_DIR_RIGHT = Symbol('SCROLL_DIR_RIGHT');
+export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
+export const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
+export const SCROLL_DIR_LEFT = Symbol('SCROLL_DIR_LEFT');
+export const SCROLL_DIR_RIGHT = Symbol('SCROLL_DIR_RIGHT');
 
 export interface IScroll {
   x: number;
