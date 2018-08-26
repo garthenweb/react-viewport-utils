@@ -1,15 +1,21 @@
 {
   "name": "react-viewport-utils",
-  "version": "1.0.0",
-  "description": "Provides viewport information to trigger animations",
+  "version": "0.0.1",
+  "description": "Utility components for working with the viewport in react",
   "main": "dist/index.js",
   "scripts": {
     "start": "rm -rf ./.cache && parcel ./expamles/index.html --out-dir='examples-dist'",
-    "build": "rollup -c",
+    "compile": "rollup -c",
     "test": "jest lib",
-    "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx,html}\""
+    "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx,html}\"",
+    "publish": "npm run compile",
+    "postversion": "git push && git push --tags"
   },
-  "author": "Jannick Garthen",
+  "author": "Jannick Garthen <jannick.garthen@gmail.com>",
+  "keywords": [
+    "react",
+    "viewport"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/react": "^16.4.11",
@@ -31,5 +37,8 @@
   },
   "peerDependencies": {
     "react": "^16.4.2"
+  },
+  "bugs": {
+    "url": "https://github.com/garthenweb/react-viewport-utils/issues"
   }
 }
