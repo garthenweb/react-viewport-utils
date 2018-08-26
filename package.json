@@ -1,5 +1,5 @@
 {
-  "name": "react-viewport",
+  "name": "react-viewport-utils",
   "version": "1.0.0",
   "description": "Provides viewport information to trigger animations",
   "main": "dist/index.js",
