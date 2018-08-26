@@ -4,6 +4,7 @@ import raf from 'raf';
 interface IProps {
   children: (rect: IState) => React.ReactNode;
   node: React.RefObject<HTMLElement>;
+  setInitials?: (rect: IState) => void;
 }
 
 interface IState {
@@ -20,17 +21,11 @@ export default class BoundingClientRect extends React.PureComponent<
   IState
 > {
   private tickId: NodeJS.Timer;
+  private firstSync: boolean = true;
 
   constructor(props) {
     super(props);
-    this.state = {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      height: 0,
-      width: 0,
-    };
+    this.state = null;
   }
 
   componentDidMount() {
@@ -50,7 +45,7 @@ export default class BoundingClientRect extends React.PureComponent<
 
   syncState = () => {
     const { node } = this.props;
-    if (!node.current) {
+    if (!node || !node.current) {
       return;
     }
     const {
@@ -61,6 +56,12 @@ export default class BoundingClientRect extends React.PureComponent<
       left,
       right,
     } = node.current.getBoundingClientRect();
+
+    if (this.firstSync && this.props.setInitials) {
+      this.props.setInitials({ height, width, top, bottom, left, right });
+      this.firstSync = false;
+    }
+
     this.setState({ height, width, top, bottom, left, right });
   };
 

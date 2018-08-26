@@ -44,6 +44,15 @@ const calcPositionStyles = (rect, scroll): React.CSSProperties => {
   };
 };
 
+const baseStyles: React.CSSProperties = {
+  transform: 'translateZ(0)',
+  willChange: 'position, top',
+  position: 'static',
+  top: 'auto',
+  width: '100%',
+  zIndex:1,
+};
+
 class StickyScrollUp extends React.PureComponent<IProps> {
   private stickyRef: React.RefObject<any>;
   constructor(props) {
@@ -61,20 +70,13 @@ class StickyScrollUp extends React.PureComponent<IProps> {
 
   render() {
     const { scroll, children } = this.props;
-    const baseStyles: React.CSSProperties = {
-      transform: 'translateZ(0)',
-      willChange: 'position, top',
-      position: 'static',
-      top: 'auto',
-      width: '100%',
-    };
     return (
       <BoundingClientRect node={this.stickyRef}>
         {rect => {
-          const styles = {
+          const styles = rect ? {
             ...baseStyles,
             ...calcPositionStyles(rect, scroll),
-          };
+          } : null;
           return (
             <div ref={this.stickyRef} style={styles}>
               {children}
