@@ -5,16 +5,35 @@ import shallowEqual from 'shallowequal';
 import {
   Consumer,
   createInitScrollState,
-  IScroll,
+  IScroll as IScrollState,
   SCROLL_DIR_UP,
   SCROLL_DIR_DOWN,
   SCROLL_DIR_RIGHT,
   SCROLL_DIR_LEFT,
 } from './Provider';
 
+interface IProps {}
+
+interface IState {
+  scroll: IScrollState;
+}
+
+export interface IScroll {
+  x: number;
+  y: number;
+  xTurn: number;
+  yTurn: number;
+  xDTurn: number;
+  yDTurn: number;
+  isScrollingUp: boolean;
+  isScrollingDown: boolean;
+  isScrollingLeft: boolean;
+  isScrollingRight: boolean;
+}
+
 export default function connectScroll() {
-  return WrappedComponent =>
-    class ConnectScroll extends React.PureComponent<{}, { scroll: IScroll }> {
+  return WrappedComponent => {
+    return class ConnectScroll extends React.PureComponent<IProps, IState> {
       tickId: NodeJS.Timer;
 
       constructor(props) {
@@ -74,4 +93,5 @@ export default function connectScroll() {
         );
       }
     };
+  };
 }

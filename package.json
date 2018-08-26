@@ -4,7 +4,7 @@
   "description": "Provides viewport information to trigger animations",
   "main": "dist/index.js",
   "scripts": {
-    "start": "parcel ./expamles/index.html --out-dir='examples-dist'",
+    "start": "rm -rf ./.cache && parcel ./expamles/index.html --out-dir='examples-dist'",
     "build": "parcel build ./lib/index.ts --experimental-scope-hoisting --no-minify",
     "test": "jest lib",
     "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx,html}\""
