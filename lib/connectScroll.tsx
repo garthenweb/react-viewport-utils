@@ -5,7 +5,7 @@ import shallowEqual from 'shallowequal';
 import {
   Consumer,
   createInitScrollState,
-  IScroll as IScrollState,
+  IScroll as IState,
   SCROLL_DIR_UP,
   SCROLL_DIR_DOWN,
   SCROLL_DIR_RIGHT,
@@ -13,10 +13,6 @@ import {
 } from './Provider';
 
 interface IProps {}
-
-interface IState {
-  scroll: IScrollState;
-}
 
 export interface IScroll {
   x: number;
@@ -41,9 +37,7 @@ export default function connectScroll() {
         this.context = {
           scroll: createInitScrollState(),
         };
-        this.state = {
-          scroll: createInitScrollState(),
-        };
+        this.state = createInitScrollState();
       }
 
       componentDidMount() {
@@ -67,15 +61,13 @@ export default function connectScroll() {
       }
 
       syncState = () => {
-        if (!shallowEqual(this.context.scroll, this.state.scroll)) {
-          this.setState({
-            scroll: { ...this.context.scroll },
-          });
+        if (!shallowEqual(this.context.scroll, this.state)) {
+          this.setState({ ...this.context.scroll });
         }
       };
 
       render() {
-        const { xDir, yDir, ...scroll } = this.state.scroll;
+        const { xDir, yDir, ...scroll } = this.state;
         return (
           <React.Fragment>
             <Consumer>{this.storeContext}</Consumer>
