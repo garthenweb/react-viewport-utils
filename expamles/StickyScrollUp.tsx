@@ -1,15 +1,17 @@
 import * as React from 'react';
 import BoundingClientRect from '../lib/BoundingClientRect';
 import { connectScroll } from '../lib/index';
+import { connect as connectStickyGroup } from './StickyGroup';
 
 interface IProps {
   scroll: {
-    y: number,
-    yTurn: number,
-    yDTurn: number,
-    isScrollingDown: boolean,
-    isScrollingUp: boolean,
-  }
+    y: number;
+    yTurn: number;
+    yDTurn: number;
+    isScrollingDown: boolean;
+    isScrollingUp: boolean;
+  };
+  updateStickyOffset?: (offset: number) => void;
 }
 
 const calcPositionStyles = (rect, scroll): React.CSSProperties => {
@@ -43,10 +45,18 @@ const calcPositionStyles = (rect, scroll): React.CSSProperties => {
 };
 
 class StickyScrollUp extends React.PureComponent<IProps> {
-  private stickyRef: React.RefObject<any>
+  private stickyRef: React.RefObject<any>;
   constructor(props) {
     super(props);
     this.stickyRef = React.createRef();
+  }
+
+  componentDidUpdate() {
+    if (this.props.updateStickyOffset) {
+      const { bottom } = this.stickyRef.current.getBoundingClientRect();
+      const offset = Math.max(bottom, 0);
+      this.props.updateStickyOffset(offset);
+    }
   }
 
   render() {
@@ -76,4 +86,4 @@ class StickyScrollUp extends React.PureComponent<IProps> {
   }
 }
 
-export default connectScroll()(StickyScrollUp);
+export default connectStickyGroup()(connectScroll()(StickyScrollUp));

@@ -4,6 +4,7 @@ import { render } from 'react-dom';
 import Provider from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
+import StickyGroupProvider from './StickyGroup';
 
 import './styles.css';
 
@@ -13,7 +14,7 @@ class Example extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <StickyGroupProvider>
         <StickyScrollUp>
           <div className="header">Header</div>
         </StickyScrollUp>
@@ -32,7 +33,7 @@ class Example extends React.Component {
         <Placeholder />
         <Placeholder />
         <Placeholder />
-      </React.Fragment>
+      </StickyGroupProvider>
     );
   }
 }
