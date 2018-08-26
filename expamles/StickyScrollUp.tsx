@@ -30,6 +30,13 @@ const calcPositionStyles = (rect, scroll): React.CSSProperties => {
     };
   }
 
+  if (scroll.y === 0) {
+    return {
+      position: 'absolute',
+      top: 0,
+    };
+  }
+
   if (scroll.yDTurn === 0) {
     return {
       position: 'absolute',
