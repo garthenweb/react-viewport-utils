@@ -10,7 +10,7 @@ import {
   SCROLL_DIR_DOWN,
   SCROLL_DIR_RIGHT,
   SCROLL_DIR_LEFT,
-} from './Provider';
+} from './ViewportProvider';
 
 interface IProps {}
 

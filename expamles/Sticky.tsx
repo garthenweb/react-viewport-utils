@@ -1,5 +1,5 @@
 import * as React from 'react';
-import BoundingClientRect from '../lib/BoundingClientRect';
+import { ObserveBoundingClientRect } from '../lib/index';
 import { connect as connectStickyGroup } from './StickyGroup';
 
 interface IProps {
@@ -143,16 +143,16 @@ class Sticky extends React.PureComponent<IProps, IState> {
     const { container } = this.props;
     return (
       <div ref={this.placeholderRef} style={this.getPlaceholderStyles()}>
-        <BoundingClientRect node={container || this.placeholderRef}>
+        <ObserveBoundingClientRect node={container || this.placeholderRef}>
           {containerRect => (
-            <BoundingClientRect
+            <ObserveBoundingClientRect
               node={this.stickyRef}
               setInitials={this.setInitials}
             >
               {rect => this.renderSticky(rect, containerRect)}
-            </BoundingClientRect>
+            </ObserveBoundingClientRect>
           )}
-        </BoundingClientRect>
+        </ObserveBoundingClientRect>
       </div>
     );
   }

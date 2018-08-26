@@ -1,6 +1,5 @@
 import * as React from 'react';
-import BoundingClientRect from '../lib/BoundingClientRect';
-import { connectScroll } from '../lib/index';
+import { ObserveBoundingClientRect, connectViewportScroll } from '../lib/index';
 import { connect as connectStickyGroup } from './StickyGroup';
 
 interface IProps {
@@ -50,7 +49,7 @@ const baseStyles: React.CSSProperties = {
   position: 'static',
   top: 'auto',
   width: '100%',
-  zIndex:1,
+  zIndex: 1,
 };
 
 class StickyScrollUp extends React.PureComponent<IProps> {
@@ -71,21 +70,23 @@ class StickyScrollUp extends React.PureComponent<IProps> {
   render() {
     const { scroll, children } = this.props;
     return (
-      <BoundingClientRect node={this.stickyRef}>
+      <ObserveBoundingClientRect node={this.stickyRef}>
         {rect => {
-          const styles = rect ? {
-            ...baseStyles,
-            ...calcPositionStyles(rect, scroll),
-          } : null;
+          const styles = rect
+            ? {
+                ...baseStyles,
+                ...calcPositionStyles(rect, scroll),
+              }
+            : null;
           return (
             <div ref={this.stickyRef} style={styles}>
               {children}
             </div>
           );
         }}
-      </BoundingClientRect>
+      </ObserveBoundingClientRect>
     );
   }
 }
 
-export default connectStickyGroup()(connectScroll()(StickyScrollUp));
+export default connectStickyGroup()(connectViewportScroll()(StickyScrollUp));
