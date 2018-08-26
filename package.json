@@ -4,7 +4,7 @@
   "description": "Utility components for working with the viewport in react",
   "main": "dist/index.js",
   "scripts": {
-    "start": "rm -rf ./.cache && parcel ./expamles/index.html --out-dir='examples-dist'",
+    "start": "rm -rf ./.cache && parcel ./examples/index.html --out-dir='examples-dist'",
     "compile": "rollup -c",
     "test": "jest lib",
     "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx,html}\"",
