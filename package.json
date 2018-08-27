@@ -7,7 +7,7 @@
     "start": "rm -rf ./.cache && parcel ./examples/index.html --out-dir='examples-dist'",
     "compile": "tsc --project ./tsconfig.json",
     "test": "jest lib",
-    "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx,html}\"",
+    "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx}\"",
     "publish": "npm run compile",
     "postversion": "git push && git push --tags"
   },
