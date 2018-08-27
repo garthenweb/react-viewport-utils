@@ -5,15 +5,18 @@
     "target": "es5",
     "lib": ["es6", "dom"],
     "sourceMap": true,
-    "allowJs": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "rootDir": "lib"
+    "rootDir": "lib",
+    "declaration": true
   },
+  "include": [
+    "lib/**/*"
+  ],
   "exclude": [
     "node_modules",
     "dist",
-    "example-dist",
+    "examples-dist",
     ".cache"
   ]
 }
