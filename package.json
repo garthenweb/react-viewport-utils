@@ -11,6 +11,13 @@
     "publish": "npm run compile",
     "postversion": "git push && git push --tags"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/garthenweb/react-viewport-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/garthenweb/react-viewport-utils/issues"
+  },
   "author": "Jannick Garthen <jannick.garthen@gmail.com>",
   "keywords": [
     "react",
@@ -37,8 +44,5 @@
   },
   "peerDependencies": {
     "react": "^16.3.0"
-  },
-  "bugs": {
-    "url": "https://github.com/garthenweb/react-viewport-utils/issues"
   }
 }
