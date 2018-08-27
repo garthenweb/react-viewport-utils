@@ -8,7 +8,17 @@
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "lib",
-    "declaration": true
+    "declaration": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "experimentalDecorators": true
+
   },
   "include": [
     "lib/**/*"

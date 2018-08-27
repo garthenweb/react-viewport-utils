@@ -35,7 +35,7 @@ const getNodeScroll = (elem = window) => {
   };
 };
 
-const getXDir = (x, prev) => {
+const getXDir = (x: number, prev: IScroll) => {
   switch (true) {
     case x < prev.x:
       return SCROLL_DIR_LEFT;
@@ -43,10 +43,12 @@ const getXDir = (x, prev) => {
       return SCROLL_DIR_RIGHT;
     case x === prev.x:
       return prev.xDir === SCROLL_DIR_LEFT ? SCROLL_DIR_RIGHT : SCROLL_DIR_LEFT;
+    default:
+      throw new Error('Could not calculate xDir');
   }
 };
 
-const getYDir = (y, prev) => {
+const getYDir = (y: number, prev: IScroll) => {
   switch (true) {
     case y < prev.y:
       return SCROLL_DIR_UP;
@@ -54,6 +56,8 @@ const getYDir = (y, prev) => {
       return SCROLL_DIR_DOWN;
     case y === prev.y:
       return prev.yDir === SCROLL_DIR_UP ? SCROLL_DIR_DOWN : SCROLL_DIR_UP;
+    default:
+      throw new Error('Could not calculate yDir');
   }
 };
 
@@ -72,7 +76,7 @@ export const Consumer = ViewportContext.Consumer;
 export default class ViewportProvider extends React.PureComponent {
   private scrollState: IScroll;
 
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.scrollState = createInitScrollState();
   }

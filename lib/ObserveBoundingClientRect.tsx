@@ -2,12 +2,12 @@ import * as React from 'react';
 import raf from 'raf';
 
 interface IProps {
-  children: (rect: IState) => React.ReactNode;
+  children: (rect: IRect | null) => React.ReactNode;
   node: React.RefObject<HTMLElement>;
-  setInitials?: (rect: IState) => void;
+  setInitials?: (rect: IRect) => void;
 }
 
-interface IState {
+interface IRect {
   top: number;
   right: number;
   bottom: number;
@@ -18,12 +18,12 @@ interface IState {
 
 export default class BoundingClientRect extends React.PureComponent<
   IProps,
-  IState
+  IRect | null
 > {
   private tickId: NodeJS.Timer;
   private firstSync: boolean = true;
 
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
     this.state = null;
   }
@@ -36,7 +36,7 @@ export default class BoundingClientRect extends React.PureComponent<
     raf.cancel(this.tickId);
   }
 
-  tick(updater) {
+  tick(updater: Function) {
     this.tickId = raf(() => {
       updater();
       this.tick(updater);

@@ -28,11 +28,11 @@ export interface IScroll {
 }
 
 export default function connectScroll() {
-  return WrappedComponent => {
+  return (WrappedComponent: React.ComponentType<any>) => {
     return class ConnectScroll extends React.PureComponent<IProps, IState> {
       tickId: NodeJS.Timer;
 
-      constructor(props) {
+      constructor(props: IProps) {
         super(props);
         this.context = {
           scroll: createInitScrollState(),
@@ -48,12 +48,12 @@ export default function connectScroll() {
         raf.cancel(this.tickId);
       }
 
-      storeContext = context => {
+      storeContext = (context: { scroll: IScroll }) => {
         this.context = context;
         return null;
       };
 
-      tick(updater) {
+      tick(updater: Function) {
         this.tickId = raf(() => {
           updater();
           this.tick(updater);
