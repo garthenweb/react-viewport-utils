@@ -1,5 +1,5 @@
 import * as React from 'react';
-import raf from 'raf';
+const raf = require('raf');
 
 interface IProps {
   children: (rect: IRect | null) => React.ReactNode;

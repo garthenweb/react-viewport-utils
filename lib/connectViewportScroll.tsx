@@ -1,6 +1,6 @@
 import * as React from 'react';
-import raf from 'raf';
-import shallowEqual from 'shallowequal';
+const raf = require('raf');
+const shallowEqual = require('shallowequal');
 
 import {
   Consumer,
