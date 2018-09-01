@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 
-import { ViewportProvider, ObserveBoundingClientRect } from '../lib/index';
+import {
+  ViewportProvider,
+  ObserveBoundingClientRect,
+  connectViewport,
+} from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
 import StickyGroupProvider from './StickyGroup';
@@ -24,7 +28,7 @@ class Example extends React.PureComponent {
     return (
       <StickyGroupProvider>
         <StickyScrollUp>
-          <div className="header">Header</div>
+          <ViewportHeader />
         </StickyScrollUp>
         <Placeholder />
 

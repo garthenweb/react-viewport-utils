@@ -1,4 +1,5 @@
 import * as React from 'react';
+const debounce = require('debounce');
 
 export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
 export const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
@@ -16,8 +17,14 @@ export interface IScroll {
   yDTurn: number;
 }
 
+export interface IDimensions {
+  width: number;
+  height: number;
+}
+
 const ViewportContext = React.createContext({
-  scroll: { x: 0, y: 0 },
+  scroll: {},
+  dimensions: {},
 });
 
 const getNodeScroll = (elem = window) => {
@@ -32,6 +39,13 @@ const getNodeScroll = (elem = window) => {
   return {
     x: scrollX,
     y: scrollY,
+  };
+};
+
+const getClientDimensions = () => {
+  return {
+    width: window.innerWidth || document.documentElement.clientWidth,
+    height: window.innerHeight || document.documentElement.clientHeight,
   };
 };
 
@@ -72,13 +86,26 @@ export const createInitScrollState = () => ({
   yDTurn: 0,
 });
 
+export const createInitDimensionsState = () => {
+  if (typeof window === 'undefined') {
+    return {
+      width: 0,
+      height: 0,
+    };
+  }
+  return getClientDimensions();
+};
+
 export const Consumer = ViewportContext.Consumer;
 export default class ViewportProvider extends React.PureComponent {
   private scrollState: IScroll;
+  private dimensionsState: IDimensions;
 
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props);
     this.scrollState = createInitScrollState();
+    this.dimensionsState = createInitDimensionsState();
+    this.handleResize = debounce(this.handleResize, 75);
   }
 
   handleScroll = () => {
@@ -103,17 +130,31 @@ export default class ViewportProvider extends React.PureComponent {
     this.scrollState.y = y;
   };
 
+  handleResize = () => {
+    const { width, height } = getClientDimensions();
+    this.dimensionsState.width = width;
+    this.dimensionsState.height = height;
+  };
+
   componentDidMount() {
     window.addEventListener('scroll', this.handleScroll, false);
+    window.addEventListener('resize', this.handleResize, false);
+    window.addEventListener('orientationchange', this.handleResize, false);
   }
 
   componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll, false);
+    window.removeEventListener('resize', this.handleResize, false);
+    window.removeEventListener('orientationchange', this.handleResize, false);
   }
 
   render() {
+    const value = {
+      scroll: this.scrollState,
+      dimensions: this.dimensionsState,
+    };
     return (
-      <ViewportContext.Provider value={{ scroll: this.scrollState }}>
+      <ViewportContext.Provider value={value}>
         {this.props.children}
       </ViewportContext.Provider>
     );

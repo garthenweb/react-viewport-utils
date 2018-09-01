@@ -5,14 +5,18 @@ const shallowEqual = require('shallowequal');
 import {
   Consumer,
   createInitScrollState,
-  IScroll as IState,
+  createInitDimensionsState,
+  IScroll as IContextScroll,
   SCROLL_DIR_UP,
   SCROLL_DIR_DOWN,
   SCROLL_DIR_RIGHT,
   SCROLL_DIR_LEFT,
+  IDimensions,
 } from './ViewportProvider';
 
 interface IProps {}
+
+interface IState extends IContextScroll, IDimensions {}
 
 export interface IScroll {
   x: number;
@@ -27,16 +31,20 @@ export interface IScroll {
   isScrollingRight: boolean;
 }
 
-export default function connectScroll() {
+export default function connect() {
   return (WrappedComponent: React.ComponentType<any>) => {
-    return class ConnectScroll extends React.PureComponent<IProps, IState> {
+    return class ConnectViewport extends React.PureComponent<IProps, IState> {
       tickId: NodeJS.Timer;
-      scrollContext: IState;
+      scrollContext: IContextScroll;
+      dimensionsContext: IDimensions;
 
       constructor(props: IProps) {
         super(props);
         this.scrollContext = createInitScrollState();
-        this.state = createInitScrollState();
+        this.state = {
+          ...createInitScrollState(),
+          ...createInitDimensionsState(),
+        };
       }
 
       componentDidMount() {
@@ -47,8 +55,12 @@ export default function connectScroll() {
         raf.cancel(this.tickId);
       }
 
-      storeContext = (scrollContext: { scroll: IState }) => {
+      storeContext = (scrollContext: {
+        scroll: IState;
+        dimensions: IDimensions;
+      }) => {
         this.scrollContext = scrollContext.scroll;
+        this.dimensionsContext = scrollContext.dimensions;
         return null;
       };
 
@@ -60,13 +72,14 @@ export default function connectScroll() {
       }
 
       syncState = () => {
-        if (!shallowEqual(this.scrollContext, this.state)) {
-          this.setState({ ...this.scrollContext });
+        const nextState = { ...this.scrollContext, ...this.dimensionsContext };
+        if (!shallowEqual(nextState, this.state)) {
+          this.setState(nextState);
         }
       };
 
       render() {
-        const { xDir, yDir, ...scroll } = this.state;
+        const { xDir, yDir, width, height, ...scroll } = this.state;
         return (
           <React.Fragment>
             <Consumer>{this.storeContext}</Consumer>
@@ -79,6 +92,7 @@ export default function connectScroll() {
                 isScrollingLeft: xDir === SCROLL_DIR_LEFT,
                 isScrollingRight: xDir === SCROLL_DIR_RIGHT,
               }}
+              dimensions={{ width, height }}
             />
           </React.Fragment>
         );
