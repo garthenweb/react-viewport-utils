@@ -1,4 +1,5 @@
 import * as React from 'react';
+import wrapDisplayName from 'recompose/wrapDisplayName';
 const raf = require('raf');
 const shallowEqual = require('shallowequal');
 
@@ -37,6 +38,7 @@ export default function connect() {
       tickId: NodeJS.Timer;
       scrollContext: IContextScroll;
       dimensionsContext: IDimensions;
+      static displayName: string = wrapDisplayName(WrappedComponent, 'connect');
 
       constructor(props: IProps) {
         super(props);
