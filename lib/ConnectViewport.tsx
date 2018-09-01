@@ -15,8 +15,6 @@ import {
   IDimensions,
 } from './ViewportProvider';
 
-interface IProps {}
-
 interface IState extends IContextScroll, IDimensions {}
 
 export interface IScroll {
@@ -32,15 +30,22 @@ export interface IScroll {
   isScrollingRight: boolean;
 }
 
+interface IWrapperProps {
+  scroll: IScroll;
+  dimensions: IDimensions;
+}
+
 export default function connect() {
-  return (WrappedComponent: React.ComponentType<any>) => {
-    return class ConnectViewport extends React.PureComponent<IProps, IState> {
+  return <P extends object>(
+    WrappedComponent: React.ComponentType<P & IWrapperProps>,
+  ): React.ComponentClass<P> => {
+    return class ConnectViewport extends React.PureComponent<P, IState> {
       tickId: NodeJS.Timer;
       scrollContext: IContextScroll;
       dimensionsContext: IDimensions;
       static displayName: string = wrapDisplayName(WrappedComponent, 'connect');
 
-      constructor(props: IProps) {
+      constructor(props: P) {
         super(props);
         this.scrollContext = createInitScrollState();
         this.state = {

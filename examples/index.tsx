@@ -13,13 +13,12 @@ import StickyGroupProvider from './StickyGroup';
 import './styles.css';
 
 const Placeholder = () => <div className="placeholder" />;
-const ViewportHeader = connectViewport()(
-  ({ dimensions }: { dimensions: { width: number; height: number } }) => (
-    <header className="header">
-      Viewport: {dimensions.width}x{dimensions.height}
-    </header>
-  ),
-);
+const ViewportHeader = connectViewport()<{ a: string }>(({ dimensions, a }) => (
+  <header className="header">
+    Viewport: {dimensions.width}x{dimensions.height}
+    {a}
+  </header>
+));
 
 class Example extends React.PureComponent<{}, { disabled: boolean }> {
   private container1: React.RefObject<any>;
@@ -49,7 +48,7 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
     return (
       <StickyGroupProvider>
         <StickyScrollUp>
-          <ViewportHeader />
+          <ViewportHeader a="test" />
         </StickyScrollUp>
         <Placeholder />
 

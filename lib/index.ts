@@ -1,8 +1,8 @@
 export { default as ViewportProvider } from './ViewportProvider';
 export {
   /**
-  * @deprecated use connectViewport instead
-  */
+   * @deprecated use connectViewport instead
+   */
   default as connectViewportScroll,
   default as connectViewport,
 } from './ConnectViewport';
