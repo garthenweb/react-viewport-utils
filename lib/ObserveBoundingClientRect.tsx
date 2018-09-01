@@ -3,8 +3,19 @@ const raf = require('raf');
 const shallowEqual = require('shallowequal');
 
 interface IProps {
-  children: (rect: IRect | null) => React.ReactNode;
+  /**
+   * Called every time when an update is detected. Same as
+   * using `onUpdate` but it requires to render a node.
+   */
+  children?: (rect: IRect | null) => React.ReactNode;
+  /**
+   * The reference to the node that should be observed
+   */
   node: React.RefObject<HTMLElement>;
+  /**
+   * Called once the node is mounted.
+   * @deprecated Use `onInit` instead.
+   */
   setInitials?: (rect: IRect) => void;
   /**
    * Called once a node is mounted for the first time.
