@@ -13,11 +13,13 @@ import StickyGroupProvider from './StickyGroup';
 import './styles.css';
 
 const Placeholder = () => <div className="placeholder" />;
-const ViewportHeader = connectViewport()(({ dimensions }) => (
-  <header className="header">
-    Viewport: {dimensions.width}x{dimensions.height}
-  </header>
-));
+const ViewportHeader = connectViewport()(
+  ({ dimensions }: { dimensions: { width: number; height: number } }) => (
+    <header className="header">
+      Viewport: {dimensions.width}x{dimensions.height}
+    </header>
+  ),
+);
 
 class Example extends React.PureComponent<{}, { disabled: boolean }> {
   private container1: React.RefObject<any>;
