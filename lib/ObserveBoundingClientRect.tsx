@@ -1,10 +1,20 @@
 import * as React from 'react';
 const raf = require('raf');
+const shallowEqual = require('shallowequal');
 
 interface IProps {
   children: (rect: IRect | null) => React.ReactNode;
   node: React.RefObject<HTMLElement>;
   setInitials?: (rect: IRect) => void;
+  /**
+   * Called once a node is mounted for the first time.
+   */
+  onInit?: (rect: IRect) => void;
+  /**
+   * Called every time when an update is detected. Same as
+   * using `children` but it does not allow to render a node.
+   */
+  onUpdate?: (rect: IRect) => void;
 }
 
 interface IRect {
@@ -16,20 +26,51 @@ interface IRect {
   width: number;
 }
 
-export default class BoundingClientRect extends React.PureComponent<
+interface IState extends IRect {
+  isInitialized: boolean;
+}
+
+export default class ObserveBoundingClientRect extends React.PureComponent<
   IProps,
-  IRect | null
+  IState
 > {
   private tickId: NodeJS.Timer;
-  private firstSync: boolean = true;
 
   constructor(props: IProps) {
     super(props);
-    this.state = null;
+    this.state = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      height: 0,
+      width: 0,
+      isInitialized: false,
+    };
   }
 
   componentDidMount() {
     this.tick(this.syncState);
+  }
+
+  componentDidUpdate(prevProps: IProps, prevState: IState) {
+    const rect = this.getRectFromState();
+    const prevRect = this.getRectFromState(prevState);
+    if (!rect) {
+      return;
+    }
+
+    if (this.props.onInit) {
+      if (!prevState.isInitialized && this.state.isInitialized) {
+        this.props.onInit(rect);
+      }
+    }
+
+    if (this.props.onUpdate) {
+      if (!shallowEqual(rect, prevRect)) {
+        this.props.onUpdate(rect);
+      }
+    }
   }
 
   componentWillUnmount() {
@@ -43,30 +84,59 @@ export default class BoundingClientRect extends React.PureComponent<
     });
   }
 
+  getRectFromState(state: IState = this.state): IRect | null {
+    if (!state.isInitialized) {
+      return null;
+    }
+
+    return {
+      height: state.height,
+      width: state.width,
+      top: state.top,
+      bottom: state.bottom,
+      left: state.left,
+      right: state.right,
+    };
+  }
+
+  getRectFromNode(): IRect | null {
+    const { node } = this.props;
+    if (!node || !node.current) {
+      return null;
+    }
+
+    const rect = node.current.getBoundingClientRect();
+    return {
+      height: rect.height,
+      width: rect.width,
+      top: rect.top,
+      bottom: rect.bottom,
+      left: rect.left,
+      right: rect.right,
+    };
+  }
+
   syncState = () => {
     const { node } = this.props;
     if (!node || !node.current) {
       return;
     }
-    const {
-      height,
-      width,
-      top,
-      bottom,
-      left,
-      right,
-    } = node.current.getBoundingClientRect();
+    const rect = this.getRectFromNode();
 
-    if (this.firstSync && this.props.setInitials) {
-      this.props.setInitials({ height, width, top, bottom, left, right });
-      this.firstSync = false;
+    if (rect && !this.state.isInitialized) {
+      if (this.props.setInitials) {
+        this.props.setInitials(rect);
+      }
+
+      this.setState({ ...rect, isInitialized: true });
+      return;
     }
 
-    this.setState({ height, width, top, bottom, left, right });
+    this.setState(rect);
   };
 
   render() {
     const { children } = this.props;
-    return children(this.state);
+    return typeof children === 'function' ? children(this.state) : null;
   }
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render } from 'react-dom';
 
-import { ViewportProvider } from '../lib/index';
+import { ViewportProvider, ObserveBoundingClientRect } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
 import StickyGroupProvider from './StickyGroup';
@@ -12,10 +12,12 @@ const Placeholder = () => <div className="placeholder" />;
 
 class Example extends React.PureComponent {
   private container1: React.RefObject<any>;
+  private container2: React.RefObject<any>;
 
   constructor(props) {
     super(props);
     this.container1 = React.createRef();
+    this.container2 = React.createRef();
   }
 
   render() {
@@ -37,7 +39,12 @@ class Example extends React.PureComponent {
           <div className="sticky-inline">Sticky inline2</div>
         </Sticky>
 
-        <Placeholder />
+        <div className="placeholder" ref={this.container2} />
+        <ObserveBoundingClientRect
+          node={this.container2}
+          onInit={(rect) => console.log('init', rect)}
+          onUpdate={(rect) => console.log('update', rect)}
+        />
         <Placeholder />
         <Placeholder />
       </StickyGroupProvider>
