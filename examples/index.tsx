@@ -13,8 +13,13 @@ import StickyGroupProvider from './StickyGroup';
 import './styles.css';
 
 const Placeholder = () => <div className="placeholder" />;
+const ViewportHeader = connectViewport()(({ dimensions }) => (
+  <header className="header">
+    Viewport: {dimensions.width}x{dimensions.height}
+  </header>
+));
 
-class Example extends React.PureComponent {
+class Example extends React.PureComponent<{}, { disabled: boolean }> {
   private container1: React.RefObject<any>;
   private container2: React.RefObject<any>;
 
@@ -22,9 +27,23 @@ class Example extends React.PureComponent {
     super(props);
     this.container1 = React.createRef();
     this.container2 = React.createRef();
+    this.state = {
+      disabled: false,
+    };
+  }
+
+  renderButton() {
+    return (
+      <button onClick={() => this.setState({ disabled: !this.state.disabled })}>
+        Toggle active
+      </button>
+    );
   }
 
   render() {
+    if (this.state.disabled) {
+      return this.renderButton();
+    }
     return (
       <StickyGroupProvider>
         <StickyScrollUp>
@@ -46,11 +65,12 @@ class Example extends React.PureComponent {
         <div className="placeholder" ref={this.container2} />
         <ObserveBoundingClientRect
           node={this.container2}
-          onInit={(rect) => console.log('init', rect)}
-          onUpdate={(rect) => console.log('update', rect)}
+          onInit={rect => console.log('init', rect)}
+          onUpdate={rect => console.log('update', rect)}
         />
         <Placeholder />
         <Placeholder />
+        {this.renderButton()}
       </StickyGroupProvider>
     );
   }
