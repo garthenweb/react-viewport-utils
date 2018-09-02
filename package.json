@@ -21,7 +21,10 @@
   "author": "Jannick Garthen <jannick.garthen@gmail.com>",
   "keywords": [
     "react",
-    "viewport"
+    "viewport",
+    "scroll",
+    "dimensions",
+    "size"
   ],
   "license": "MIT",
   "devDependencies": {
