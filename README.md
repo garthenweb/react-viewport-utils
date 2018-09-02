@@ -4,45 +4,40 @@ The goal of this project is to create a set of low level utility components for 
 
 See the example folder for more information about what you can build with it.
 
-## Caution
-
-This library is in early stages and may contain bugs. Please fill them in the [issues section](https://github.com/garthenweb/react-viewport-utils/issues).
-
-Also the performance goal is probably not reached yet, even if there are good defaults already. Some functionalities are missing as well and breaking changes may occur.
-
 ## Installation/ requirements
 
-Please note that `react` version 16.3 or higher is required for this library to work because it is using the context as well as references api.
+Please note that `react` version 16.3 or higher is required for this library to work because it is using the [context](https://reactjs.org/docs/context.html) as well as [references](https://reactjs.org/docs/refs-and-the-dom.html) api.
 
 ```
 npm install --save react-viewport-utils
 ```
 
+By default the library ships with Typescript definitions, so there is no need to install a separate dependency. Typescript is no requirement for this library, all definition are extracted in separate files.
+
 ## Usage
 
 ### ViewportProvider/ connectViewportScroll
 
-The ViewportProvider will delegate global viewport information to a connected component. At the moment only scroll events are supported.
+The ViewportProvider will delegate global viewport information to a connected component.
 
 ``` javascript
 import * as React from 'react';
-import { ViewportProvider, connectViewportScroll } from 'react-viewport-uitls';
+import {
+  ViewportProvider,
+  connectViewport,
+  IScroll,
+  IDimensions,
+} from 'react-viewport-uitls';
 
-interface IScroll {
-  x: number;
-  y: number;
-  xTurn: number;
-  yTurn: number;
-  xDTurn: number;
-  yDTurn: number;
-  isScrollingUp: boolean;
-  isScrollingDown: boolean;
-  isScrollingLeft: boolean;
-  isScrollingRight: boolean;
+interface IProps {
+  scroll: IScroll,
+  dimensions: IDimensions,
 }
 
-const Component = ({ scroll }: { scroll: IScroll }) => (
+const Component = ({ scroll, dimensions }: IProps) => (
   <>
+    <div>Dimension width: ${dimensions.width}</div>
+    <div>Dimension height: ${dimensions.height}</div>
     <div>Scroll X: {scroll.x}</div>
     <div>Scroll Y: {scroll.y}</div>
     <div>Scroll last turning point X: {scroll.xTurn}</div>
@@ -55,7 +50,7 @@ const Component = ({ scroll }: { scroll: IScroll }) => (
     <div>Is scrolling right: ${scroll.isScrollingRight}</div>
   </>
 );
-const ConnectedComponent = connectViewportScroll()(Component);
+const ConnectedComponent = connectViewport()(Component);
 
 render(
   <ViewportProvider>
@@ -73,41 +68,41 @@ Observes for changes to the bounding client rect of a given reference.
 
 ``` javascript
 import * as React from 'react';
-import { ObserveBoundingClientRect } from 'react-viewport-uitls';
+import { ObserveBoundingClientRect, IRect } from 'react-viewport-uitls';
 
-class Component extends React.Component {
+const Component = ({ rect: IRect, initRect: IRect }) => (
+  <React.Fragment>
+    <div>Current top: {rect.top}</div>
+    <div>Current right: {rect.right}</div>
+    <div>Current bottom: {rect.bottom}</div>
+    <div>Current left: {rect.left}</div>
+    <div>Current height: {rect.height}</div>
+    <div>Current width: {rect.width}</div>
+    <div>Initial top: {initRect.top}</div>
+    <div>Initial right: {initRect.right}</div>
+    <div>Initial bottom: {initRect.bottom}</div>
+    <div>Initial left: {initRect.left}</div>
+    <div>Initial height: {initRect.height}</div>
+    <div>Initial width: {initRect.width}</div>
+  </React.Fragment>
+);
+
+class Component extends React.Component<{}, IRect> {
   constructor(props) {
     super(props);
     this.ref = React.createRef();
     this.state = {};
   }
 
-  setInitials = rect => {
-    this.setState(rect)
-  }
-
   render() {
     return (
       <ObserveBoundingClientRect
         node={this.ref}
-        setInitials={this.setInitials}
+        onInit={rect => this.setState(rect)}
       >
         {rect => (
           <div ref={this.ref}>
-            {Boolean(rect) && (
-              <div>Current top: {rect.top}</div>
-              <div>Current right: {rect.right}</div>
-              <div>Current bottom: {rect.bottom}</div>
-              <div>Current left: {rect.left}</div>
-              <div>Current height: {rect.height}</div>
-              <div>Current width: {rect.width}</div>
-              <div>Initial top: {this.state.top}</div>
-              <div>Initial right: {this.state.right}</div>
-              <div>Initial bottom: {this.state.bottom}</div>
-              <div>Initial left: {this.state.left}</div>
-              <div>Initial height: {this.state.height}</div>
-              <div>Initial width: {this.state.width}</div>
-            )}
+            {Boolean(rect) && <Component rect={rect} initRect={this.state} />}
           </div>
         )}
       </ObserveBoundingClientRect>
@@ -119,6 +114,18 @@ render(
   <Component />,
   document.querySelector('main')
 );
+```
+
+In case no nodes should be rendered by `ObserveBoundingClientRect`, instead of using `children` as a function it is also possible to use the `onUpdate` function.
+
+```javascript
+<div ref={this.ref}></div>
+<ObserveBoundingClientRect
+  node={this.ref}
+  onUpdate={rect => {
+    this.setState(rect);
+  }}
+/>
 ```
 
 ## License
