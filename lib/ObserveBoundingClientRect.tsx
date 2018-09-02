@@ -28,7 +28,7 @@ interface IProps {
   onUpdate?: (rect: IRect) => void;
 }
 
-interface IRect {
+export interface IRect {
   top: number;
   right: number;
   bottom: number;
