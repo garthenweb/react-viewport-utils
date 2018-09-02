@@ -148,6 +148,8 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
 
   render() {
     const { children } = this.props;
-    return typeof children === 'function' ? children(this.state) : null;
+    return typeof children === 'function'
+      ? children(this.getRectFromState())
+      : null;
   }
 }
