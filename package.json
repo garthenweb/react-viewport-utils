@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "rm -rf ./.cache && parcel ./examples/index.html --out-dir='examples-dist'",
+    "precompile": "rm -rf dist",
     "compile": "tsc --project ./tsconfig.json",
     "test": "jest lib",
     "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx}\"",
