@@ -1,7 +1,7 @@
 import * as React from 'react';
 import wrapDisplayName from 'recompose/wrapDisplayName';
+import shallowEqual from 'recompose/shallowEqual';
 const raf = require('raf');
-const shallowEqual = require('shallowequal');
 
 import {
   Consumer,
