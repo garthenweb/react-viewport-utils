@@ -1,7 +1,8 @@
 import * as React from 'react';
 import wrapDisplayName from 'recompose/wrapDisplayName';
-import shallowEqual from 'recompose/shallowEqual';
 const raf = require('raf');
+
+import { shallowEqualScroll, shallowEqualDimensions } from './utils';
 
 import {
   Consumer,
@@ -79,8 +80,14 @@ export default function connect() {
       }
 
       syncState = () => {
-        const nextState = { ...this.scrollContext, ...this.dimensionsContext };
-        if (!shallowEqual(nextState, this.state)) {
+        const nextState = {
+          ...this.scrollContext,
+          ...this.dimensionsContext,
+        };
+        if (
+          !shallowEqualScroll(nextState as any, this.state as any) ||
+          !shallowEqualDimensions(nextState as any, this.state as any)
+        ) {
           this.setState(nextState);
         }
       };

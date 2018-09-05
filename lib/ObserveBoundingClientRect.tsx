@@ -1,6 +1,7 @@
 import * as React from 'react';
-import shallowEqual from 'recompose/shallowEqual';
 const raf = require('raf');
+
+import { shallowEqualRect } from './utils';
 
 interface IProps {
   /**
@@ -78,7 +79,7 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
     }
 
     if (this.props.onUpdate) {
-      if (prevRect === null || !shallowEqual(rect, prevRect)) {
+      if (prevRect === null || !shallowEqualRect(rect, prevRect)) {
         this.props.onUpdate(rect);
       }
     }
