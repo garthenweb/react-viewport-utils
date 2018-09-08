@@ -1,5 +1,6 @@
 import * as React from 'react';
-const debounce = require('debounce');
+const throttle = require('lodash.throttle');
+const debounce = require('lodash.debounce');
 
 export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
 export const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
@@ -105,7 +106,11 @@ export default class ViewportProvider extends React.PureComponent {
     super(props);
     this.scrollState = createInitScrollState();
     this.dimensionsState = createInitDimensionsState();
-    this.handleResize = debounce(this.handleResize, 75);
+    this.handleScroll = throttle(this.handleScroll, 16, {
+      leading: true,
+      trailing: false,
+    });
+    this.handleResize = debounce(this.handleResize, 80);
   }
 
   handleScroll = () => {
