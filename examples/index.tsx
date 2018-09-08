@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 
 import {
   ViewportProvider,
-  ObserveBoundingClientRect,
+  ObserveViewport,
   connectViewport,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
@@ -13,12 +13,14 @@ import StickyGroupProvider from './StickyGroup';
 import './styles.css';
 
 const Placeholder = () => <div className="placeholder" />;
-const ViewportHeader = connectViewport()<{ a: string }>(({ dimensions, a }) => (
-  <header className="header">
-    Viewport: {dimensions.width}x{dimensions.height}
-    {a}
-  </header>
-));
+const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
+  ({ dimensions, a }) => (
+    <header className="header">
+      Viewport: {dimensions.width}x{dimensions.height}
+      {a}
+    </header>
+  ),
+);
 
 class Example extends React.PureComponent<{}, { disabled: boolean }> {
   private container1: React.RefObject<any>;
@@ -40,6 +42,9 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
       </button>
     );
   }
+
+  lastDimensions = null;
+  lastScroll = null;
 
   render() {
     if (this.state.disabled) {
@@ -64,10 +69,23 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
         </Sticky>
 
         <div className="placeholder" ref={this.container2} />
-        <ObserveBoundingClientRect
-          node={this.container2}
-          onInit={rect => console.log('init', rect)}
-          onUpdate={rect => console.log('update', rect)}
+        <ObserveViewport
+          disableDimensionsUpdates
+          onUpdate={props => {
+            console.log('update scroll', props.scroll);
+          }}
+        />
+        <ObserveViewport
+          onUpdate={({ dimensions, scroll }) => {
+            if (this.lastDimensions !== dimensions) {
+              console.log('update dimensions', dimensions);
+              this.lastDimensions = dimensions;
+            }
+            if (this.lastScroll !== scroll) {
+              console.log('update scroll', scroll);
+              this.lastScroll = scroll;
+            }
+          }}
         />
         <Placeholder />
         <Placeholder />

@@ -5,9 +5,9 @@ export {
    */
   default as connectViewportScroll,
   default as connectViewport,
-  IScroll,
 } from './ConnectViewport';
 export {
   default as ObserveBoundingClientRect,
   IRect,
 } from './ObserveBoundingClientRect';
+export { default as ObserveViewport, IScroll } from './ObserveViewport';
