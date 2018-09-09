@@ -19,7 +19,7 @@ export default function connect(options: IOptions = {}) {
     WrappedComponent: React.ComponentType<P & IWrapperProps>,
   ): React.ComponentClass<P> => {
     return class ConnectViewport extends React.Component<P, {}> {
-      static displayName: string = wrapDisplayName(WrappedComponent, 'connect');
+      static displayName: string = wrapDisplayName(WrappedComponent, 'connectViewport');
 
       render() {
         return (
