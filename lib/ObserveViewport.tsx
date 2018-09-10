@@ -1,5 +1,5 @@
 import * as React from 'react';
-const memoize = require('memoize-one');
+const memoize = require('memoize-one').default;
 const raf = require('raf');
 
 import { shallowEqualScroll, shallowEqualDimensions } from './utils';
