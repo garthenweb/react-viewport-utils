@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ObserveBoundingClientRect, connectViewportScroll } from '../lib/index';
+import { ObserveBoundingClientRect, connectViewport } from '../lib/index';
 import { connect as connectStickyGroup } from './StickyGroup';
 
 interface IProps {
@@ -96,4 +96,4 @@ class StickyScrollUp extends React.PureComponent<IProps> {
   }
 }
 
-export default connectStickyGroup()(connectViewportScroll()(StickyScrollUp));
+export default connectStickyGroup()(connectViewport()(StickyScrollUp));
