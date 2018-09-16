@@ -1,4 +1,4 @@
-import { IRect, IScroll, IDimensions } from './index';
+import { IRect, IScroll, IPrivateScroll, IDimensions } from './types';
 
 export const shallowEqualScroll = (a: IScroll, b: IScroll) => {
   if (a === b) {
@@ -15,6 +15,22 @@ export const shallowEqualScroll = (a: IScroll, b: IScroll) => {
     a.isScrollingDown === b.isScrollingDown &&
     a.isScrollingLeft === b.isScrollingLeft &&
     a.isScrollingRight === b.isScrollingRight
+  );
+};
+
+export const shallowEqualPrivateScroll = (a: IPrivateScroll, b: IPrivateScroll) => {
+  if (a === b) {
+    return true;
+  }
+  return (
+    a.x === b.x &&
+    a.y === b.y &&
+    a.xTurn === b.xTurn &&
+    a.yTurn === b.yTurn &&
+    a.xDTurn === b.xDTurn &&
+    a.yDTurn === b.yDTurn &&
+    a.xDir === b.xDir &&
+    a.yDir === b.yDir
   );
 };
 

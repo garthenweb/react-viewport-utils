@@ -1,28 +1,31 @@
 import * as React from 'react';
 const throttle = require('lodash.throttle');
 const debounce = require('lodash.debounce');
+const memoizeOne = require('memoize-one');
+const memoize =
+  typeof memoizeOne === 'function' ? memoizeOne : memoizeOne.default;
+const raf = require('raf');
 
-import { IDimensions } from './types';
+import {
+  shallowEqualScroll,
+  shallowEqualPrivateScroll,
+  shallowEqualDimensions,
+} from './utils';
+import {
+  IDimensions,
+  IPrivateScroll,
+  IScroll,
+  TViewportChangeHandler,
+} from './types';
 
 export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
 export const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
 export const SCROLL_DIR_LEFT = Symbol('SCROLL_DIR_LEFT');
 export const SCROLL_DIR_RIGHT = Symbol('SCROLL_DIR_RIGHT');
 
-export interface IScroll {
-  x: number;
-  y: number;
-  xDir: typeof SCROLL_DIR_LEFT | typeof SCROLL_DIR_RIGHT | undefined;
-  yDir: typeof SCROLL_DIR_UP | typeof SCROLL_DIR_DOWN | undefined;
-  xTurn: number;
-  yTurn: number;
-  xDTurn: number;
-  yDTurn: number;
-}
-
 const ViewportContext = React.createContext({
-  scroll: {},
-  dimensions: {},
+  removeViewportChangeListener: (props: TViewportChangeHandler) => {},
+  addViewportChangeListener: (props: TViewportChangeHandler) => {},
 });
 
 const getNodeScroll = (elem = window) => {
@@ -47,7 +50,7 @@ const getClientDimensions = () => {
   };
 };
 
-const getXDir = (x: number, prev: IScroll) => {
+const getXDir = (x: number, prev: IPrivateScroll) => {
   switch (true) {
     case x < prev.x:
       return SCROLL_DIR_LEFT;
@@ -60,7 +63,7 @@ const getXDir = (x: number, prev: IScroll) => {
   }
 };
 
-const getYDir = (y: number, prev: IScroll) => {
+const getYDir = (y: number, prev: IPrivateScroll) => {
   switch (true) {
     case y < prev.y:
       return SCROLL_DIR_UP;
@@ -73,7 +76,21 @@ const getYDir = (y: number, prev: IScroll) => {
   }
 };
 
-export const createInitScrollState = () => ({
+const privateToPublisScroll = ({
+  yDir,
+  xDir,
+  ...scroll
+}: IPrivateScroll): IScroll => {
+  return {
+    ...scroll,
+    isScrollingUp: yDir === SCROLL_DIR_UP,
+    isScrollingDown: yDir === SCROLL_DIR_DOWN,
+    isScrollingLeft: xDir === SCROLL_DIR_LEFT,
+    isScrollingRight: xDir === SCROLL_DIR_RIGHT,
+  };
+};
+
+const createInitPrivateScrollState = () => ({
   x: 0,
   y: 0,
   xDir: undefined,
@@ -83,6 +100,9 @@ export const createInitScrollState = () => ({
   xDTurn: 0,
   yDTurn: 0,
 });
+
+export const createInitScrollState = (): IScroll =>
+  privateToPublisScroll(createInitPrivateScrollState());
 
 export const createInitDimensionsState = () => {
   if (typeof window === 'undefined') {
@@ -96,39 +116,66 @@ export const createInitDimensionsState = () => {
 
 export const Consumer = ViewportContext.Consumer;
 export default class ViewportProvider extends React.PureComponent {
-  private scrollState: IScroll;
+  private scrollState: IPrivateScroll;
   private dimensionsState: IDimensions;
+  private lastSyncedScrollState: IPrivateScroll;
+  private lastSyncedDimensionsState: IDimensions;
+  private tickId: NodeJS.Timer;
+  private listeners: TViewportChangeHandler[] = [];
 
   constructor(props: {}) {
     super(props);
-    this.scrollState = createInitScrollState();
+    this.scrollState = createInitPrivateScrollState();
     this.dimensionsState = createInitDimensionsState();
+    this.lastSyncedDimensionsState = { ...this.dimensionsState };
+    this.lastSyncedScrollState = { ...this.scrollState };
   }
 
-  handleScroll = throttle(() => {
-    const { x, y } = getNodeScroll();
-    const {
-      xDir: prevXDir,
-      yDir: prevYDir,
-      xTurn: prevXTurn,
-      yTurn: prevYTurn,
-    } = this.scrollState;
+  componentDidMount() {
+    window.addEventListener('scroll', this.handleScroll, false);
+    window.addEventListener('resize', this.handleResize, false);
+    window.addEventListener('orientationchange', this.handleResize, false);
+    this.tick(this.syncState);
+  }
 
-    this.scrollState.xDir = getXDir(x, this.scrollState);
-    this.scrollState.yDir = getYDir(y, this.scrollState);
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll, false);
+    window.removeEventListener('resize', this.handleResize, false);
+    window.removeEventListener('orientationchange', this.handleResize, false);
+    raf.cancel(this.tickId);
+    this.listeners = [];
+  }
 
-    this.scrollState.xTurn = this.scrollState.xDir === prevXDir ? prevXTurn : x;
-    this.scrollState.yTurn = this.scrollState.yDir === prevYDir ? prevYTurn : y;
+  handleScroll = throttle(
+    () => {
+      const { x, y } = getNodeScroll();
+      const {
+        xDir: prevXDir,
+        yDir: prevYDir,
+        xTurn: prevXTurn,
+        yTurn: prevYTurn,
+      } = this.scrollState;
 
-    this.scrollState.xDTurn = x - this.scrollState.xTurn;
-    this.scrollState.yDTurn = y - this.scrollState.yTurn;
+      this.scrollState.xDir = getXDir(x, this.scrollState);
+      this.scrollState.yDir = getYDir(y, this.scrollState);
 
-    this.scrollState.x = x;
-    this.scrollState.y = y;
-  }, 16, {
-    leading: true,
-    trailing: false,
-  });
+      this.scrollState.xTurn =
+        this.scrollState.xDir === prevXDir ? prevXTurn : x;
+      this.scrollState.yTurn =
+        this.scrollState.yDir === prevYDir ? prevYTurn : y;
+
+      this.scrollState.xDTurn = x - this.scrollState.xTurn;
+      this.scrollState.yDTurn = y - this.scrollState.yTurn;
+
+      this.scrollState.x = x;
+      this.scrollState.y = y;
+    },
+    16,
+    {
+      leading: true,
+      trailing: false,
+    },
+  );
 
   handleResize = debounce(() => {
     const { width, height } = getClientDimensions();
@@ -136,23 +183,76 @@ export default class ViewportProvider extends React.PureComponent {
     this.dimensionsState.height = height;
   }, 80);
 
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll, false);
-    window.addEventListener('resize', this.handleResize, false);
-    window.addEventListener('orientationchange', this.handleResize, false);
+  getPublicScroll: ((scroll: IScroll) => IScroll) = memoize(
+    (scroll: IScroll): IScroll => scroll,
+    shallowEqualScroll,
+  );
+
+  getPublicDimensions: ((dimensions: IDimensions) => IDimensions) = memoize(
+    (dimensions: IDimensions): IDimensions => dimensions,
+    shallowEqualDimensions,
+  );
+
+  tick(updater: () => void) {
+    this.tickId = raf(() => {
+      if (this) {
+        updater();
+        this.tick(updater);
+      }
+    });
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll, false);
-    window.removeEventListener('resize', this.handleResize, false);
-    window.removeEventListener('orientationchange', this.handleResize, false);
+  syncState = () => {
+    const scrollDidUpdate = !shallowEqualPrivateScroll(
+      this.lastSyncedScrollState,
+      this.scrollState,
+    );
+    const dimensionsDidUpdate = !shallowEqualDimensions(
+      this.lastSyncedDimensionsState,
+      this.dimensionsState,
+    );
+
+    if (scrollDidUpdate) {
+      this.lastSyncedScrollState = { ...this.scrollState };
+    }
+
+    if (dimensionsDidUpdate) {
+      this.lastSyncedDimensionsState = { ...this.dimensionsState };
+    }
+
+    if (scrollDidUpdate || dimensionsDidUpdate) {
+      const publicState = this.getPropsFromState();
+      this.listeners.forEach(listener => {
+        listener(publicState);
+      });
+    }
+  };
+
+  getPropsFromState() {
+    return {
+      scroll: this.getPublicScroll(
+        privateToPublisScroll(this.lastSyncedScrollState),
+      ),
+      dimensions: this.getPublicDimensions({
+        ...this.lastSyncedDimensionsState,
+      }),
+    };
   }
+
+  addViewportChangeListener = (fn: TViewportChangeHandler) => {
+    this.listeners.push(fn);
+  };
+
+  removeViewportChangeListener = (fn: TViewportChangeHandler) => {
+    this.listeners = this.listeners.filter(listener => listener !== fn);
+  };
 
   render() {
     const value = {
-      scroll: this.scrollState,
-      dimensions: this.dimensionsState,
+      addViewportChangeListener: this.addViewportChangeListener,
+      removeViewportChangeListener: this.removeViewportChangeListener,
     };
+
     return (
       <ViewportContext.Provider value={value}>
         {this.props.children}

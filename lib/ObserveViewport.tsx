@@ -1,29 +1,24 @@
 import * as React from 'react';
-const memoizeOne = require('memoize-one');
-const memoize =
-  typeof memoizeOne === 'function' ? memoizeOne : memoizeOne.default;
 const raf = require('raf');
-
-import { shallowEqualScroll, shallowEqualDimensions } from './utils';
-import { IScroll, IDimensions } from './types';
 
 import {
   Consumer,
-  createInitScrollState,
   createInitDimensionsState,
-  IScroll as IContextScroll,
-  SCROLL_DIR_UP,
-  SCROLL_DIR_DOWN,
-  SCROLL_DIR_RIGHT,
-  SCROLL_DIR_LEFT,
+  createInitScrollState,
 } from './ViewportProvider';
-
-interface IState extends IContextScroll, IDimensions {}
+import {
+  IScroll,
+  IDimensions,
+  IViewport,
+  TViewportChangeHandler,
+} from './types';
 
 export interface IChildProps {
   scroll: IScroll | null;
   dimensions: IDimensions | null;
 }
+
+interface IState extends IChildProps {}
 
 interface IProps {
   children?: (props: IChildProps) => React.ReactNode;
@@ -32,10 +27,20 @@ interface IProps {
   disableDimensionsUpdates: boolean;
 }
 
+interface IContext {
+  addViewportChangeListener: (fn: TViewportChangeHandler) => void;
+  removeViewportChangeListener: (fn: TViewportChangeHandler) => void;
+}
+
 export default class ObserveViewport extends React.Component<IProps, IState> {
-  tickId: NodeJS.Timer;
-  scrollContext: IContextScroll;
-  dimensionsContext: IDimensions;
+  private addViewportChangeListener:
+    | ((fn: TViewportChangeHandler) => void)
+    | null;
+  private removeViewportChangeListener:
+    | ((fn: TViewportChangeHandler) => void)
+    | null;
+
+  private tickId: NodeJS.Timer;
 
   static defaultProps = {
     disableScrollUpdates: false,
@@ -44,11 +49,9 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    this.scrollContext = createInitScrollState();
-    this.dimensionsContext = createInitDimensionsState();
     this.state = {
-      ...this.scrollContext,
-      ...this.dimensionsContext,
+      scroll: createInitScrollState(),
+      dimensions: createInitDimensionsState(),
     };
   }
 
@@ -56,88 +59,60 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     return Boolean(nextProps.children);
   }
 
-  componentDidMount() {
-    this.tick(this.syncState);
-  }
-
   componentWillUnmount() {
+    if (this.removeViewportChangeListener) {
+      this.removeViewportChangeListener(this.handleViewportUpdate);
+    }
+    this.removeViewportChangeListener = null;
+    this.addViewportChangeListener = null;
     raf.cancel(this.tickId);
   }
 
-  getPublicScroll = memoize(
-    (scroll: IScroll): IScroll => scroll,
-    shallowEqualScroll,
-  );
+  handleViewportUpdate = (viewport: IViewport) => {
+    const scroll = this.props.disableScrollUpdates ? null : viewport.scroll;
+    const dimensions = this.props.disableDimensionsUpdates
+      ? null
+      : viewport.dimensions;
+    const nextViewport = {
+      scroll: scroll,
+      dimensions: dimensions,
+    };
 
-  getPublicDimensions = memoize(
-    (dimensions: IDimensions): IDimensions => dimensions,
-    shallowEqualDimensions,
-  );
+    if (this.props.onUpdate) {
+      this.props.onUpdate(nextViewport);
+    }
 
-  storeContext = (scrollContext: {
-    scroll: IContextScroll;
-    dimensions: IDimensions;
-  }) => {
-    this.scrollContext = scrollContext.scroll;
-    this.dimensionsContext = scrollContext.dimensions;
+    this.tickId = raf(() => {
+      this.setState(nextViewport);
+    });
+  };
+
+  registerViewportListeners = ({
+    addViewportChangeListener,
+    removeViewportChangeListener,
+  }: IContext): null => {
+    const shouldRegister =
+      this.removeViewportChangeListener !== removeViewportChangeListener &&
+      this.addViewportChangeListener !== addViewportChangeListener;
+
+    if (!shouldRegister) {
+      return null;
+    }
+
+    if (this.removeViewportChangeListener) {
+      this.removeViewportChangeListener(this.handleViewportUpdate);
+    }
+    this.removeViewportChangeListener = removeViewportChangeListener;
+    addViewportChangeListener(this.handleViewportUpdate);
     return null;
   };
-
-  tick(updater: () => void) {
-    this.tickId = raf(() => {
-      if (this) {
-        updater();
-        this.tick(updater);
-      }
-    });
-  }
-
-  syncState = () => {
-    const { disableScrollUpdates, disableDimensionsUpdates } = this.props;
-    const nextState = {
-      ...this.scrollContext,
-      ...this.dimensionsContext,
-    };
-    const scrollDidUpdate = disableScrollUpdates
-      ? false
-      : !shallowEqualScroll(nextState as any, this.state as any);
-    const dimensionsDidUpdate = disableDimensionsUpdates
-      ? false
-      : !shallowEqualDimensions(nextState as any, this.state as any);
-
-    if (scrollDidUpdate || dimensionsDidUpdate) {
-      if (this.props.onUpdate) {
-        this.props.onUpdate(this.getPropsFromState(nextState));
-      }
-      this.setState(nextState);
-    }
-  };
-
-  getPropsFromState(state: IState = this.state) {
-    const { disableScrollUpdates, disableDimensionsUpdates } = this.props;
-    const { xDir, yDir, width, height, ...scroll } = state;
-    return {
-      scroll: disableScrollUpdates
-        ? null
-        : this.getPublicScroll({
-            ...scroll,
-            isScrollingUp: yDir === SCROLL_DIR_UP,
-            isScrollingDown: yDir === SCROLL_DIR_DOWN,
-            isScrollingLeft: xDir === SCROLL_DIR_LEFT,
-            isScrollingRight: xDir === SCROLL_DIR_RIGHT,
-          }),
-      dimensions: disableDimensionsUpdates
-        ? null
-        : this.getPublicDimensions({ width, height }),
-    };
-  }
 
   render() {
     const { children } = this.props;
     return (
       <React.Fragment>
-        <Consumer>{this.storeContext}</Consumer>
-        {typeof children === 'function' && children(this.getPropsFromState())}
+        <Consumer>{this.registerViewportListeners}</Consumer>
+        {typeof children === 'function' && children(this.state)}
       </React.Fragment>
     );
   }
