@@ -3,10 +3,12 @@
   "version": "0.3.3",
   "description": "Utility components for working with the viewport in react",
   "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "start": "rm -rf ./.cache && parcel ./examples/index.html --out-dir='examples-dist'",
     "precompile": "rm -rf dist",
-    "compile": "tsc --project ./tsconfig.json",
+    "compile": "rollup -c",
     "test": "jest lib",
     "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx}\"",
     "prepublish": "npm run compile",
@@ -29,6 +31,8 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.4",
+    "@types/lodash.throttle": "^4.1.4",
     "@types/memoize-one": "^3.1.1",
     "@types/node": "^10.9.2",
     "@types/react": "^16.4.11",
@@ -40,6 +44,8 @@
     "prettier": "^1.14.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
+    "rollup": "^0.66.0",
+    "rollup-plugin-typescript2": "^0.17.0",
     "ts-jest": "^23.1.4",
     "typescript": "^3.0.1"
   },

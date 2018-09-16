@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "module": "CommonJS",
+    "declaration": true,
+    "declarationDir": "./dist",
+    "module": "es6",
+    "outDir": "./dist",
     "target": "es5",
     "lib": ["es6", "dom"],
     "sourceMap": true,
     "jsx": "react",
-    "moduleResolution": "node",
-    "rootDir": "lib",
-    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -17,8 +16,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "alwaysStrict": true,
-    "experimentalDecorators": true
-
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "lib/**/*"

@@ -1,10 +1,8 @@
 import * as React from 'react';
-const throttle = require('lodash.throttle');
-const debounce = require('lodash.debounce');
-const memoizeOne = require('memoize-one');
-const memoize =
-  typeof memoizeOne === 'function' ? memoizeOne : memoizeOne.default;
-const raf = require('raf');
+import throttle from 'lodash.throttle';
+import debounce from 'lodash.debounce';
+import memoize from 'memoize-one';
+import raf from 'raf';
 
 import {
   shallowEqualScroll,

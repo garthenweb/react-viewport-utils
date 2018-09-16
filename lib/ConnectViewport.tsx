@@ -1,5 +1,5 @@
 import * as React from 'react';
-import wrapDisplayName from 'recompose/wrapDisplayName';
+import { wrapDisplayName } from 'recompose';
 
 import { IScroll, IDimensions } from './index';
 import ObserveViewport from './ObserveViewport';

@@ -3,6 +3,5 @@ declare module 'raf' {
     (tick: Function): NodeJS.Timer;
     cancel: (id: NodeJS.Timer) => void;
   };
-
-  export default raf;
+  export = raf;
 }

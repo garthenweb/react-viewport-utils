@@ -1,5 +1,5 @@
 import * as React from 'react';
-const raf = require('raf');
+import raf from 'raf';
 
 import { shallowEqualRect } from './utils';
 import { IRect } from './types';
