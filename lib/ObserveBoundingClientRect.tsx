@@ -15,11 +15,6 @@ interface IProps {
    */
   node: React.RefObject<HTMLElement>;
   /**
-   * Called once the node is mounted.
-   * @deprecated Use `onInit` instead.
-   */
-  setInitials?: (rect: IRect) => void;
-  /**
    * Called once a node is mounted for the first time.
    */
   onInit?: (rect: IRect) => void;
@@ -128,10 +123,6 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
     const rect = this.getRectFromNode();
 
     if (rect && !this.state.isInitialized) {
-      if (this.props.setInitials) {
-        this.props.setInitials(rect);
-      }
-
       this.setState({ ...rect, isInitialized: true });
       return;
     }
