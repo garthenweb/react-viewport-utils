@@ -103,14 +103,9 @@ export default class ViewportProvider extends React.PureComponent {
     super(props);
     this.scrollState = createInitScrollState();
     this.dimensionsState = createInitDimensionsState();
-    this.handleScroll = throttle(this.handleScroll, 16, {
-      leading: true,
-      trailing: false,
-    });
-    this.handleResize = debounce(this.handleResize, 80);
   }
 
-  handleScroll = () => {
+  handleScroll = throttle(() => {
     const { x, y } = getNodeScroll();
     const {
       xDir: prevXDir,
@@ -130,13 +125,16 @@ export default class ViewportProvider extends React.PureComponent {
 
     this.scrollState.x = x;
     this.scrollState.y = y;
-  };
+  }, 16, {
+    leading: true,
+    trailing: false,
+  });
 
-  handleResize = () => {
+  handleResize = debounce(() => {
     const { width, height } = getClientDimensions();
     this.dimensionsState.width = width;
     this.dimensionsState.height = height;
-  };
+  }, 80);
 
   componentDidMount() {
     window.addEventListener('scroll', this.handleScroll, false);
