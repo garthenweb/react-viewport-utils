@@ -72,7 +72,7 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
         <ObserveViewport
           disableDimensionsUpdates
           onUpdate={props => {
-            console.log('update scroll', props.scroll);
+            console.log('update scroll only', props.scroll);
           }}
         />
         <ObserveViewport

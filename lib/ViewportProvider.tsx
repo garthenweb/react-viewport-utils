@@ -16,7 +16,12 @@ import {
   IPrivateScroll,
   IScroll,
   TViewportChangeHandler,
+  IViewportChangeOptions,
 } from './types';
+
+interface IListener extends IViewportChangeOptions {
+  handler: TViewportChangeHandler;
+}
 
 export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
 export const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
@@ -24,8 +29,14 @@ export const SCROLL_DIR_LEFT = Symbol('SCROLL_DIR_LEFT');
 export const SCROLL_DIR_RIGHT = Symbol('SCROLL_DIR_RIGHT');
 
 const ViewportContext = React.createContext({
-  removeViewportChangeListener: (props: TViewportChangeHandler) => {},
-  addViewportChangeListener: (props: TViewportChangeHandler) => {},
+  removeViewportChangeListener: (
+    handler: TViewportChangeHandler,
+    options: IViewportChangeOptions,
+  ) => {},
+  addViewportChangeListener: (
+    handler: TViewportChangeHandler,
+    options: IViewportChangeOptions,
+  ) => {},
 });
 
 const getNodeScroll = (elem = window) => {
@@ -121,7 +132,7 @@ export default class ViewportProvider extends React.PureComponent {
   private lastSyncedScrollState: IPrivateScroll;
   private lastSyncedDimensionsState: IDimensions;
   private tickId: NodeJS.Timer;
-  private listeners: TViewportChangeHandler[] = [];
+  private listeners: IListener[] = [];
 
   constructor(props: {}) {
     super(props);
@@ -222,8 +233,13 @@ export default class ViewportProvider extends React.PureComponent {
 
     if (scrollDidUpdate || dimensionsDidUpdate) {
       const publicState = this.getPropsFromState();
-      this.listeners.forEach(listener => {
-        listener(publicState);
+      this.listeners.forEach(({ handler, notifyScroll, notifyDimensions }) => {
+        if (
+          (notifyScroll && scrollDidUpdate) ||
+          (notifyDimensions && dimensionsDidUpdate)
+        ) {
+          handler(publicState);
+        }
       });
     }
   };
@@ -239,12 +255,26 @@ export default class ViewportProvider extends React.PureComponent {
     };
   }
 
-  addViewportChangeListener = (fn: TViewportChangeHandler) => {
-    this.listeners.push(fn);
+  addViewportChangeListener = (
+    handler: TViewportChangeHandler,
+    options: IViewportChangeOptions,
+  ) => {
+    this.listeners.push({ handler, ...options });
   };
 
-  removeViewportChangeListener = (fn: TViewportChangeHandler) => {
-    this.listeners = this.listeners.filter(listener => listener !== fn);
+  removeViewportChangeListener = (
+    h: TViewportChangeHandler,
+    options: IViewportChangeOptions,
+  ) => {
+    this.listeners = this.listeners.filter(
+      ({ handler, notifyScroll, notifyDimensions }) => {
+        const equals =
+          handler === h &&
+          notifyScroll === options.notifyScroll &&
+          notifyDimensions === options.notifyDimensions;
+        return !equals;
+      },
+    );
   };
 
   render() {

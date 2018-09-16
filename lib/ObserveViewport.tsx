@@ -11,6 +11,7 @@ import {
   IDimensions,
   IViewport,
   TViewportChangeHandler,
+  IViewportChangeOptions,
 } from './types';
 
 export interface IChildProps {
@@ -28,16 +29,28 @@ interface IProps {
 }
 
 interface IContext {
-  addViewportChangeListener: (fn: TViewportChangeHandler) => void;
-  removeViewportChangeListener: (fn: TViewportChangeHandler) => void;
+  addViewportChangeListener: (
+    handler: TViewportChangeHandler,
+    options: IViewportChangeOptions,
+  ) => void;
+  removeViewportChangeListener: (
+    handler: TViewportChangeHandler,
+    options: IViewportChangeOptions,
+  ) => void;
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
   private addViewportChangeListener:
-    | ((fn: TViewportChangeHandler) => void)
+    | ((
+        handler: TViewportChangeHandler,
+        options: IViewportChangeOptions,
+      ) => void)
     | null;
   private removeViewportChangeListener:
-    | ((fn: TViewportChangeHandler) => void)
+    | ((
+        handler: TViewportChangeHandler,
+        options: IViewportChangeOptions,
+      ) => void)
     | null;
 
   private tickId: NodeJS.Timer;
@@ -61,7 +74,10 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
 
   componentWillUnmount() {
     if (this.removeViewportChangeListener) {
-      this.removeViewportChangeListener(this.handleViewportUpdate);
+      this.removeViewportChangeListener(this.handleViewportUpdate, {
+        notifyScroll: !this.props.disableScrollUpdates,
+        notifyDimensions: !this.props.disableDimensionsUpdates,
+      });
     }
     this.removeViewportChangeListener = null;
     this.addViewportChangeListener = null;
@@ -100,10 +116,16 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
 
     if (this.removeViewportChangeListener) {
-      this.removeViewportChangeListener(this.handleViewportUpdate);
+      this.removeViewportChangeListener(this.handleViewportUpdate, {
+        notifyScroll: !this.props.disableScrollUpdates,
+        notifyDimensions: !this.props.disableDimensionsUpdates,
+      });
     }
     this.removeViewportChangeListener = removeViewportChangeListener;
-    addViewportChangeListener(this.handleViewportUpdate);
+    addViewportChangeListener(this.handleViewportUpdate, {
+      notifyScroll: !this.props.disableScrollUpdates,
+      notifyDimensions: !this.props.disableDimensionsUpdates,
+    });
     return null;
   };
 
