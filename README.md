@@ -16,7 +16,7 @@ By default the library ships with Typescript definitions, so there is no need to
 
 ## Usage
 
-### ViewportProvider/ connectViewportScroll
+### ViewportProvider/ connectViewport/ ObserveViewport
 
 The ViewportProvider will delegate global viewport information to a connected component.
 
@@ -62,9 +62,59 @@ render(
 );
 ```
 
+In some situations more control is required to do perform heavy tasks. Therefore the `ObserveViewport` component allows to update without rendering.
+
+``` javascript
+import * as React from 'react';
+import {
+  ViewportProvider,
+  ObserveViewport,
+  IScroll,
+  IDimensions,
+} from 'react-viewport-uitls';
+
+interface IViewport {
+  scroll: IScroll,
+  dimensions: IDimensions,
+}
+
+const handleUpdate = ({ scroll, dimensions }: IViewport) {
+  console.log(scroll, dimensions);
+}
+
+render(
+  <ViewportProvider>
+    <div>
+      <ObserveViewport onUpdate={handleUpdate} />
+    </div>
+  </ViewportProvider>,
+  document.querySelector('main')
+);
+```
+
+#### Omit events
+
+In case only certain updates are required `connectViewport` allows an `omit` option to skip updates to `scroll` and `dimensions` events. If both strings are included within the `omit` array, no events will get triggered at all.
+
+``` javascript
+const ConnectedComponent = connectViewport({ omit: ['scroll', 'dimensions']})(Component);
+```
+
+The same works for `ObserveViewport` by using the `disableScrollUpdates` and `disableDimensionsUpdates` property.
+
+``` javascript
+<ObserveViewport
+  disableScrollUpdates
+  disableDimensionsUpdates
+  onUpdate={handleUpdate}
+/>
+```
+
 ### ObserveBoundingClientRect
 
 Observes for changes to the bounding client rect of a given reference.
+
+**!!! Be careful with this component. It can cause really bad performance if overused !!!**
 
 ``` javascript
 import * as React from 'react';
