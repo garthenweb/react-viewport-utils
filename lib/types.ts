@@ -48,7 +48,9 @@ export interface IViewport {
   dimensions: IDimensions;
 }
 
-export type TViewportChangeHandler = ({ scroll, dimensions }: IViewport) => void;
+export type TViewportChangeHandler = (
+  { scroll, dimensions }: IViewport,
+) => void;
 
 export interface IViewportChangeOptions {
   notifyScroll: boolean;

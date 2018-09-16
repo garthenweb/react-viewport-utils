@@ -18,7 +18,10 @@ export const shallowEqualScroll = (a: IScroll, b: IScroll) => {
   );
 };
 
-export const shallowEqualPrivateScroll = (a: IPrivateScroll, b: IPrivateScroll) => {
+export const shallowEqualPrivateScroll = (
+  a: IPrivateScroll,
+  b: IPrivateScroll,
+) => {
   if (a === b) {
     return true;
   }
