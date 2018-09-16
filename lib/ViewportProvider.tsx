@@ -2,6 +2,8 @@ import * as React from 'react';
 const throttle = require('lodash.throttle');
 const debounce = require('lodash.debounce');
 
+import { IDimensions } from './types';
+
 export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
 export const SCROLL_DIR_UP = Symbol('SCROLL_DIR_UP');
 export const SCROLL_DIR_LEFT = Symbol('SCROLL_DIR_LEFT');
@@ -16,11 +18,6 @@ export interface IScroll {
   yTurn: number;
   xDTurn: number;
   yDTurn: number;
-}
-
-export interface IDimensions {
-  width: number;
-  height: number;
 }
 
 const ViewportContext = React.createContext({

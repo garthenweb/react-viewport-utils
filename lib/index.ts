@@ -1,4 +1,4 @@
-export { default as ViewportProvider, IDimensions } from './ViewportProvider';
+export { default as ViewportProvider } from './ViewportProvider';
 export {
   /**
    * @deprecated use connectViewport instead
@@ -8,6 +8,6 @@ export {
 } from './ConnectViewport';
 export {
   default as ObserveBoundingClientRect,
-  IRect,
 } from './ObserveBoundingClientRect';
-export { default as ObserveViewport, IScroll } from './ObserveViewport';
+export { default as ObserveViewport } from './ObserveViewport';
+export { IRect, IScroll, IDimensions } from './types';

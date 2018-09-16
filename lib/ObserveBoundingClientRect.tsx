@@ -2,6 +2,7 @@ import * as React from 'react';
 const raf = require('raf');
 
 import { shallowEqualRect } from './utils';
+import { IRect } from './types';
 
 interface IProps {
   /**
@@ -27,15 +28,6 @@ interface IProps {
    * using `children` but it does not allow to render a node.
    */
   onUpdate?: (rect: IRect) => void;
-}
-
-export interface IRect {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-  height: number;
-  width: number;
 }
 
 interface IState extends IRect {

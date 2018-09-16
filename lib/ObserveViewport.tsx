@@ -5,6 +5,7 @@ const memoize =
 const raf = require('raf');
 
 import { shallowEqualScroll, shallowEqualDimensions } from './utils';
+import { IScroll, IDimensions } from './types';
 
 import {
   Consumer,
@@ -15,23 +16,9 @@ import {
   SCROLL_DIR_DOWN,
   SCROLL_DIR_RIGHT,
   SCROLL_DIR_LEFT,
-  IDimensions,
 } from './ViewportProvider';
 
 interface IState extends IContextScroll, IDimensions {}
-
-export interface IScroll {
-  x: number;
-  y: number;
-  xTurn: number;
-  yTurn: number;
-  xDTurn: number;
-  yDTurn: number;
-  isScrollingUp: boolean;
-  isScrollingDown: boolean;
-  isScrollingLeft: boolean;
-  isScrollingRight: boolean;
-}
 
 export interface IChildProps {
   scroll: IScroll | null;
