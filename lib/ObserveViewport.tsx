@@ -23,7 +23,8 @@ interface IState extends IChildProps {}
 
 interface IProps {
   children?: (props: IChildProps) => React.ReactNode;
-  onUpdate?: (props: IChildProps) => void;
+  onUpdate?: (props: IChildProps, layoutSnapshot: any) => void;
+  recalculateLayoutBeforeUpdate?: (props: IChildProps) => any;
   disableScrollUpdates: boolean;
   disableDimensionsUpdates: boolean;
 }
@@ -84,7 +85,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     raf.cancel(this.tickId);
   }
 
-  handleViewportUpdate = (viewport: IViewport) => {
+  handleViewportUpdate = (viewport: IViewport, layoutSnapshot: any) => {
     const scroll = this.props.disableScrollUpdates ? null : viewport.scroll;
     const dimensions = this.props.disableDimensionsUpdates
       ? null
@@ -95,7 +96,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     };
 
     if (this.props.onUpdate) {
-      this.props.onUpdate(nextViewport);
+      this.props.onUpdate(nextViewport, layoutSnapshot);
     }
 
     this.tickId = raf(() => {
@@ -119,12 +120,14 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       this.removeViewportChangeListener(this.handleViewportUpdate, {
         notifyScroll: !this.props.disableScrollUpdates,
         notifyDimensions: !this.props.disableDimensionsUpdates,
+        recalculateLayoutBeforeUpdate: this.props.recalculateLayoutBeforeUpdate,
       });
     }
     this.removeViewportChangeListener = removeViewportChangeListener;
     addViewportChangeListener(this.handleViewportUpdate, {
       notifyScroll: !this.props.disableScrollUpdates,
       notifyDimensions: !this.props.disableDimensionsUpdates,
+      recalculateLayoutBeforeUpdate: this.props.recalculateLayoutBeforeUpdate,
     });
     return null;
   };

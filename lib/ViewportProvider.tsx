@@ -238,13 +238,23 @@ export default class ViewportProvider extends React.PureComponent {
 
     if (scrollDidUpdate || dimensionsDidUpdate) {
       const publicState = this.getPropsFromState();
-      this.listeners.forEach(({ handler, notifyScroll, notifyDimensions }) => {
-        if (
+      const updatableListeners = this.listeners.filter(
+        ({ notifyScroll, notifyDimensions }) =>
           (notifyScroll && scrollDidUpdate) ||
-          (notifyDimensions && dimensionsDidUpdate)
-        ) {
-          handler(publicState);
-        }
+          (notifyDimensions && dimensionsDidUpdate),
+      );
+      const layouts = updatableListeners.map(
+        ({ recalculateLayoutBeforeUpdate }) => {
+          if (recalculateLayoutBeforeUpdate) {
+            return recalculateLayoutBeforeUpdate(publicState);
+          }
+          return null;
+        },
+      );
+
+      updatableListeners.forEach(({ handler }, index) => {
+        const layout = layouts[index];
+        handler(publicState, layout);
       });
     }
   };

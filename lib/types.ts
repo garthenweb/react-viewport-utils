@@ -49,10 +49,12 @@ export interface IViewport {
 }
 
 export type TViewportChangeHandler = (
-  { scroll, dimensions }: IViewport,
+  viewport: IViewport,
+  layoutSnapshot: any,
 ) => void;
 
 export interface IViewportChangeOptions {
   notifyScroll: boolean;
   notifyDimensions: boolean;
+  recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
 }
