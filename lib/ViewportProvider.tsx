@@ -130,6 +130,7 @@ export default class ViewportProvider extends React.PureComponent {
   private lastSyncedScrollState: IPrivateScroll;
   private lastSyncedDimensionsState: IDimensions;
   private tickId: NodeJS.Timer;
+  private componentMightHaveUpdated: boolean;
   private listeners: IListener[] = [];
 
   constructor(props: {}) {
@@ -144,7 +145,8 @@ export default class ViewportProvider extends React.PureComponent {
     window.addEventListener('scroll', this.handleScroll, false);
     window.addEventListener('resize', this.handleResize, false);
     window.addEventListener('orientationchange', this.handleResize, false);
-    this.tick(this.syncState);
+
+    this.tickId = raf(this.tick);
   }
 
   componentWillUnmount() {
@@ -154,6 +156,16 @@ export default class ViewportProvider extends React.PureComponent {
     raf.cancel(this.tickId);
     this.listeners = [];
   }
+
+  tick = () => {
+    if (this) {
+      if (this.componentMightHaveUpdated) {
+        this.syncState();
+      }
+      this.componentMightHaveUpdated = false;
+      this.tickId = raf(this.tick);
+    }
+  };
 
   handleScroll = throttle(
     () => {
@@ -178,6 +190,8 @@ export default class ViewportProvider extends React.PureComponent {
 
       this.scrollState.x = x;
       this.scrollState.y = y;
+
+      this.componentMightHaveUpdated = true;
     },
     16,
     {
@@ -190,6 +204,8 @@ export default class ViewportProvider extends React.PureComponent {
     const { width, height } = getClientDimensions();
     this.dimensionsState.width = width;
     this.dimensionsState.height = height;
+
+    this.componentMightHaveUpdated = true;
   }, 80);
 
   getPublicScroll: ((scroll: IScroll) => IScroll) = memoize(
@@ -201,15 +217,6 @@ export default class ViewportProvider extends React.PureComponent {
     (dimensions: IDimensions): IDimensions => dimensions,
     shallowEqualDimensions,
   );
-
-  tick(updater: () => void) {
-    this.tickId = raf(() => {
-      if (this) {
-        updater();
-        this.tick(updater);
-      }
-    });
-  }
 
   syncState = () => {
     const scrollDidUpdate = !shallowEqualPrivateScroll(
