@@ -78,7 +78,7 @@ const getXDir = (x: number, prev: IPrivateScroll) => {
     case x > prev.x:
       return SCROLL_DIR_RIGHT;
     case x === prev.x:
-      return prev.xDir === SCROLL_DIR_LEFT ? SCROLL_DIR_RIGHT : SCROLL_DIR_LEFT;
+      return prev.xDir;
     default:
       throw new Error('Could not calculate xDir');
   }
@@ -91,7 +91,7 @@ const getYDir = (y: number, prev: IPrivateScroll) => {
     case y > prev.y:
       return SCROLL_DIR_DOWN;
     case y === prev.y:
-      return prev.yDir === SCROLL_DIR_UP ? SCROLL_DIR_DOWN : SCROLL_DIR_UP;
+      return prev.yDir;
     default:
       throw new Error('Could not calculate yDir');
   }
