@@ -1,5 +1,4 @@
 import * as React from 'react';
-import throttle from 'lodash.throttle';
 import debounce from 'lodash.debounce';
 import memoize from 'memoize-one';
 import raf from 'raf';
@@ -185,38 +184,29 @@ export default class ViewportProvider extends React.PureComponent {
     }
   };
 
-  handleScroll = throttle(
-    () => {
-      const { x, y } = getNodeScroll();
-      const {
-        xDir: prevXDir,
-        yDir: prevYDir,
-        xTurn: prevXTurn,
-        yTurn: prevYTurn,
-      } = this.scrollState;
+  handleScroll = () => {
+    const { x, y } = getNodeScroll();
+    const {
+      xDir: prevXDir,
+      yDir: prevYDir,
+      xTurn: prevXTurn,
+      yTurn: prevYTurn,
+    } = this.scrollState;
 
-      this.scrollState.xDir = getXDir(x, this.scrollState);
-      this.scrollState.yDir = getYDir(y, this.scrollState);
+    this.scrollState.xDir = getXDir(x, this.scrollState);
+    this.scrollState.yDir = getYDir(y, this.scrollState);
 
-      this.scrollState.xTurn =
-        this.scrollState.xDir === prevXDir ? prevXTurn : x;
-      this.scrollState.yTurn =
-        this.scrollState.yDir === prevYDir ? prevYTurn : y;
+    this.scrollState.xTurn = this.scrollState.xDir === prevXDir ? prevXTurn : x;
+    this.scrollState.yTurn = this.scrollState.yDir === prevYDir ? prevYTurn : y;
 
-      this.scrollState.xDTurn = x - this.scrollState.xTurn;
-      this.scrollState.yDTurn = y - this.scrollState.yTurn;
+    this.scrollState.xDTurn = x - this.scrollState.xTurn;
+    this.scrollState.yDTurn = y - this.scrollState.yTurn;
 
-      this.scrollState.x = x;
-      this.scrollState.y = y;
+    this.scrollState.x = x;
+    this.scrollState.y = y;
 
-      this.componentMightHaveUpdated = true;
-    },
-    (1 / 60) * 1000,
-    {
-      leading: true,
-      trailing: true,
-    },
-  );
+    this.componentMightHaveUpdated = true;
+  };
 
   handleResize = debounce(() => {
     Object.assign(this.dimensionsState, getClientDimensions());

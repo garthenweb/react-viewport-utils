@@ -51,7 +51,6 @@
   },
   "dependencies": {
     "lodash.debounce": "^4.0.8",
-    "lodash.throttle": "^4.1.1",
     "memoize-one": "^4.0.2",
     "raf": "^3.4.0",
     "recompose": "^0.30.0"
