@@ -34,10 +34,7 @@ interface IContext {
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
   ) => void;
-  removeViewportChangeListener: (
-    handler: TViewportChangeHandler,
-    options: IViewportChangeOptions,
-  ) => void;
+  removeViewportChangeListener: (handler: TViewportChangeHandler) => void;
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
@@ -48,10 +45,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       ) => void)
     | null;
   private removeViewportChangeListener:
-    | ((
-        handler: TViewportChangeHandler,
-        options: IViewportChangeOptions,
-      ) => void)
+    | ((handler: TViewportChangeHandler) => void)
     | null;
 
   private tickId: NodeJS.Timer;
@@ -75,10 +69,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
 
   componentWillUnmount() {
     if (this.removeViewportChangeListener) {
-      this.removeViewportChangeListener(this.handleViewportUpdate, {
-        notifyScroll: !this.props.disableScrollUpdates,
-        notifyDimensions: !this.props.disableDimensionsUpdates,
-      });
+      this.removeViewportChangeListener(this.handleViewportUpdate);
     }
     this.removeViewportChangeListener = null;
     this.addViewportChangeListener = null;
@@ -104,10 +95,18 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     });
   };
 
+  get optionNotifyScroll(): boolean {
+    return !this.props.disableScrollUpdates;
+  }
+
+  get optionNotifyDimensions(): boolean {
+    return !this.props.disableDimensionsUpdates;
+  }
+
   registerViewportListeners = ({
     addViewportChangeListener,
     removeViewportChangeListener,
-  }: IContext): null => {
+  }: IContext): React.ReactNode => {
     const shouldRegister =
       this.removeViewportChangeListener !== removeViewportChangeListener &&
       this.addViewportChangeListener !== addViewportChangeListener;
@@ -117,18 +116,21 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
 
     if (this.removeViewportChangeListener) {
-      this.removeViewportChangeListener(this.handleViewportUpdate, {
-        notifyScroll: !this.props.disableScrollUpdates,
-        notifyDimensions: !this.props.disableDimensionsUpdates,
-        recalculateLayoutBeforeUpdate: this.props.recalculateLayoutBeforeUpdate,
-      });
+      this.removeViewportChangeListener(this.handleViewportUpdate);
     }
+
     this.removeViewportChangeListener = removeViewportChangeListener;
     addViewportChangeListener(this.handleViewportUpdate, {
-      notifyScroll: !this.props.disableScrollUpdates,
-      notifyDimensions: !this.props.disableDimensionsUpdates,
-      recalculateLayoutBeforeUpdate: this.props.recalculateLayoutBeforeUpdate,
+      notifyScroll: () => !this.props.disableScrollUpdates,
+      notifyDimensions: () => !this.props.disableDimensionsUpdates,
+      recalculateLayoutBeforeUpdate: (viewport: IViewport) => {
+        if (this.props.recalculateLayoutBeforeUpdate) {
+          return this.props.recalculateLayoutBeforeUpdate(viewport);
+        }
+        return null;
+      },
     });
+
     return null;
   };
 

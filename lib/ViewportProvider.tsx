@@ -27,10 +27,7 @@ export const SCROLL_DIR_LEFT = Symbol('SCROLL_DIR_LEFT');
 export const SCROLL_DIR_RIGHT = Symbol('SCROLL_DIR_RIGHT');
 
 const ViewportContext = React.createContext({
-  removeViewportChangeListener: (
-    handler: TViewportChangeHandler,
-    options: IViewportChangeOptions,
-  ) => {},
+  removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
   addViewportChangeListener: (
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
@@ -240,8 +237,8 @@ export default class ViewportProvider extends React.PureComponent {
       const publicState = this.getPropsFromState();
       const updatableListeners = this.listeners.filter(
         ({ notifyScroll, notifyDimensions }) =>
-          (notifyScroll && scrollDidUpdate) ||
-          (notifyDimensions && dimensionsDidUpdate),
+          (notifyScroll() && scrollDidUpdate) ||
+          (notifyDimensions() && dimensionsDidUpdate),
       );
       const layouts = updatableListeners.map(
         ({ recalculateLayoutBeforeUpdate }) => {
@@ -277,19 +274,8 @@ export default class ViewportProvider extends React.PureComponent {
     this.listeners.push({ handler, ...options });
   };
 
-  removeViewportChangeListener = (
-    h: TViewportChangeHandler,
-    options: IViewportChangeOptions,
-  ) => {
-    this.listeners = this.listeners.filter(
-      ({ handler, notifyScroll, notifyDimensions }) => {
-        const equals =
-          handler === h &&
-          notifyScroll === options.notifyScroll &&
-          notifyDimensions === options.notifyDimensions;
-        return !equals;
-      },
-    );
+  removeViewportChangeListener = (h: TViewportChangeHandler) => {
+    this.listeners = this.listeners.filter(({ handler }) => handler !== h);
   };
 
   render() {

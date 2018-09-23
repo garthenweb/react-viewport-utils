@@ -54,7 +54,7 @@ export type TViewportChangeHandler = (
 ) => void;
 
 export interface IViewportChangeOptions {
-  notifyScroll: boolean;
-  notifyDimensions: boolean;
+  notifyScroll: () => boolean;
+  notifyDimensions: () => boolean;
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
 }
