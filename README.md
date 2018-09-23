@@ -36,8 +36,14 @@ interface IProps {
 
 const Component = ({ scroll, dimensions }: IProps) => (
   <>
-    <div>Dimension width: ${dimensions.width}</div>
-    <div>Dimension height: ${dimensions.height}</div>
+    <div>Dimension (inner)width: ${dimensions.width}</div>
+    <div>Dimension (inner)height: ${dimensions.height}</div>
+    <div>Dimension outerWidth: ${dimensions.outerWidth}</div>
+    <div>Dimension outerHeight: ${dimensions.outerHeight}</div>
+    <div>Dimension clientWidth: ${dimensions.clientWidth}</div>
+    <div>Dimension clientHeight: ${dimensions.clientHeight}</div>
+    <div>Dimension documentWidth: ${dimensions.documentWidth}</div>
+    <div>Dimension documentHeight: ${dimensions.documentHeight}</div>
     <div>Scroll X: {scroll.x}</div>
     <div>Scroll Y: {scroll.y}</div>
     <div>Scroll last turning point X: {scroll.xTurn}</div>
