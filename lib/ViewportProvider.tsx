@@ -50,9 +50,24 @@ const getNodeScroll = (elem = window) => {
 };
 
 const getClientDimensions = () => {
+  const { innerWidth, innerHeight, outerWidth, outerHeight } = window;
+  const {
+    clientWidth,
+    clientHeight,
+    scrollHeight,
+    scrollWidth,
+    offsetHeight,
+    offsetWidth,
+  } = document.documentElement;
   return {
-    width: window.innerWidth || document.documentElement.clientWidth,
-    height: window.innerHeight || document.documentElement.clientHeight,
+    width: innerWidth,
+    height: innerHeight,
+    clientWidth,
+    clientHeight,
+    outerWidth,
+    outerHeight,
+    documentWidth: Math.max(scrollWidth, offsetWidth, clientWidth),
+    documentHeight: Math.max(scrollHeight, offsetHeight, clientHeight),
   };
 };
 
@@ -115,6 +130,12 @@ export const createInitDimensionsState = () => {
     return {
       width: 0,
       height: 0,
+      clientWidth: 0,
+      clientHeight: 0,
+      outerWidth: 0,
+      outerHeight: 0,
+      documentWidth: 0,
+      documentHeight: 0,
     };
   }
   return getClientDimensions();
@@ -198,9 +219,7 @@ export default class ViewportProvider extends React.PureComponent {
   );
 
   handleResize = debounce(() => {
-    const { width, height } = getClientDimensions();
-    this.dimensionsState.width = width;
-    this.dimensionsState.height = height;
+    Object.assign(this.dimensionsState, getClientDimensions());
 
     this.componentMightHaveUpdated = true;
   }, 80);

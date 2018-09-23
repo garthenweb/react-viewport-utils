@@ -8,6 +8,12 @@ import {
 export interface IDimensions {
   width: number;
   height: number;
+  clientWidth: number;
+  clientHeight: number;
+  outerWidth: number;
+  outerHeight: number;
+  documentWidth: number;
+  documentHeight: number;
 }
 
 export interface IScroll {
