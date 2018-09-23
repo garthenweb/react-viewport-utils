@@ -211,10 +211,10 @@ export default class ViewportProvider extends React.PureComponent {
 
       this.componentMightHaveUpdated = true;
     },
-    16,
+    (1 / 60) * 1000,
     {
       leading: true,
-      trailing: false,
+      trailing: true,
     },
   );
 
