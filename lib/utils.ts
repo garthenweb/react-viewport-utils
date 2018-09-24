@@ -59,3 +59,23 @@ export const shallowEqualDimensions = (a: IDimensions, b: IDimensions) => {
 
   return a.width === b.width && a.height === b.height;
 };
+
+// implementation based on https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+export const browserSupportsPassiveEvents = (() => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  let supportsPassive = false;
+  try {
+    var opts = Object.defineProperty({}, 'passive', {
+      get: () => {
+        supportsPassive = true;
+      },
+    });
+    window.addEventListener('testPassive', null as any, opts);
+    window.removeEventListener('testPassive', null as any, opts);
+  } catch (e) {
+    return false;
+  }
+  return supportsPassive;
+})();

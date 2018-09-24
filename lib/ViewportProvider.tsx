@@ -7,7 +7,9 @@ import {
   shallowEqualScroll,
   shallowEqualPrivateScroll,
   shallowEqualDimensions,
+  browserSupportsPassiveEvents,
 } from './utils';
+
 import {
   IDimensions,
   IPrivateScroll,
@@ -159,9 +161,10 @@ export default class ViewportProvider extends React.PureComponent {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll, false);
-    window.addEventListener('resize', this.handleResize, false);
-    window.addEventListener('orientationchange', this.handleResize, false);
+    const options = browserSupportsPassiveEvents ? { passive: true } : false;
+    window.addEventListener('scroll', this.handleScroll, options);
+    window.addEventListener('resize', this.handleResize, options);
+    window.addEventListener('orientationchange', this.handleResize, options);
 
     this.tickId = raf(this.tick);
   }
