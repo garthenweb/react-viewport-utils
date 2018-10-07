@@ -3,7 +3,7 @@ import {
   SCROLL_DIR_RIGHT,
   SCROLL_DIR_UP,
   SCROLL_DIR_DOWN,
-} from './ViewportProvider';
+} from './ViewportCollector';
 
 export interface IDimensions {
   width: number;
@@ -63,4 +63,9 @@ export interface IViewportChangeOptions {
   notifyScroll: () => boolean;
   notifyDimensions: () => boolean;
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
+}
+
+export interface IViewportCollectorUpdateOptions {
+  scrollDidUpdate: boolean;
+  dimensionsDidUpdate: boolean;
 }

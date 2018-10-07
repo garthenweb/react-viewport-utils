@@ -51,46 +51,48 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
       return this.renderButton();
     }
     return (
-      <StickyGroupProvider>
-        <StickyScrollUp>
-          <ViewportHeader a="test" />
-        </StickyScrollUp>
-        <Placeholder />
-
-        <div ref={this.container1}>
-          <Sticky container={this.container1}>
-            <div className="sticky-inline">Sticky inline1</div>
-          </Sticky>
+      <ViewportProvider>
+        <StickyGroupProvider>
+          <StickyScrollUp>
+            <ViewportHeader a="test" />
+          </StickyScrollUp>
           <Placeholder />
-        </div>
 
-        <Sticky>
-          <div className="sticky-inline">Sticky inline2</div>
-        </Sticky>
+          <div ref={this.container1}>
+            <Sticky container={this.container1}>
+              <div className="sticky-inline">Sticky inline1</div>
+            </Sticky>
+            <Placeholder />
+          </div>
 
-        <div className="placeholder" ref={this.container2} />
-        <ObserveViewport
-          disableDimensionsUpdates
-          onUpdate={props => {
-            console.log('update scroll only', props.scroll);
-          }}
-        />
-        <ObserveViewport
-          onUpdate={({ dimensions, scroll }) => {
-            if (this.lastDimensions !== dimensions) {
-              console.log('update dimensions', dimensions);
-              this.lastDimensions = dimensions;
-            }
-            if (this.lastScroll !== scroll) {
-              console.log('update scroll', scroll);
-              this.lastScroll = scroll;
-            }
-          }}
-        />
-        <Placeholder />
-        <Placeholder />
-        {this.renderButton()}
-      </StickyGroupProvider>
+          <Sticky>
+            <div className="sticky-inline">Sticky inline2</div>
+          </Sticky>
+
+          <div className="placeholder" ref={this.container2} />
+          <ObserveViewport
+            disableDimensionsUpdates
+            onUpdate={props => {
+              console.log('update scroll only', props.scroll);
+            }}
+          />
+          <ObserveViewport
+            onUpdate={({ dimensions, scroll }) => {
+              if (this.lastDimensions !== dimensions) {
+                console.log('update dimensions', dimensions);
+                this.lastDimensions = dimensions;
+              }
+              if (this.lastScroll !== scroll) {
+                console.log('update scroll', scroll);
+                this.lastScroll = scroll;
+              }
+            }}
+          />
+          <Placeholder />
+          <Placeholder />
+          {this.renderButton()}
+        </StickyGroupProvider>
+      </ViewportProvider>
     );
   }
 }

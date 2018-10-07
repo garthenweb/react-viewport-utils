@@ -1,11 +1,11 @@
 import * as React from 'react';
 import raf from 'raf';
 
+import { Consumer } from './ViewportProvider';
 import {
-  Consumer,
   createInitDimensionsState,
   createInitScrollState,
-} from './ViewportProvider';
+} from './ViewportCollector';
 import {
   IScroll,
   IDimensions,
