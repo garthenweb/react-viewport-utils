@@ -35,6 +35,7 @@ interface IContext {
     options: IViewportChangeOptions,
   ) => void;
   removeViewportChangeListener: (handler: TViewportChangeHandler) => void;
+  hasRootProviderAsParent: boolean;
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
@@ -106,7 +107,30 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   registerViewportListeners = ({
     addViewportChangeListener,
     removeViewportChangeListener,
+    hasRootProviderAsParent,
   }: IContext): React.ReactNode => {
+    if (!hasRootProviderAsParent) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(
+          `react-viewport-utils: <ObserveViewport> component is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the <ObserveViewport> component, e.g. directly in the ReactDOM.render call:
+
+import * as ReactDOM from 'react-dom';
+import { ViewportProvider, ObserveViewport } from 'react-viewport-utils';
+ReactDOM.render(
+  <ViewportProvider>
+    <main role="main">
+      <ObserveViewport>
+        {({ scroll, dimensions }) => ...}
+      </ObserveViewport>
+    </main>
+  </ViewportProvider>,
+  document.getElementById('root')
+);`,
+        );
+      }
+      return null;
+    }
+
     const shouldRegister =
       this.removeViewportChangeListener !== removeViewportChangeListener &&
       this.addViewportChangeListener !== addViewportChangeListener;
