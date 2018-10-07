@@ -67,7 +67,7 @@ export const browserSupportsPassiveEvents = (() => {
   }
   let supportsPassive = false;
   try {
-    var opts = Object.defineProperty({}, 'passive', {
+    const opts = Object.defineProperty({}, 'passive', {
       get: () => {
         supportsPassive = true;
       },
