@@ -50,7 +50,10 @@ const getNodeScroll = (elem = window) => {
   };
 };
 
-const getClientDimensions = () => {
+const getClientDimensions = (): IDimensions => {
+  if (!document || !document.documentElement) {
+    return createEmptyDimensionState();
+  }
   const { innerWidth, innerHeight, outerWidth, outerHeight } = window;
   const {
     clientWidth,
@@ -98,7 +101,7 @@ const getYDir = (y: number, prev: IPrivateScroll) => {
   }
 };
 
-const privateToPublisScroll = ({
+const privateToPublicScroll = ({
   yDir,
   xDir,
   ...scroll
@@ -123,21 +126,23 @@ const createInitPrivateScrollState = () => ({
   yDTurn: 0,
 });
 
-export const createInitScrollState = (): IScroll =>
-  privateToPublisScroll(createInitPrivateScrollState());
+const createEmptyDimensionState = (): IDimensions => ({
+  width: 0,
+  height: 0,
+  clientWidth: 0,
+  clientHeight: 0,
+  outerWidth: 0,
+  outerHeight: 0,
+  documentWidth: 0,
+  documentHeight: 0,
+});
 
-export const createInitDimensionsState = () => {
+export const createInitScrollState = (): IScroll =>
+  privateToPublicScroll(createInitPrivateScrollState());
+
+export const createInitDimensionsState = (): IDimensions => {
   if (typeof window === 'undefined') {
-    return {
-      width: 0,
-      height: 0,
-      clientWidth: 0,
-      clientHeight: 0,
-      outerWidth: 0,
-      outerHeight: 0,
-      documentWidth: 0,
-      documentHeight: 0,
-    };
+    return createEmptyDimensionState();
   }
   return getClientDimensions();
 };
@@ -271,7 +276,7 @@ export default class ViewportProvider extends React.PureComponent {
   getPropsFromState() {
     return {
       scroll: this.getPublicScroll(
-        privateToPublisScroll(this.lastSyncedScrollState),
+        privateToPublicScroll(this.lastSyncedScrollState),
       ),
       dimensions: this.getPublicDimensions({
         ...this.lastSyncedDimensionsState,
