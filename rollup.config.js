@@ -1,5 +1,7 @@
 import typescript from 'rollup-plugin-typescript2';
+import replace from 'rollup-plugin-replace';
 import pkg from './package.json';
+
 export default {
   input: 'lib/index.ts',
   output: [
@@ -17,6 +19,9 @@ export default {
     ...Object.keys(pkg.peerDependencies || {}),
   ],
   plugins: [
+    replace({
+      __VERSION__: pkg.version,
+    }),
     typescript({
       typescript: require('typescript'),
     }),

@@ -5,3 +5,5 @@ export {
 } from './ObserveBoundingClientRect';
 export { default as ObserveViewport } from './ObserveViewport';
 export { IRect, IScroll, IDimensions } from './types';
+
+export const VERSION = '__VERSION__';

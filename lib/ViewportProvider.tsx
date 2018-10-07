@@ -7,6 +7,7 @@ import {
   IViewportCollectorUpdateOptions,
 } from './types';
 import ViewportCollector from './ViewportCollector';
+import { VERSION } from './index';
 
 interface IListener extends IViewportChangeOptions {
   handler: TViewportChangeHandler;
@@ -19,6 +20,7 @@ const ViewportContext = React.createContext({
     options: IViewportChangeOptions,
   ) => {},
   hasRootProviderAsParent: false,
+  version: VERSION,
 });
 
 export const Consumer = ViewportContext.Consumer;
@@ -67,6 +69,7 @@ export default class ViewportProvider extends React.PureComponent {
         addViewportChangeListener: this.addViewportChangeListener,
         removeViewportChangeListener: this.removeViewportChangeListener,
         hasRootProviderAsParent: true,
+        version: VERSION,
       };
       return (
         <React.Fragment>

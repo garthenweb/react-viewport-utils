@@ -36,6 +36,7 @@ interface IContext {
   ) => void;
   removeViewportChangeListener: (handler: TViewportChangeHandler) => void;
   hasRootProviderAsParent: boolean;
+  version: string;
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
