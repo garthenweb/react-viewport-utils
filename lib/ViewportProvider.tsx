@@ -44,7 +44,7 @@ export default class ViewportProvider extends React.PureComponent<
   }
 
   triggerUpdateToListeners = (
-    publicState: IViewport,
+    state: IViewport,
     { scrollDidUpdate, dimensionsDidUpdate }: IViewportCollectorUpdateOptions,
     options?: { isIdle: boolean },
   ) => {
@@ -62,7 +62,7 @@ export default class ViewportProvider extends React.PureComponent<
     const layouts = updatableListeners.map(
       ({ recalculateLayoutBeforeUpdate }) => {
         if (recalculateLayoutBeforeUpdate) {
-          return recalculateLayoutBeforeUpdate(publicState);
+          return recalculateLayoutBeforeUpdate(state);
         }
         return null;
       },
@@ -70,7 +70,7 @@ export default class ViewportProvider extends React.PureComponent<
 
     updatableListeners.forEach(({ handler }, index) => {
       const layout = layouts[index];
-      handler(publicState, layout);
+      handler(state, layout);
     });
   };
 
