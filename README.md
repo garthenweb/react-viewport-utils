@@ -118,7 +118,7 @@ The optional `recalculateLayoutBeforeUpdate` property, which accepts a function,
 In case only certain updates are required `connectViewport` allows an `omit` option to skip updates to `scroll` and `dimensions` events. If both strings are included within the `omit` array, no events will get triggered at all.
 
 ``` javascript
-const ConnectedComponent = connectViewport({ omit: ['scroll', 'dimensions']})(Component);
+const ConnectedComponent = connectViewport({ omit: ['scroll', 'dimensions'] })(Component);
 ```
 
 The same works for `ObserveViewport` by using the `disableScrollUpdates` and `disableDimensionsUpdates` property.
@@ -129,6 +129,19 @@ The same works for `ObserveViewport` by using the `disableScrollUpdates` and `di
   disableDimensionsUpdates
   onUpdate={handleUpdate}
 />
+```
+
+### Defer events
+
+Some updates are heavy and might reduce the user experience when scheduled with the same priority as others. Therefore its possible to defer events until idle by enabling `deferUpdateUntilIdle` (default is `false`). If enabled, the `onUpdate` callback/ the rerender of the component will be deferred until no events (independent whether `omit`, `disableDimensionsUpdates` or `disableScrollUpdates` is used) are scheduled anymore.
+
+``` javascript
+<ObserveViewport
+  deferUpdateUntilIdle
+  onUpdate={handleUpdate}
+/>
+
+const ConnectedComponent = connectViewport({ deferUpdateUntilIdle: true })(Component);
 ```
 
 ### ObserveBoundingClientRect
