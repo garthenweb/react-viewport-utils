@@ -192,7 +192,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     Object.assign(this.dimensionsState, getClientDimensions());
 
     this.componentMightHaveUpdated = true;
-  }, 80);
+  }, 88);
 
   getPublicScroll: ((scroll: IScroll) => IScroll) = memoize(
     (scroll: IScroll): IScroll => ({ ...scroll }),
@@ -239,7 +239,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     if (typeof this.props.onIdledUpdate === 'function') {
       this.props.onIdledUpdate(...args);
     }
-  }, 700);
+  }, 166);
 
   getPropsFromState(): IViewport {
     return {
