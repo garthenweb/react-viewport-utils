@@ -1,4 +1,10 @@
-import { IRect, IScroll, IPrivateScroll, IDimensions } from './types';
+import {
+  IRect,
+  IScroll,
+  IPrivateScroll,
+  IDimensions,
+  OnUpdateType,
+} from './types';
 
 export const shallowEqualScroll = (a: IScroll, b: IScroll) => {
   if (a === b) {
@@ -79,3 +85,37 @@ export const browserSupportsPassiveEvents = (() => {
   }
   return supportsPassive;
 })();
+
+export const simpleDebounce = <F extends (...args: any[]) => any>(
+  fn: F,
+  delay: number,
+): F => {
+  let timeout: NodeJS.Timer;
+  return ((...args: any[]) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(fn, delay, ...args);
+  }) as F;
+};
+
+export const debounceOnUpdate = (
+  fn: OnUpdateType,
+  delay: number,
+): OnUpdateType => {
+  let timeout: NodeJS.Timer;
+  let scrollDidUpdate = false;
+  let dimensionsDidUpdate = false;
+
+  return (viewport, options) => {
+    clearTimeout(timeout);
+    scrollDidUpdate = scrollDidUpdate || options.scrollDidUpdate;
+    dimensionsDidUpdate = dimensionsDidUpdate || options.dimensionsDidUpdate;
+    timeout = setTimeout(() => {
+      fn(viewport, {
+        scrollDidUpdate,
+        dimensionsDidUpdate,
+      });
+      scrollDidUpdate = false;
+      dimensionsDidUpdate = false;
+    }, delay);
+  };
+};

@@ -62,6 +62,7 @@ export type TViewportChangeHandler = (
 export interface IViewportChangeOptions {
   notifyScroll: () => boolean;
   notifyDimensions: () => boolean;
+  notifyOnlyWhenIdle: () => boolean;
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
 }
 
@@ -69,3 +70,8 @@ export interface IViewportCollectorUpdateOptions {
   scrollDidUpdate: boolean;
   dimensionsDidUpdate: boolean;
 }
+
+export type OnUpdateType = (
+  props: IViewport,
+  options: IViewportCollectorUpdateOptions,
+) => void;

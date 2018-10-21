@@ -13,9 +13,11 @@ type TPropStrings = 'scroll' | 'dimensions';
 
 interface IOptions {
   omit?: TPropStrings[];
+  deferUpdateUntilIdle?: boolean;
 }
 
 export default function connect(options: IOptions = {}) {
+  const deferUpdateUntilIdle = Boolean(options.deferUpdateUntilIdle);
   const omit = options.omit || [];
   const shouldOmitScroll = omit.indexOf('scroll') !== -1;
   const shouldOmitDimensions = omit.indexOf('dimensions') !== -1;
@@ -33,6 +35,7 @@ export default function connect(options: IOptions = {}) {
           <ObserveViewport
             disableScrollUpdates={shouldOmitScroll}
             disableDimensionsUpdates={shouldOmitDimensions}
+            deferUpdateUntilIdle={deferUpdateUntilIdle}
           >
             {({ scroll, dimensions }) => (
               <WrappedComponent

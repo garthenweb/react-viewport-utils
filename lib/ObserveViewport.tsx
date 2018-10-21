@@ -27,6 +27,7 @@ interface IProps {
   recalculateLayoutBeforeUpdate?: (props: IChildProps) => any;
   disableScrollUpdates: boolean;
   disableDimensionsUpdates: boolean;
+  deferUpdateUntilIdle: boolean;
 }
 
 interface IContext {
@@ -55,6 +56,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   static defaultProps = {
     disableScrollUpdates: false,
     disableDimensionsUpdates: false,
+    deferUpdateUntilIdle: false,
   };
 
   constructor(props: IProps) {
@@ -148,6 +150,7 @@ ReactDOM.render(
     addViewportChangeListener(this.handleViewportUpdate, {
       notifyScroll: () => !this.props.disableScrollUpdates,
       notifyDimensions: () => !this.props.disableDimensionsUpdates,
+      notifyOnlyWhenIdle: () => this.props.deferUpdateUntilIdle,
       recalculateLayoutBeforeUpdate: (viewport: IViewport) => {
         if (this.props.recalculateLayoutBeforeUpdate) {
           return this.props.recalculateLayoutBeforeUpdate(viewport);

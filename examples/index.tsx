@@ -88,6 +88,13 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
               }
             }}
           />
+          <ObserveViewport
+            deferUpdateUntilIdle
+            disableScrollUpdates
+            onUpdate={props => {
+              console.log('update dimensions lazy', props.dimensions);
+            }}
+          />
           <Placeholder />
           <Placeholder />
           {this.renderButton()}

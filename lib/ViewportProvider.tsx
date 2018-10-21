@@ -43,14 +43,21 @@ export default class ViewportProvider extends React.PureComponent<
     clearTimeout(this.updateListenersTick);
   }
 
-  updateListeners = (
+  triggerUpdateToListeners = (
     publicState: IViewport,
     { scrollDidUpdate, dimensionsDidUpdate }: IViewportCollectorUpdateOptions,
+    options?: { isIdle: boolean },
   ) => {
+    const { isIdle } = Object.assign({ isIdle: false }, options);
     const updatableListeners = this.listeners.filter(
-      ({ notifyScroll, notifyDimensions }) =>
-        (notifyScroll() && scrollDidUpdate) ||
-        (notifyDimensions() && dimensionsDidUpdate),
+      ({ notifyScroll, notifyDimensions, notifyOnlyWhenIdle }) => {
+        if (notifyOnlyWhenIdle() && !isIdle) {
+          return false;
+        }
+        const updateForScroll = notifyScroll() && scrollDidUpdate;
+        const updateForDimensions = notifyDimensions() && dimensionsDidUpdate;
+        return updateForScroll || updateForDimensions;
+      },
     );
     const layouts = updatableListeners.map(
       ({ recalculateLayoutBeforeUpdate }) => {
@@ -100,7 +107,12 @@ export default class ViewportProvider extends React.PureComponent<
       return (
         <React.Fragment>
           {this.state.hasListeners && (
-            <ViewportCollector onUpdate={this.updateListeners} />
+            <ViewportCollector
+              onUpdate={this.triggerUpdateToListeners}
+              onIdledUpdate={(state, updates) =>
+                this.triggerUpdateToListeners(state, updates, { isIdle: true })
+              }
+            />
           )}
           <ViewportContext.Provider value={value}>
             {this.props.children}

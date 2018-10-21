@@ -1,5 +1,4 @@
 import * as React from 'react';
-import debounce from 'lodash.debounce';
 import memoize from 'memoize-one';
 import raf from 'raf';
 
@@ -8,6 +7,8 @@ import {
   shallowEqualPrivateScroll,
   shallowEqualDimensions,
   browserSupportsPassiveEvents,
+  simpleDebounce,
+  debounceOnUpdate,
 } from './utils';
 
 import {
@@ -15,7 +16,7 @@ import {
   IPrivateScroll,
   IScroll,
   IViewport,
-  IViewportCollectorUpdateOptions,
+  OnUpdateType,
 } from './types';
 
 export const SCROLL_DIR_DOWN = Symbol('SCROLL_DIR_DOWN');
@@ -136,10 +137,8 @@ export const createInitDimensionsState = (): IDimensions => {
 };
 
 interface IProps {
-  onUpdate: (
-    props: IViewport,
-    options: IViewportCollectorUpdateOptions,
-  ) => void;
+  onUpdate: OnUpdateType;
+  onIdledUpdate?: OnUpdateType;
 }
 
 export default class ViewportCollector extends React.PureComponent<IProps> {
@@ -211,7 +210,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.componentMightHaveUpdated = true;
   };
 
-  handleResize = debounce(() => {
+  handleResize = simpleDebounce(() => {
     Object.assign(this.dimensionsState, getClientDimensions());
 
     this.componentMightHaveUpdated = true;
@@ -251,8 +250,18 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
         scrollDidUpdate,
         dimensionsDidUpdate,
       });
+      this.updateOnIdle(publicState, {
+        scrollDidUpdate,
+        dimensionsDidUpdate,
+      });
     }
   };
+
+  updateOnIdle = debounceOnUpdate((...args) => {
+    if (typeof this.props.onIdledUpdate === 'function') {
+      this.props.onIdledUpdate(...args);
+    }
+  }, 700);
 
   getPropsFromState(): IViewport {
     return {
