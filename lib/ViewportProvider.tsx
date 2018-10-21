@@ -25,8 +25,23 @@ const ViewportContext = React.createContext({
 
 export const Consumer = ViewportContext.Consumer;
 
-export default class ViewportProvider extends React.PureComponent {
+export default class ViewportProvider extends React.PureComponent<
+  {},
+  { hasListeners: boolean }
+> {
   private listeners: IListener[] = [];
+  private updateListenersTick: NodeJS.Timer;
+
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      hasListeners: false,
+    };
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.updateListenersTick);
+  }
 
   updateListeners = (
     publicState: IViewport,
@@ -57,11 +72,22 @@ export default class ViewportProvider extends React.PureComponent {
     options: IViewportChangeOptions,
   ) => {
     this.listeners.push({ handler, ...options });
+    this.updateListenersLazy();
   };
 
   removeViewportChangeListener = (h: TViewportChangeHandler) => {
     this.listeners = this.listeners.filter(({ handler }) => handler !== h);
+    this.updateListenersLazy();
   };
+
+  updateListenersLazy() {
+    clearTimeout(this.updateListenersTick);
+    this.updateListenersTick = setTimeout(() => {
+      this.setState({
+        hasListeners: this.listeners.length !== 0,
+      });
+    }, 0);
+  }
 
   renderChildren = (props: { hasRootProviderAsParent: boolean }) => {
     if (!props.hasRootProviderAsParent) {
@@ -73,7 +99,9 @@ export default class ViewportProvider extends React.PureComponent {
       };
       return (
         <React.Fragment>
-          <ViewportCollector onUpdate={this.updateListeners} />
+          {this.state.hasListeners && (
+            <ViewportCollector onUpdate={this.updateListeners} />
+          )}
           <ViewportContext.Provider value={value}>
             {this.props.children}
           </ViewportContext.Provider>
