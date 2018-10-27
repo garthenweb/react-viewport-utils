@@ -92,6 +92,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
 
     if (this.props.children) {
+      raf.cancel(this.tickId);
       this.tickId = raf(() => {
         this.setState(nextViewport);
       });
