@@ -68,10 +68,6 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     };
   }
 
-  shouldComponentUpdate(nextProps: IProps) {
-    return Boolean(nextProps.children);
-  }
-
   componentWillUnmount() {
     if (this.removeViewportChangeListener) {
       this.removeViewportChangeListener(this.handleViewportUpdate);
@@ -95,9 +91,11 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       this.props.onUpdate(nextViewport, layoutSnapshot);
     }
 
-    this.tickId = raf(() => {
-      this.setState(nextViewport);
-    });
+    if (this.props.children) {
+      this.tickId = raf(() => {
+        this.setState(nextViewport);
+      });
+    }
   };
 
   get optionNotifyScroll(): boolean {
