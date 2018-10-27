@@ -94,3 +94,26 @@ export const debounceOnUpdate = (
     }, delay);
   };
 };
+
+export const warnNoContextAvailable = (location: string) => {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+  const type = location.startsWith('use') ? 'hook' : 'component';
+  console.warn(
+    `react-viewport-utils: ${name} ${type} is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the <ObserveViewport> component, e.g. directly in the ReactDOM.render call:
+
+import * as ReactDOM from 'react-dom';
+import { ViewportProvider, ObserveViewport } from 'react-viewport-utils';
+ReactDOM.render(
+<ViewportProvider>
+<main role="main">
+<ObserveViewport>
+  {({ scroll, dimensions }) => ...}
+</ObserveViewport>
+</main>
+</ViewportProvider>,
+document.getElementById('root')
+);`,
+  );
+};

@@ -13,7 +13,7 @@ interface IListener extends IViewportChangeOptions {
   handler: TViewportChangeHandler;
 }
 
-const ViewportContext = React.createContext({
+export const ViewportContext = React.createContext({
   removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
   addViewportChangeListener: (
     handler: TViewportChangeHandler,
@@ -22,8 +22,6 @@ const ViewportContext = React.createContext({
   hasRootProviderAsParent: false,
   version: VERSION,
 });
-
-export const Consumer = ViewportContext.Consumer;
 
 export default class ViewportProvider extends React.PureComponent<
   {},

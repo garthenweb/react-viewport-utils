@@ -5,6 +5,7 @@ import {
   ViewportProvider,
   ObserveViewport,
   connectViewport,
+  useScroll,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
@@ -18,9 +19,19 @@ const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
     <header className="header">
       Viewport: {dimensions.width}x{dimensions.height}
       {a}
+      <DisplayScroll />
     </header>
   ),
 );
+
+const DisplayScroll = () => {
+  const { x, y } = useScroll();
+  return (
+    <>
+      x: {x}, y: {y}
+    </>
+  );
+};
 
 class Example extends React.PureComponent<{}, { disabled: boolean }> {
   private container1: React.RefObject<any>;

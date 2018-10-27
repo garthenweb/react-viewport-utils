@@ -1,7 +1,7 @@
 import * as React from 'react';
 import raf from 'raf';
 
-import { Consumer } from './ViewportProvider';
+import { ViewportContext } from './ViewportProvider';
 import {
   createInitDimensionsState,
   createInitScrollState,
@@ -13,6 +13,7 @@ import {
   TViewportChangeHandler,
   IViewportChangeOptions,
 } from './types';
+import { warnNoContextAvailable } from './utils';
 
 export interface IChildProps {
   scroll: IScroll | null;
@@ -113,24 +114,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     hasRootProviderAsParent,
   }: IContext): React.ReactNode => {
     if (!hasRootProviderAsParent) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          `react-viewport-utils: <ObserveViewport> component is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the <ObserveViewport> component, e.g. directly in the ReactDOM.render call:
-
-import * as ReactDOM from 'react-dom';
-import { ViewportProvider, ObserveViewport } from 'react-viewport-utils';
-ReactDOM.render(
-  <ViewportProvider>
-    <main role="main">
-      <ObserveViewport>
-        {({ scroll, dimensions }) => ...}
-      </ObserveViewport>
-    </main>
-  </ViewportProvider>,
-  document.getElementById('root')
-);`,
-        );
-      }
+      warnNoContextAvailable('ObserveViewport');
       return null;
     }
 
@@ -166,7 +150,9 @@ ReactDOM.render(
     const { children } = this.props;
     return (
       <React.Fragment>
-        <Consumer>{this.registerViewportListeners}</Consumer>
+        <ViewportContext.Consumer>
+          {this.registerViewportListeners}
+        </ViewportContext.Consumer>
         {typeof children === 'function' && children(this.state)}
       </React.Fragment>
     );
