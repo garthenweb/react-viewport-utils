@@ -26,6 +26,7 @@ export default {
     }),
     typescript({
       typescript: require('typescript'),
+      check: false,
     }),
   ],
 };
