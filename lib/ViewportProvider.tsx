@@ -8,8 +8,15 @@ import {
 } from './types';
 import ViewportCollector from './ViewportCollector';
 
+interface IProps {
+  experimentalSchedulerEnabled?: boolean;
+}
+
 interface IListener extends IViewportChangeOptions {
   handler: TViewportChangeHandler;
+  iterations: number;
+  averageExecutionCost: number;
+  skippedIterations: number;
 }
 
 export const ViewportContext = React.createContext({
@@ -22,14 +29,51 @@ export const ViewportContext = React.createContext({
   version: '__VERSION__',
 });
 
+const maxIterations = (priority: 'highest' | 'high' | 'normal' | 'low') => {
+  switch (priority) {
+    case 'highest':
+      return 0;
+    case 'high':
+      return 4;
+    case 'normal':
+      return 16;
+    case 'low':
+      return 64;
+  }
+};
+
+const shouldSkipIteration = (
+  { priority: getPriority, averageExecutionCost, skippedIterations }: IListener,
+  budget: number,
+): boolean => {
+  const priority = getPriority();
+  if (priority === 'highest') {
+    return false;
+  }
+  if (priority !== 'low' && averageExecutionCost <= budget) {
+    return false;
+  }
+  if (averageExecutionCost <= budget / 10) {
+    return false;
+  }
+  const probability = skippedIterations / maxIterations(priority);
+  if (probability >= 1) {
+    return false;
+  }
+  return Math.random() > probability;
+};
+
 export default class ViewportProvider extends React.PureComponent<
-  {},
+  IProps,
   { hasListeners: boolean }
 > {
+  static defaultProps: {
+    experimentalSchedulerEnabled: false;
+  };
   private listeners: IListener[] = [];
   private updateListenersTick: NodeJS.Timer;
 
-  constructor(props: {}) {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       hasListeners: false,
@@ -46,7 +90,7 @@ export default class ViewportProvider extends React.PureComponent<
     options?: { isIdle: boolean },
   ) => {
     const { isIdle } = Object.assign({ isIdle: false }, options);
-    const updatableListeners = this.listeners.filter(
+    let updatableListeners = this.listeners.filter(
       ({ notifyScroll, notifyDimensions, notifyOnlyWhenIdle }) => {
         if (notifyOnlyWhenIdle() && !isIdle) {
           return false;
@@ -56,18 +100,43 @@ export default class ViewportProvider extends React.PureComponent<
         return updateForScroll || updateForDimensions;
       },
     );
+    if (this.props.experimentalSchedulerEnabled) {
+      if (!isIdle) {
+        const budget = 16 / updatableListeners.length;
+        updatableListeners = updatableListeners.filter(listener => {
+          const skip = shouldSkipIteration(listener, budget);
+          if (skip) {
+            listener.skippedIterations++;
+            return false;
+          }
+          listener.skippedIterations = 0;
+          return true;
+        });
+      }
+    }
     const layouts = updatableListeners.map(
       ({ recalculateLayoutBeforeUpdate }) => {
         if (recalculateLayoutBeforeUpdate) {
-          return recalculateLayoutBeforeUpdate(state);
+          const start = performance.now();
+          const layoutState = recalculateLayoutBeforeUpdate(state);
+          return [layoutState, performance.now() - start];
         }
         return null;
       },
     );
 
-    updatableListeners.forEach(({ handler }, index) => {
-      const layout = layouts[index];
+    updatableListeners.forEach((listener, index) => {
+      const { handler, averageExecutionCost, iterations } = listener;
+      const [layout, layoutCost] = layouts[index] || [null, 0];
+
+      const start = performance.now();
       handler(state, layout);
+      const totalCost = layoutCost + performance.now() - start;
+      const diff = totalCost - averageExecutionCost;
+      const i = iterations + 1;
+
+      listener.averageExecutionCost = averageExecutionCost + diff / i;
+      listener.iterations = i;
     });
   };
 
@@ -75,16 +144,22 @@ export default class ViewportProvider extends React.PureComponent<
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
   ) => {
-    this.listeners.push({ handler, ...options });
-    this.updateListenersLazy();
+    this.listeners.push({
+      handler,
+      iterations: 0,
+      averageExecutionCost: 0,
+      skippedIterations: 0,
+      ...options,
+    });
+    this.updateHasListenersState();
   };
 
   removeViewportChangeListener = (h: TViewportChangeHandler) => {
     this.listeners = this.listeners.filter(({ handler }) => handler !== h);
-    this.updateListenersLazy();
+    this.updateHasListenersState();
   };
 
-  updateListenersLazy() {
+  updateHasListenersState() {
     clearTimeout(this.updateListenersTick);
     this.updateListenersTick = setTimeout(() => {
       this.setState({

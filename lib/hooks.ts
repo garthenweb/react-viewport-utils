@@ -5,11 +5,10 @@ import {
   createInitScrollState,
   createInitDimensionsState,
 } from './ViewportCollector';
-import { IViewport, IScroll, IDimensions } from './types';
+import { IViewport, IScroll, IDimensions, PriorityType } from './types';
 import { warnNoContextAvailable } from './utils';
 
-interface IFullOptions {
-  recalculateLayoutBeforeUpdate?: (props: IViewport) => any;
+interface IFullOptions extends IOptions {
   disableScrollUpdates?: boolean;
   disableDimensionsUpdates?: boolean;
   deferUpdateUntilIdle?: boolean;
@@ -17,6 +16,7 @@ interface IFullOptions {
 
 interface IOptions {
   deferUpdateUntilIdle?: boolean;
+  priority?: PriorityType;
   recalculateLayoutBeforeUpdate?: (props: IViewport) => any;
 }
 
@@ -43,6 +43,7 @@ const useViewportEffect = (
         notifyScroll: () => !options.disableScrollUpdates,
         notifyDimensions: () => !options.disableDimensionsUpdates,
         notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
+        priority: () => options.priority || 'normal',
         recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
       });
       return () => removeViewportChangeListener(handleViewportChange);

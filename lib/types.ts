@@ -45,6 +45,7 @@ export interface IViewportChangeOptions {
   notifyScroll: () => boolean;
   notifyDimensions: () => boolean;
   notifyOnlyWhenIdle: () => boolean;
+  priority: () => PriorityType;
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
 }
 
@@ -57,3 +58,5 @@ export type OnUpdateType = (
   props: IViewport,
   options: IViewportCollectorUpdateOptions,
 ) => void;
+
+export type PriorityType = 'highest' | 'high' | 'normal' | 'low'

@@ -12,6 +12,7 @@ import {
   IViewport,
   TViewportChangeHandler,
   IViewportChangeOptions,
+  PriorityType,
 } from './types';
 import { warnNoContextAvailable } from './utils';
 
@@ -29,6 +30,7 @@ interface IProps {
   disableScrollUpdates: boolean;
   disableDimensionsUpdates: boolean;
   deferUpdateUntilIdle: boolean;
+  priority: PriorityType;
 }
 
 interface IContext {
@@ -54,10 +56,11 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
 
   private tickId: NodeJS.Timer;
 
-  static defaultProps = {
+  static defaultProps: IProps = {
     disableScrollUpdates: false,
     disableDimensionsUpdates: false,
     deferUpdateUntilIdle: false,
+    priority: 'normal',
   };
 
   constructor(props: IProps) {
@@ -134,6 +137,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       notifyScroll: () => !this.props.disableScrollUpdates,
       notifyDimensions: () => !this.props.disableDimensionsUpdates,
       notifyOnlyWhenIdle: () => this.props.deferUpdateUntilIdle,
+      priority: () => this.props.priority,
       recalculateLayoutBeforeUpdate: (viewport: IViewport) => {
         if (this.props.recalculateLayoutBeforeUpdate) {
           return this.props.recalculateLayoutBeforeUpdate(viewport);

@@ -25,7 +25,9 @@ const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
 );
 
 const DisplayScroll = () => {
-  const { x, y } = useScroll();
+  const { x, y } = useScroll({
+    priority: 'low',
+  });
   return (
     <>
       x: {x}, y: {y}
@@ -116,7 +118,7 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
 }
 
 render(
-  <ViewportProvider>
+  <ViewportProvider experimentalSchedulerEnabled>
     <main role="main">
       <Example />
       <Placeholder />
