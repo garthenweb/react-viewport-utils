@@ -11,13 +11,11 @@ import { warnNoContextAvailable } from './utils';
 interface IFullOptions extends IOptions {
   disableScrollUpdates?: boolean;
   disableDimensionsUpdates?: boolean;
-  deferUpdateUntilIdle?: boolean;
 }
 
 interface IOptions {
   deferUpdateUntilIdle?: boolean;
   priority?: PriorityType;
-  recalculateLayoutBeforeUpdate?: (props: IViewport) => any;
 }
 
 type HandleViewportChangeType = (viewport: IViewport) => void;
@@ -44,7 +42,6 @@ const useViewportEffect = (
         notifyDimensions: () => !options.disableDimensionsUpdates,
         notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
         priority: () => options.priority || 'normal',
-        recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
       });
       return () => removeViewportChangeListener(handleViewportChange);
     },
