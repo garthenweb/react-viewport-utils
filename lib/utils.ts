@@ -38,7 +38,16 @@ export const shallowEqualDimensions = (a: IDimensions, b: IDimensions) => {
     return true;
   }
 
-  return a.width === b.width && a.height === b.height;
+  return (
+    a.width === b.width &&
+    a.height === b.height &&
+    a.clientWidth === b.clientWidth &&
+    a.clientHeight === b.clientHeight &&
+    a.outerWidth === b.outerWidth &&
+    a.outerHeight === b.outerHeight &&
+    a.documentWidth === b.documentWidth &&
+    a.documentHeight === b.documentHeight
+  );
 };
 
 // implementation based on https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
