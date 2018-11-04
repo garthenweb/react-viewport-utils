@@ -6,6 +6,7 @@ import {
   ObserveViewport,
   connectViewport,
   useScroll,
+  useLayoutSnapshot,
   useDimensions,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
@@ -26,17 +27,24 @@ const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
 );
 
 const DisplayViewport = () => {
+  const div = React.useRef(null);
   const { x, y } = useScroll({
     priority: 'low',
   });
   const { documentHeight, clientWidth } = useDimensions({
     priority: 'low',
   });
+  const offsetTop = useLayoutSnapshot<number>(({ scroll }) => {
+    if (!div.current) {
+      return 0;
+    }
+    return div.current.getBoundingClientRect().top + scroll.y;
+  });
   return (
-    <>
+    <div ref={div}>
       x: {x}, y: {y}, documentHeight: {documentHeight}, clientWidth:{' '}
-      {clientWidth}
-    </>
+      {clientWidth}, element offsetTop: {offsetTop}
+    </div>
   );
 };
 

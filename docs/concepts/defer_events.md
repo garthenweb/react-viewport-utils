@@ -6,7 +6,7 @@ This option is available for
 
 * ObserveViewport
 * connectViewport
-* useViewport, useScroll, useDimensions
+* useViewport, useScroll, useDimensions, useLayoutSnapshot
 
 ## Example
 

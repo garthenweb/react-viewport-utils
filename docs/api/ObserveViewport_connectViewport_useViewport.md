@@ -84,7 +84,7 @@ render(
 );
 ```
 
-## Hooks: `useViewport`, `useScroll`, `useDimensions`
+## Hooks: `useViewport`, `useScroll`, `useDimensions`, `useLayoutSnapshot`
 
 [Hooks](https://reactjs.org/docs/hooks-intro.html) are probably the easiest way to update your components but as of now needs to be consumed with care because this API and hooks in general are in early stage and thus are may contain bugs or will undergo breaking changes. As always, please report bugs if you find some.
 
@@ -94,8 +94,8 @@ render(
 
 | Property | Type | Required? | Description |
 |:---|:---|:---:|:---|
-| disableScrollUpdates | boolean |  | Disables updates to scroll events |
-| disableDimensionsUpdates | boolean |  | Disables updates to dimensions events |
+| disableScrollUpdates | boolean |  | Disables updates to scroll events (only for `useViewport` and `useLayoutSnapshot`) |
+| disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport` and `useLayoutSnapshot`) |
 | deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
 

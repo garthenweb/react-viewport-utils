@@ -4,7 +4,12 @@ export {
   default as ObserveBoundingClientRect,
 } from './ObserveBoundingClientRect';
 export { default as ObserveViewport } from './ObserveViewport';
-export { useScroll, useDimensions, useViewport } from './hooks';
+export {
+  useScroll,
+  useDimensions,
+  useViewport,
+  useLayoutSnapshot,
+} from './hooks';
 export { IRect, IScroll, IDimensions } from './types';
 
 export const VERSION = '__VERSION__';

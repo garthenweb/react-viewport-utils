@@ -36,9 +36,10 @@ For detection of some resize events the `ResizeObserver` API is used internally 
 * [`ViewportProvider`](docs/api/ViewportProvider.md)
 * [`ObserveViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#render-props-event-handler-observeviewport)
 * [`connectViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#hoc-connectviewport)
-* [`NEW useViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions)
-* [`NEW useScroll`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions)
-* [`NEW useDimensions`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions)
+* [`NEW useViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
+* [`NEW useScroll`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
+* [`NEW useDimensions`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
+* [`NEW useLayoutSnapshot`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
 * [`ObserveBoundingClientRect`](docs/api/ObserveBoundingClientRect.md)
 * [Types](docs/api/types.md)
 

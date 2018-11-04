@@ -11,6 +11,7 @@ The optional `recalculateLayoutBeforeUpdate` property, which accepts a function,
 This option is available for
 
 * ObserveViewport
+* useLayoutSnapshot
 
 ## Example
 
@@ -19,4 +20,10 @@ This option is available for
   recalculateLayoutBeforeUpdate={() => el.getBoundingClientRect()}
   onUpdate={({ scroll }, rect) => console.log('Top offset: ', scroll.y + rect.top))}
 />
+
+const Component = () => {
+  const offsetTop = useLayoutSnapshot(
+    ({ scroll }) => scroll.y + el.getBoundingClientRect().top
+  );
+}
 ```

@@ -8,6 +8,10 @@ import {
 import { IViewport, IScroll, IDimensions, PriorityType } from './types';
 import { warnNoContextAvailable } from './utils';
 
+interface IViewPortEffectOptions extends IFullOptions {
+  recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
+}
+
 interface IFullOptions extends IOptions {
   disableScrollUpdates?: boolean;
   disableDimensionsUpdates?: boolean;
@@ -18,11 +22,11 @@ interface IOptions {
   priority?: PriorityType;
 }
 
-type HandleViewportChangeType = (viewport: IViewport) => void;
+type HandleViewportChangeType = (viewport: IViewport, snapshot: any) => void;
 
 const useViewportEffect = (
   handleViewportChange: HandleViewportChangeType,
-  options: IFullOptions,
+  options: IViewPortEffectOptions,
 ) => {
   const {
     addViewportChangeListener,
@@ -42,6 +46,7 @@ const useViewportEffect = (
         notifyDimensions: () => !options.disableDimensionsUpdates,
         notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
         priority: () => options.priority || 'normal',
+        recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
       });
       return () => removeViewportChangeListener(handleViewportChange);
     },
@@ -74,5 +79,20 @@ export const useViewport = (options: IFullOptions = {}): IViewport => {
   });
   useViewportEffect(setViewport, options);
 
+  return state;
+};
+
+export const useLayoutSnapshot = <T = any>(
+  recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
+  options: IFullOptions = {},
+): null | T => {
+  const [state, setSnapshot]: [null | T, (state: T) => void] = useState(null);
+  useViewportEffect(
+    (viewport: IViewport, snapshot: T) => setSnapshot(snapshot),
+    {
+      ...options,
+      recalculateLayoutBeforeUpdate,
+    },
+  );
   return state;
 };
