@@ -59,4 +59,4 @@ export type OnUpdateType = (
   options: IViewportCollectorUpdateOptions,
 ) => void;
 
-export type PriorityType = 'highest' | 'high' | 'normal' | 'low'
+export type PriorityType = 'highest' | 'high' | 'normal' | 'low';

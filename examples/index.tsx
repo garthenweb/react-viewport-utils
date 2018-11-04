@@ -29,12 +29,13 @@ const DisplayViewport = () => {
   const { x, y } = useScroll({
     priority: 'low',
   });
-  const { documentHeight } = useDimensions({
+  const { documentHeight, clientWidth } = useDimensions({
     priority: 'low',
   });
   return (
     <>
-      x: {x}, y: {y}, documentHeight: {documentHeight}
+      x: {x}, y: {y}, documentHeight: {documentHeight}, clientWidth:{' '}
+      {clientWidth}
     </>
   );
 };

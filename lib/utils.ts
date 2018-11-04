@@ -126,3 +126,12 @@ document.getElementById('root')
 );`,
   );
 };
+
+export const warnNoResizeObserver = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+  console.warn(
+    'react-viewport-utils: This browser does not support the ResizeObserver API, therefore not all possible resize events will be detected. In most of the cases this is not an issue and can be ignored. If its relevant to your application please consider adding a polyfill, e.g. https://www.npmjs.com/package/resize-observer-polyfill .',
+  );
+};

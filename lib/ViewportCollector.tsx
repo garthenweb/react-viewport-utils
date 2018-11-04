@@ -8,6 +8,7 @@ import {
   browserSupportsPassiveEvents,
   simpleDebounce,
   debounceOnUpdate,
+  warnNoResizeObserver,
 } from './utils';
 
 import { IDimensions, IScroll, IViewport, OnUpdateType } from './types';
@@ -121,6 +122,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   private lastSyncedDimensionsState: IDimensions;
   private tickId: NodeJS.Timer;
   private componentMightHaveUpdated: boolean;
+  private resizeObserver: ResizeObserver | null;
 
   constructor(props: IProps) {
     super(props);
@@ -131,6 +133,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.dimensionsState = createInitDimensionsState();
     this.lastSyncedDimensionsState = { ...this.dimensionsState };
     this.lastSyncedScrollState = { ...this.scrollState };
+    this.resizeObserver = null;
   }
 
   componentDidMount() {
@@ -139,6 +142,13 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     window.addEventListener('resize', this.handleResize, options);
     window.addEventListener('orientationchange', this.handleResize, options);
 
+    if (typeof window.ResizeObserver !== 'undefined') {
+      this.resizeObserver = new window.ResizeObserver(this.handleResize);
+      this.resizeObserver!.observe(document.body);
+    } else {
+      warnNoResizeObserver();
+    }
+
     this.tickId = raf(this.tick);
   }
 
@@ -146,6 +156,10 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     window.removeEventListener('scroll', this.handleScroll, false);
     window.removeEventListener('resize', this.handleResize, false);
     window.removeEventListener('orientationchange', this.handleResize, false);
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
     raf.cancel(this.tickId);
   }
 
