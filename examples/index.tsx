@@ -6,6 +6,7 @@ import {
   ObserveViewport,
   connectViewport,
   useScroll,
+  useDimensions,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
@@ -19,18 +20,21 @@ const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
     <header className="header">
       Viewport: {dimensions.width}x{dimensions.height}
       {a}
-      <DisplayScroll />
+      <DisplayViewport />
     </header>
   ),
 );
 
-const DisplayScroll = () => {
+const DisplayViewport = () => {
   const { x, y } = useScroll({
+    priority: 'low',
+  });
+  const { documentHeight } = useDimensions({
     priority: 'low',
   });
   return (
     <>
-      x: {x}, y: {y}
+      x: {x}, y: {y}, documentHeight: {documentHeight}
     </>
   );
 };

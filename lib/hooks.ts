@@ -70,7 +70,7 @@ export const useDimensions = (options: IOptions = {}): IDimensions => {
 export const useViewport = (options: IFullOptions = {}): IViewport => {
   const [state, setViewport] = useState({
     scroll: createInitScrollState(),
-    viewport: createInitDimensionsState(),
+    dimensions: createInitDimensionsState(),
   });
   useViewportEffect(setViewport, options);
 
