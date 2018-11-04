@@ -42,7 +42,7 @@
     "prettier": "^1.14.2",
     "react": "^16.7.0-alpha.0",
     "react-dom": "^16.7.0-alpha.0",
-    "rollup": "^0.66.6",
+    "rollup": "^0.67.0",
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-typescript2": "^0.17.2",
     "ts-jest": "^23.10.4",
