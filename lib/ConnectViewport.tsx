@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { wrapDisplayName } from 'recompose';
 
 import { IScroll, IDimensions } from './index';
 import ObserveViewport from './ObserveViewport';
@@ -24,11 +23,10 @@ export default function connect(options: IOptions = {}) {
   return <P extends object>(
     WrappedComponent: React.ComponentType<P & IInjectedProps>,
   ): React.ComponentClass<P> => {
+    const displayName =
+      WrappedComponent.displayName || WrappedComponent.name || 'Component';
     return class ConnectViewport extends React.Component<P, {}> {
-      static displayName: string = wrapDisplayName(
-        WrappedComponent,
-        'connectViewport',
-      );
+      static displayName = `connectViewport(${displayName})`;
 
       render() {
         return (
