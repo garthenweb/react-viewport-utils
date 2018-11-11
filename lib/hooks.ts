@@ -86,7 +86,7 @@ export const useLayoutSnapshot = <T = any>(
   recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
   options: IFullOptions = {},
 ): null | T => {
-  const [state, setSnapshot]: [null | T, (state: T) => void] = useState(null);
+  const [state, setSnapshot] = useState<null | T>(null);
   useViewportEffect(
     (viewport: IViewport, snapshot: T) => setSnapshot(snapshot),
     {
