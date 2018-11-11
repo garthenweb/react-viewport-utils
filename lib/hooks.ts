@@ -80,6 +80,7 @@ export const useLayoutSnapshot = <T = any>(
   recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
   options: IFullOptions = {},
 ): null | T => {
+  const { getCurrentViewport } = useContext(ViewportContext);
   const [state, setSnapshot] = useState<null | T>(null);
   useViewportEffect(
     (viewport: IViewport, snapshot: T) => setSnapshot(snapshot),
@@ -88,5 +89,10 @@ export const useLayoutSnapshot = <T = any>(
       recalculateLayoutBeforeUpdate,
     },
   );
+
+  useEffect(() => {
+    setSnapshot(recalculateLayoutBeforeUpdate(getCurrentViewport()));
+  }, []);
+
   return state;
 };

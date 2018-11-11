@@ -13,22 +13,7 @@ import {
 
 import { IDimensions, IScroll, IViewport, OnUpdateType } from './types';
 
-const getNodeScroll = (elem = window) => {
-  let { scrollX, scrollY } = elem;
-  if (scrollX === undefined) {
-    scrollX = elem.pageXOffset;
-  }
-  if (scrollY === undefined) {
-    scrollY = elem.pageYOffset;
-  }
-
-  return {
-    x: scrollX,
-    y: scrollY,
-  };
-};
-
-const getClientDimensions = (): IDimensions => {
+export const getClientDimensions = (): IDimensions => {
   if (!document || !document.documentElement) {
     return createEmptyDimensionState();
   }
@@ -51,6 +36,56 @@ const getClientDimensions = (): IDimensions => {
     documentWidth: Math.max(scrollWidth, offsetWidth, clientWidth),
     documentHeight: Math.max(scrollHeight, offsetHeight, clientHeight),
   };
+};
+
+const getNodeScroll = (elem = window) => {
+  let { scrollX, scrollY } = elem;
+  if (scrollX === undefined) {
+    scrollX = elem.pageXOffset;
+  }
+  if (scrollY === undefined) {
+    scrollY = elem.pageYOffset;
+  }
+
+  return {
+    x: scrollX,
+    y: scrollY,
+  };
+};
+
+export const getClientScroll = (
+  prevScrollState: IScroll = createEmptyScrollState(),
+) => {
+  if (typeof window === 'undefined') {
+    return createEmptyScrollState();
+  }
+  const { x, y } = getNodeScroll();
+  const nextScrollState = { ...prevScrollState };
+  const {
+    isScrollingLeft: prevIsScrollingLeft,
+    isScrollingUp: prevIsScrollingUp,
+    xTurn: prevXTurn,
+    yTurn: prevYTurn,
+  } = prevScrollState;
+
+  nextScrollState.isScrollingLeft = isScrollingLeft(x, nextScrollState);
+  nextScrollState.isScrollingRight = !nextScrollState.isScrollingLeft;
+
+  nextScrollState.isScrollingUp = isScrollingUp(y, nextScrollState);
+  nextScrollState.isScrollingDown = !nextScrollState.isScrollingUp;
+
+  nextScrollState.xTurn =
+    nextScrollState.isScrollingLeft === prevIsScrollingLeft ? prevXTurn : x;
+  nextScrollState.yTurn =
+    nextScrollState.isScrollingUp === prevIsScrollingUp ? prevYTurn : y;
+
+  nextScrollState.xDTurn = x - nextScrollState.xTurn;
+  nextScrollState.yDTurn = y - nextScrollState.yTurn;
+
+  nextScrollState.x = x;
+  nextScrollState.y = y;
+
+  return nextScrollState;
 };
 
 const isScrollingLeft = (x: number, prev: IScroll) => {
@@ -178,37 +213,12 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   };
 
   handleScroll = () => {
-    const { x, y } = getNodeScroll();
-    const {
-      isScrollingLeft: prevIsScrollingLeft,
-      isScrollingUp: prevIsScrollingUp,
-      xTurn: prevXTurn,
-      yTurn: prevYTurn,
-    } = this.scrollState;
-
-    this.scrollState.isScrollingLeft = isScrollingLeft(x, this.scrollState);
-    this.scrollState.isScrollingRight = !this.scrollState.isScrollingLeft;
-
-    this.scrollState.isScrollingUp = isScrollingUp(y, this.scrollState);
-    this.scrollState.isScrollingDown = !this.scrollState.isScrollingUp;
-
-    this.scrollState.xTurn =
-      this.scrollState.isScrollingLeft === prevIsScrollingLeft ? prevXTurn : x;
-    this.scrollState.yTurn =
-      this.scrollState.isScrollingUp === prevIsScrollingUp ? prevYTurn : y;
-
-    this.scrollState.xDTurn = x - this.scrollState.xTurn;
-    this.scrollState.yDTurn = y - this.scrollState.yTurn;
-
-    this.scrollState.x = x;
-    this.scrollState.y = y;
-
+    Object.assign(this.scrollState, getClientScroll(this.scrollState));
     this.componentMightHaveUpdated = true;
   };
 
   handleResize = () => {
     Object.assign(this.dimensionsState, getClientDimensions());
-
     this.componentMightHaveUpdated = true;
   };
 

@@ -7,8 +7,8 @@ import {
   IViewportCollectorUpdateOptions,
 } from './types';
 import ViewportCollector, {
-  createEmptyScrollState,
-  createEmptyDimensionState,
+  getClientDimensions,
+  getClientScroll,
 } from './ViewportCollector';
 
 interface IProps {
@@ -22,10 +22,10 @@ interface IListener extends IViewportChangeOptions {
   skippedIterations: number;
 }
 
-const createEmptyViewport = (): IViewport => {
+const getCurrentDefaultViewport = (): IViewport => {
   return {
-    scroll: createEmptyScrollState(),
-    dimensions: createEmptyDimensionState(),
+    scroll: getClientScroll(),
+    dimensions: getClientDimensions(),
   };
 };
 
@@ -35,7 +35,7 @@ export const ViewportContext = React.createContext({
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
   ) => {},
-  getCurrentViewport: createEmptyViewport,
+  getCurrentViewport: getCurrentDefaultViewport,
   hasRootProviderAsParent: false,
   version: '__VERSION__',
 });
@@ -189,7 +189,7 @@ export default class ViewportProvider extends React.PureComponent<
       removeViewportChangeListener: this.removeViewportChangeListener,
       getCurrentViewport: () => {
         if (!collector.current) {
-          return createEmptyViewport();
+          return getCurrentDefaultViewport();
         }
         return collector.current.getPropsFromState();
       },
