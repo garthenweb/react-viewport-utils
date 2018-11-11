@@ -3,8 +3,8 @@ import raf from 'raf';
 
 import { ViewportContext } from './ViewportProvider';
 import {
-  createInitDimensionsState,
-  createInitScrollState,
+  createEmptyDimensionState,
+  createEmptyScrollState,
 } from './ViewportCollector';
 import {
   IScroll,
@@ -40,6 +40,7 @@ interface IContext {
   ) => void;
   removeViewportChangeListener: (handler: TViewportChangeHandler) => void;
   hasRootProviderAsParent: boolean;
+  getCurrentViewport: () => IViewport;
   version: string;
 }
 
@@ -66,8 +67,8 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   constructor(props: IProps) {
     super(props);
     this.state = {
-      scroll: createInitScrollState(),
-      dimensions: createInitDimensionsState(),
+      scroll: createEmptyScrollState(),
+      dimensions: createEmptyDimensionState(),
     };
   }
 

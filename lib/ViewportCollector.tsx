@@ -79,7 +79,7 @@ const isScrollingUp = (y: number, prev: IScroll) => {
   }
 };
 
-export const createInitScrollState = () => ({
+export const createEmptyScrollState = () => ({
   x: 0,
   y: 0,
   isScrollingUp: false,
@@ -92,7 +92,7 @@ export const createInitScrollState = () => ({
   yDTurn: 0,
 });
 
-const createEmptyDimensionState = (): IDimensions => ({
+export const createEmptyDimensionState = (): IDimensions => ({
   width: 0,
   height: 0,
   clientWidth: 0,
@@ -102,13 +102,6 @@ const createEmptyDimensionState = (): IDimensions => ({
   documentWidth: 0,
   documentHeight: 0,
 });
-
-export const createInitDimensionsState = (): IDimensions => {
-  if (typeof window === 'undefined') {
-    return createEmptyDimensionState();
-  }
-  return getClientDimensions();
-};
 
 interface IProps {
   onUpdate: OnUpdateType;
@@ -129,8 +122,9 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.state = {
       parentProviderExists: false,
     };
-    this.scrollState = createInitScrollState();
-    this.dimensionsState = createInitDimensionsState();
+
+    this.scrollState = createEmptyScrollState();
+    this.dimensionsState = createEmptyDimensionState();
     this.lastSyncedDimensionsState = { ...this.dimensionsState };
     this.lastSyncedScrollState = { ...this.scrollState };
     this.resizeObserver = null;
@@ -139,11 +133,17 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   componentDidMount() {
     const options = browserSupportsPassiveEvents ? { passive: true } : false;
     window.addEventListener('scroll', this.handleScroll, options);
-    window.addEventListener('resize', this.handleResize, options);
-    window.addEventListener('orientationchange', this.handleResize, options);
+    window.addEventListener('resize', this.handleResizeDebounce, options);
+    window.addEventListener(
+      'orientationchange',
+      this.handleResizeDebounce,
+      options,
+    );
 
     if (typeof window.ResizeObserver !== 'undefined') {
-      this.resizeObserver = new window.ResizeObserver(this.handleResize);
+      this.resizeObserver = new window.ResizeObserver(
+        this.handleResizeDebounce,
+      );
       this.resizeObserver!.observe(document.body);
     } else {
       warnNoResizeObserver();
@@ -154,8 +154,12 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
 
   componentWillUnmount() {
     window.removeEventListener('scroll', this.handleScroll, false);
-    window.removeEventListener('resize', this.handleResize, false);
-    window.removeEventListener('orientationchange', this.handleResize, false);
+    window.removeEventListener('resize', this.handleResizeDebounce, false);
+    window.removeEventListener(
+      'orientationchange',
+      this.handleResizeDebounce,
+      false,
+    );
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
@@ -202,11 +206,13 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.componentMightHaveUpdated = true;
   };
 
-  handleResize = simpleDebounce(() => {
+  handleResize = () => {
     Object.assign(this.dimensionsState, getClientDimensions());
 
     this.componentMightHaveUpdated = true;
-  }, 88);
+  };
+
+  handleResizeDebounce = simpleDebounce(this.handleResize, 88);
 
   getPublicScroll: ((scroll: IScroll) => IScroll) = memoize(
     (scroll: IScroll): IScroll => ({ ...scroll }),

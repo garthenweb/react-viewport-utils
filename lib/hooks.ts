@@ -1,10 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 
 import { ViewportContext } from './ViewportProvider';
-import {
-  createInitScrollState,
-  createInitDimensionsState,
-} from './ViewportCollector';
 import { IViewport, IScroll, IDimensions, PriorityType } from './types';
 import { warnNoContextAvailable } from './utils';
 
@@ -73,10 +69,8 @@ export const useDimensions = (options: IOptions = {}): IDimensions => {
 };
 
 export const useViewport = (options: IFullOptions = {}): IViewport => {
-  const [state, setViewport] = useState({
-    scroll: createInitScrollState(),
-    dimensions: createInitDimensionsState(),
-  });
+  const { getCurrentViewport } = useContext(ViewportContext);
+  const [state, setViewport] = useState(getCurrentViewport());
   useViewportEffect(setViewport, options);
 
   return state;

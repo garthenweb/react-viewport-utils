@@ -26,7 +26,7 @@ const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
   ),
 );
 
-const DisplayViewport = () => {
+const DisplayViewport = React.memo(() => {
   const div = React.useRef(null);
   const { x, y } = useScroll({
     priority: 'low',
@@ -46,7 +46,7 @@ const DisplayViewport = () => {
       {clientWidth}, element offsetTop: {offsetTop}
     </div>
   );
-};
+});
 
 class Example extends React.PureComponent<{}, { disabled: boolean }> {
   private container1: React.RefObject<any>;
