@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 
 import { ViewportContext } from './ViewportProvider';
 import { IViewport, IScroll, IDimensions, PriorityType } from './types';
@@ -90,7 +90,7 @@ export const useLayoutSnapshot = <T = any>(
     },
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setSnapshot(recalculateLayoutBeforeUpdate(getCurrentViewport()));
   }, []);
 
