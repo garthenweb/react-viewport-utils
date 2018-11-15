@@ -14,7 +14,7 @@ import {
 import { IDimensions, IScroll, IViewport, OnUpdateType } from './types';
 
 export const getClientDimensions = (): IDimensions => {
-  if (!document || !document.documentElement) {
+  if (typeof document === 'undefined' || !document.documentElement) {
     return createEmptyDimensionState();
   }
   const { innerWidth, innerHeight, outerWidth, outerHeight } = window;
