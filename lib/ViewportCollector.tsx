@@ -184,6 +184,8 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
       warnNoResizeObserver();
     }
 
+    this.handleScroll();
+    this.handleResize();
     this.tickId = raf(this.tick);
   }
 
