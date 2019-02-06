@@ -18,7 +18,9 @@ interface IOptions {
   priority?: PriorityType;
 }
 
-type HandleViewportChangeType = (viewport: IViewport, snapshot: any) => void;
+type HandleViewportChangeType = (
+  options: { viewport: IViewport; snapshot: any },
+) => void;
 
 const useViewportEffect = (
   handleViewportChange: HandleViewportChangeType,
@@ -37,14 +39,16 @@ const useViewportEffect = (
 
   useEffect(
     () => {
-      addViewportChangeListener(handleViewportChange, {
+      const handler = (viewport: IViewport, snapshot: any) =>
+        handleViewportChange({ viewport, snapshot });
+      addViewportChangeListener(handler, {
         notifyScroll: () => !options.disableScrollUpdates,
         notifyDimensions: () => !options.disableDimensionsUpdates,
         notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
         priority: () => options.priority || 'normal',
         recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
       });
-      return () => removeViewportChangeListener(handleViewportChange);
+      return () => removeViewportChangeListener(handler);
     },
     [addViewportChangeListener, removeViewportChangeListener],
   );
@@ -71,7 +75,7 @@ export const useDimensions = (options: IOptions = {}): IDimensions => {
 export const useViewport = (options: IFullOptions = {}): IViewport => {
   const { getCurrentViewport } = useContext(ViewportContext);
   const [state, setViewport] = useState(getCurrentViewport());
-  useViewportEffect(setViewport, options);
+  useViewportEffect(({ viewport }) => setViewport(viewport), options);
 
   return state;
 };
@@ -82,13 +86,10 @@ export const useLayoutSnapshot = <T = any>(
 ): null | T => {
   const { getCurrentViewport } = useContext(ViewportContext);
   const [state, setSnapshot] = useState<null | T>(null);
-  useViewportEffect(
-    (viewport: IViewport, snapshot: T) => setSnapshot(snapshot),
-    {
-      ...options,
-      recalculateLayoutBeforeUpdate,
-    },
-  );
+  useViewportEffect(({ snapshot }: { snapshot: T }) => setSnapshot(snapshot), {
+    ...options,
+    recalculateLayoutBeforeUpdate,
+  });
 
   useLayoutEffect(() => {
     setSnapshot(recalculateLayoutBeforeUpdate(getCurrentViewport()));
