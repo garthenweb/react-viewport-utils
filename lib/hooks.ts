@@ -18,9 +18,10 @@ interface IOptions {
   priority?: PriorityType;
 }
 
-type HandleViewportChangeType = (
-  options: { viewport: IViewport; snapshot: any },
-) => void;
+type HandleViewportChangeType = (options: {
+  viewport: IViewport;
+  snapshot: any;
+}) => void;
 
 const useViewportEffect = (
   handleViewportChange: HandleViewportChangeType,
@@ -37,21 +38,18 @@ const useViewportEffect = (
     return;
   }
 
-  useEffect(
-    () => {
-      const handler = (viewport: IViewport, snapshot: any) =>
-        handleViewportChange({ viewport, snapshot });
-      addViewportChangeListener(handler, {
-        notifyScroll: () => !options.disableScrollUpdates,
-        notifyDimensions: () => !options.disableDimensionsUpdates,
-        notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
-        priority: () => options.priority || 'normal',
-        recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
-      });
-      return () => removeViewportChangeListener(handler);
-    },
-    [addViewportChangeListener, removeViewportChangeListener],
-  );
+  useEffect(() => {
+    const handler = (viewport: IViewport, snapshot: any) =>
+      handleViewportChange({ viewport, snapshot });
+    addViewportChangeListener(handler, {
+      notifyScroll: () => !options.disableScrollUpdates,
+      notifyDimensions: () => !options.disableDimensionsUpdates,
+      notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
+      priority: () => options.priority || 'normal',
+      recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
+    });
+    return () => removeViewportChangeListener(handler);
+  }, [addViewportChangeListener, removeViewportChangeListener]);
 };
 
 export const useScroll = (options: IOptions = {}): IScroll => {

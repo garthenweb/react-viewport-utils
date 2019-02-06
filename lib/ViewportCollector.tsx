@@ -226,12 +226,12 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
 
   handleResizeDebounce = simpleDebounce(this.handleResize, 88);
 
-  getPublicScroll: ((scroll: IScroll) => IScroll) = memoize(
+  getPublicScroll: (scroll: IScroll) => IScroll = memoize(
     (scroll: IScroll): IScroll => ({ ...scroll }),
     shallowEqualScroll,
   );
 
-  getPublicDimensions: ((dimensions: IDimensions) => IDimensions) = memoize(
+  getPublicDimensions: (dimensions: IDimensions) => IDimensions = memoize(
     (dimensions: IDimensions): IDimensions => ({ ...dimensions }),
     shallowEqualDimensions,
   );
