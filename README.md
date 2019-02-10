@@ -2,6 +2,12 @@
 
 The goal of this project is to create a set of low level utility components for react to make working with the viewport (e.g scroll position or size of the page) easy to use and performant by default.
 
+![](https://img.shields.io/npm/l/react-viewport-utils.svg)
+[![](https://img.shields.io/npm/v/react-viewport-utils.svg)](https://www.npmjs.com/package/react-viewport-utils)
+![](https://img.shields.io/david/garthenweb/react-viewport-utils.svg)
+[![](https://img.shields.io/bundlephobia/minzip/react-viewport-utils.svg)](https://bundlephobia.com/result?p=react-viewport-utils)
+[![Build Status](https://travis-ci.org/garthenweb/react-viewport-utils.svg?branch=master)](https://travis-ci.org/garthenweb/react-viewport-utils)
+
 See the example folder for more information about what you can build with it.
 
 ## Why?
