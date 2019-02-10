@@ -1,7 +1,10 @@
 import * as React from 'react';
-import raf from 'raf';
 
-import { shallowEqualRect } from './utils';
+import {
+  shallowEqualRect,
+  requestAnimationFrame,
+  cancelAnimationFrame,
+} from './utils';
 import { IRect } from './types';
 
 interface IProps {
@@ -33,7 +36,7 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
   IProps,
   IState
 > {
-  private tickId: NodeJS.Timer;
+  private tickId: number;
 
   constructor(props: IProps) {
     super(props);
@@ -73,11 +76,11 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
   }
 
   componentWillUnmount() {
-    raf.cancel(this.tickId);
+    cancelAnimationFrame(this.tickId);
   }
 
   tick(updater: Function) {
-    this.tickId = raf(() => {
+    this.tickId = requestAnimationFrame(() => {
       updater();
       this.tick(updater);
     });

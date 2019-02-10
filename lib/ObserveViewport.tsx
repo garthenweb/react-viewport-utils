@@ -1,5 +1,4 @@
 import * as React from 'react';
-import raf from 'raf';
 
 import { ViewportContext } from './ViewportProvider';
 import {
@@ -14,7 +13,11 @@ import {
   IViewportChangeOptions,
   PriorityType,
 } from './types';
-import { warnNoContextAvailable } from './utils';
+import {
+  warnNoContextAvailable,
+  requestAnimationFrame,
+  cancelAnimationFrame,
+} from './utils';
 
 export interface IChildProps {
   scroll: IScroll | null;
@@ -55,7 +58,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     | ((handler: TViewportChangeHandler) => void)
     | null;
 
-  private tickId: NodeJS.Timer;
+  private tickId: number;
 
   static defaultProps: IProps = {
     disableScrollUpdates: false,
@@ -78,7 +81,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
     this.removeViewportChangeListener = null;
     this.addViewportChangeListener = null;
-    raf.cancel(this.tickId);
+    cancelAnimationFrame(this.tickId);
   }
 
   handleViewportUpdate = (viewport: IViewport, layoutSnapshot: any) => {
@@ -100,8 +103,8 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
 
   syncState(nextViewport: IState) {
     if (this.props.children) {
-      raf.cancel(this.tickId);
-      this.tickId = raf(() => {
+      cancelAnimationFrame(this.tickId);
+      this.tickId = requestAnimationFrame(() => {
         this.setState(nextViewport);
       });
     }

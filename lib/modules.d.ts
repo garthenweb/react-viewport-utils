@@ -1,11 +1,3 @@
-declare module 'raf' {
-  const raf: {
-    (tick: Function): NodeJS.Timer;
-    cancel: (id: NodeJS.Timer) => void;
-  };
-  export = raf;
-}
-
 // @see https://gist.github.com/strothj/708afcf4f01dd04de8f49c92e88093c3
 interface Window {
   ResizeObserver: ResizeObserver;

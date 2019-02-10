@@ -1,6 +1,5 @@
 import * as React from 'react';
 import memoize from 'memoize-one';
-import raf from 'raf';
 
 import {
   shallowEqualScroll,
@@ -9,6 +8,8 @@ import {
   simpleDebounce,
   debounceOnUpdate,
   warnNoResizeObserver,
+  requestAnimationFrame,
+  cancelAnimationFrame,
 } from './utils';
 
 import { IDimensions, IScroll, IViewport, OnUpdateType } from './types';
@@ -148,7 +149,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   private dimensionsState: IDimensions;
   private lastSyncedScrollState: IScroll;
   private lastSyncedDimensionsState: IDimensions;
-  private tickId: NodeJS.Timer;
+  private tickId: NodeJS.Timeout;
   private componentMightHaveUpdated: boolean;
   private resizeObserver: ResizeObserver | null;
 
@@ -186,7 +187,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
 
     this.handleScroll();
     this.handleResize();
-    this.tickId = raf(this.tick);
+    this.tickId = requestAnimationFrame(this.tick);
   }
 
   componentWillUnmount() {
@@ -201,7 +202,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
     }
-    raf.cancel(this.tickId);
+    cancelAnimationFrame(this.tickId);
   }
 
   tick = () => {
@@ -210,7 +211,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
         this.syncState();
       }
       this.componentMightHaveUpdated = false;
-      this.tickId = raf(this.tick);
+      this.tickId = requestAnimationFrame(this.tick);
     }
   };
 

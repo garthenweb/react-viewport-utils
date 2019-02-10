@@ -135,3 +135,19 @@ export const warnNoResizeObserver = () => {
     'react-viewport-utils: This browser does not support the ResizeObserver API, therefore not all possible resize events will be detected. In most of the cases this is not an issue and can be ignored. If its relevant to your application please consider adding a polyfill, e.g. https://www.npmjs.com/package/resize-observer-polyfill .',
   );
 };
+
+type RequestAnimationFrameType = (callback: FrameRequestCallback) => number;
+
+export const requestAnimationFrame = ((): RequestAnimationFrameType => {
+  if (typeof window !== 'undefined') {
+    return window.requestAnimationFrame;
+  }
+  return callback => (setTimeout(callback, 0) as unknown) as number;
+})();
+
+export const cancelAnimationFrame = ((): ((handle: number) => void) => {
+  if (typeof window !== 'undefined') {
+    return window.cancelAnimationFrame;
+  }
+  return clearTimeout;
+})();
