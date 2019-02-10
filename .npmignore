@@ -9,4 +9,7 @@ examples-dist/
 .prettierrc
 rollup.config.js
 tsconfig.json
+tsconfig.test.json
 tslint.json
+.travis.yml
+jest.config.js
