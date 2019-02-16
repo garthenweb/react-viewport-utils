@@ -139,15 +139,27 @@ export const warnNoResizeObserver = () => {
 type RequestAnimationFrameType = (callback: FrameRequestCallback) => number;
 
 export const requestAnimationFrame = ((): RequestAnimationFrameType => {
+  const fallback = (callback: FrameRequestCallback) =>
+    (setTimeout(callback, 1000 / 60) as unknown) as number;
   if (typeof window !== 'undefined') {
-    return window.requestAnimationFrame;
+    return (
+      window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      (<any>window).mozRequestAnimationFrame ||
+      fallback
+    );
   }
-  return callback => (setTimeout(callback, 0) as unknown) as number;
+  return fallback;
 })();
 
 export const cancelAnimationFrame = ((): ((handle: number) => void) => {
   if (typeof window !== 'undefined') {
-    return window.cancelAnimationFrame;
+    return (
+      window.cancelAnimationFrame ||
+      window.webkitCancelAnimationFrame ||
+      (<any>window).webkitCancelRequestAnimationFrame ||
+      clearTimeout
+    );
   }
   return clearTimeout;
 })();
