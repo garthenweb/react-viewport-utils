@@ -35,6 +35,20 @@ By default the library ships with Typescript definitions, so there is no need to
 
 For detection of some resize events the `ResizeObserver` API is used internally which is not supported in some browsers. Please make sure to implement a polyfill on your own in case its required for your application.
 
+## Supported Environments
+
+### Browsers
+
+The goal is to support the most recent versions of all major browsers (Internet Explorer, Edge, Safari, Chrome and Firefox).
+
+We try to be downward compatible with older browsers when possible to at least not throw errors, but older versions will not be test at all.
+
+In case you have specific requirements, please fill an issue or create a PR so we can discuss about them.
+
+### NodeJS
+
+The project aims to support recent releases of v8 and v10 of NodeJS.
+
 ## Documentation
 
 ### API
