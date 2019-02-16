@@ -10,6 +10,7 @@ import ViewportCollector, {
   getClientDimensions,
   getClientScroll,
 } from './ViewportCollector';
+import { createPerformanceMarker } from './utils';
 
 interface IProps {
   experimentalSchedulerEnabled?: boolean;
@@ -128,9 +129,9 @@ export default class ViewportProvider extends React.PureComponent<
     const layouts = updatableListeners.map(
       ({ recalculateLayoutBeforeUpdate }) => {
         if (recalculateLayoutBeforeUpdate) {
-          const start = performance.now();
+          const getDuration = createPerformanceMarker();
           const layoutState = recalculateLayoutBeforeUpdate(state);
-          return [layoutState, performance.now() - start];
+          return [layoutState, getDuration()];
         }
         return null;
       },
@@ -140,9 +141,9 @@ export default class ViewportProvider extends React.PureComponent<
       const { handler, averageExecutionCost, iterations } = listener;
       const [layout, layoutCost] = layouts[index] || [null, 0];
 
-      const start = performance.now();
+      const getDuration = createPerformanceMarker();
       handler(state, layout);
-      const totalCost = layoutCost + performance.now() - start;
+      const totalCost = layoutCost + getDuration();
       const diff = totalCost - averageExecutionCost;
       const i = iterations + 1;
 

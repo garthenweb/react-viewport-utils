@@ -151,3 +151,9 @@ export const cancelAnimationFrame = ((): ((handle: number) => void) => {
   }
   return clearTimeout;
 })();
+
+const now = () => performance.now() || Date.now();
+export const createPerformanceMarker = () => {
+  const start = now();
+  return () => now() - start;
+};
