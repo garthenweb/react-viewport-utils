@@ -164,7 +164,10 @@ export const cancelAnimationFrame = ((): ((handle: number) => void) => {
   return clearTimeout;
 })();
 
-const now = () => performance.now() || Date.now();
+const now =
+  typeof performance !== 'undefined'
+    ? performance.now.bind(performance)
+    : Date.now;
 export const createPerformanceMarker = () => {
   const start = now();
   return () => now() - start;
