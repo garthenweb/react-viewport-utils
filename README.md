@@ -1,6 +1,6 @@
 # React Viewport Utils
 
-The goal of this project is to create a set of low level utility components for react to make working with the viewport (e.g scroll position or size of the page) easy to use and performant by default.
+A set of low level utility components for react to make working with the viewport (e.g scroll position or size of the page) easy to use and performant by default.
 
 ![](https://img.shields.io/npm/l/react-viewport-utils.svg)
 [![](https://img.shields.io/npm/v/react-viewport-utils.svg)](https://www.npmjs.com/package/react-viewport-utils)
@@ -21,7 +21,7 @@ This library solves all those issues by
 * using one central event handler per event to collect data
 * triggers updates to components using request animation frame
 * allows to prioritize the importance of updates at runtime which allows to drop frames for less important updates in case the main thread is busy
-* implements patterns like `onUpdate` callbacks, [render props](https://reactjs.org/docs/render-props.html), [higher order components](https://reactjs.org/docs/higher-order-components.html) and [hooks](https://reactjs.org/docs/hooks-intro.html) which make the developer experience as simple as possible and allow the the developer to concentrate on the application and not on global event handling.
+* implements patterns like `onUpdate` callbacks, [render props](https://reactjs.org/docs/render-props.html), [higher order components](https://reactjs.org/docs/higher-order-components.html) and [hooks](https://reactjs.org/docs/hooks-intro.html) which make the developer experience as simple as possible and allows the developer to concentrate on the application and not on global event handling.
 
 ## Installation/ requirements
 
