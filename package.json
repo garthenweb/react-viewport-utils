@@ -30,7 +30,12 @@
     "viewport",
     "scroll",
     "dimensions",
-    "size"
+    "size",
+    "resize",
+    "event",
+    "observer",
+    "window",
+    "screen"
   ],
   "license": "MIT",
   "devDependencies": {
