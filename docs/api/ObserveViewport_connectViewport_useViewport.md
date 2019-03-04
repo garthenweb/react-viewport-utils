@@ -62,7 +62,7 @@ import * as React from 'react';
 import {
   ViewportProvider,
   connectViewport,
-} from 'react-viewport-uitls';
+} from 'react-viewport-utils';
 
 const Component = ({ scroll, dimensions }) => (
   <>
