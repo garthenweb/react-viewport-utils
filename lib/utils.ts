@@ -165,7 +165,7 @@ export const cancelAnimationFrame = ((): ((handle: number) => void) => {
 })();
 
 const now =
-  typeof performance !== 'undefined'
+  typeof performance !== 'undefined' && performance.now
     ? performance.now.bind(performance)
     : Date.now;
 export const createPerformanceMarker = () => {
