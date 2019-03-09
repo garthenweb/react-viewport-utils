@@ -47,7 +47,7 @@ In case you have specific requirements, please fill an issue or create a PR so w
 
 ### NodeJS
 
-The project aims to support recent releases of v8 and v10 of NodeJS.
+The project aims to support recent releases of v8 and v10 and higher of NodeJS.
 
 ## Documentation
 

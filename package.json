@@ -22,7 +22,7 @@
     "url": "https://github.com/garthenweb/react-viewport-utils/issues"
   },
   "engines": {
-    "node": "^8.9.0 || ^10.13.0"
+    "node": "^8.9.0 || >= 10.13.0"
   },
   "author": "Jannick Garthen <jannick.garthen@gmail.com>",
   "keywords": [
