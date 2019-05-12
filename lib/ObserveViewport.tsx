@@ -48,13 +48,8 @@ interface IContext {
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
-  private addViewportChangeListener:
-    | ((
-        handler: TViewportChangeHandler,
-        options: IViewportChangeOptions,
-      ) => void)
-    | null;
-  private removeViewportChangeListener:
+  private getCurrentViewport?: () => IViewport;
+  private removeViewportChangeListener?:
     | ((handler: TViewportChangeHandler) => void)
     | null;
 
@@ -75,12 +70,31 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     };
   }
 
+  componentDidUpdate(prevProps: IProps) {
+    const dimensionsBecameActive =
+      !this.props.disableDimensionsUpdates &&
+      prevProps.disableDimensionsUpdates;
+    const scrollBecameActive =
+      !this.props.disableScrollUpdates && prevProps.disableScrollUpdates;
+    if (
+      typeof this.getCurrentViewport === 'function' &&
+      (dimensionsBecameActive || scrollBecameActive)
+    ) {
+      const viewport = this.getCurrentViewport();
+      this.handleViewportUpdate(
+        viewport,
+        this.props.recalculateLayoutBeforeUpdate
+          ? this.props.recalculateLayoutBeforeUpdate(viewport)
+          : null,
+      );
+    }
+  }
+
   componentWillUnmount() {
     if (this.removeViewportChangeListener) {
       this.removeViewportChangeListener(this.handleViewportUpdate);
     }
     this.removeViewportChangeListener = null;
-    this.addViewportChangeListener = null;
     cancelAnimationFrame(this.tickId);
   }
 
@@ -98,16 +112,16 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       this.props.onUpdate(nextViewport, layoutSnapshot);
     }
 
-    this.syncState(nextViewport);
+    if (this.props.children) {
+      this.syncState(nextViewport);
+    }
   };
 
   syncState(nextViewport: IState) {
-    if (this.props.children) {
-      cancelAnimationFrame(this.tickId);
-      this.tickId = requestAnimationFrame(() => {
-        this.setState(nextViewport);
-      });
-    }
+    cancelAnimationFrame(this.tickId);
+    this.tickId = requestAnimationFrame(() => {
+      this.setState(nextViewport);
+    });
   }
 
   get optionNotifyScroll(): boolean {
@@ -130,8 +144,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
 
     const shouldRegister =
-      this.removeViewportChangeListener !== removeViewportChangeListener &&
-      this.addViewportChangeListener !== addViewportChangeListener;
+      this.removeViewportChangeListener !== removeViewportChangeListener;
 
     if (!shouldRegister) {
       return null;
@@ -142,6 +155,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
 
     this.removeViewportChangeListener = removeViewportChangeListener;
+    this.getCurrentViewport = getCurrentViewport;
     addViewportChangeListener(this.handleViewportUpdate, {
       notifyScroll: () => !this.props.disableScrollUpdates,
       notifyDimensions: () => !this.props.disableDimensionsUpdates,
@@ -155,7 +169,9 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       },
     });
 
-    this.syncState(getCurrentViewport());
+    if (this.props.children) {
+      this.syncState(getCurrentViewport());
+    }
 
     return null;
   };
@@ -167,7 +183,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
         <ViewportContext.Consumer>
           {this.registerViewportListeners}
         </ViewportContext.Consumer>
-        {typeof children === 'function' && children(this.state)}
+        {children ? children(this.state) : null}
       </React.Fragment>
     );
   }

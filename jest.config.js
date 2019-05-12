@@ -5,9 +5,7 @@ module.exports = {
   globals: {
     'ts-jest': {
       tsConfig: './tsconfig.test.json',
-      diagnostics: {
-        warnOnly: true,
-      },
+      diagnostics: false,
     },
   },
 };
