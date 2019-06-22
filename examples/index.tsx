@@ -9,6 +9,10 @@ import {
   useLayoutSnapshot,
   useDimensions,
   useRect,
+  useScrollEffect,
+  useDimensionsEffect,
+  useViewportEffect,
+  useRectEffect,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
@@ -107,17 +111,17 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
           <ObserveViewport
             disableDimensionsUpdates
             onUpdate={props => {
-              console.log('update scroll only', props.scroll);
+              console.log('ObserveViewport: update scroll only', props.scroll);
             }}
           />
           <ObserveViewport
             onUpdate={({ dimensions, scroll }) => {
               if (this.lastDimensions !== dimensions) {
-                console.log('update dimensions', dimensions);
+                console.log('ObserveViewport: update dimensions', dimensions);
                 this.lastDimensions = dimensions;
               }
               if (this.lastScroll !== scroll) {
-                console.log('update scroll', scroll);
+                console.log('ObserveViewport: update scroll', scroll);
                 this.lastScroll = scroll;
               }
             }}
@@ -126,7 +130,10 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
             deferUpdateUntilIdle
             disableScrollUpdates
             onUpdate={props => {
-              console.log('update dimensions lazy', props.dimensions);
+              console.log(
+                'ObserveViewport: update dimensions lazy',
+                props.dimensions,
+              );
             }}
           />
           <Placeholder />
@@ -138,10 +145,22 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
   }
 }
 
+const HooksExample = () => {
+  const ref = React.useRef<HTMLDivElement>();
+  useScrollEffect(scroll => console.log('hook:scroll effect', scroll));
+  useDimensionsEffect(dimensions =>
+    console.log('hook:dimensions effect', dimensions),
+  );
+  useViewportEffect(viewport => console.log('hook:viewport effect', viewport));
+  useRectEffect(rect => console.log('hook:rect effect', rect), ref);
+  return <div ref={ref} />;
+};
+
 render(
   <ViewportProvider experimentalSchedulerEnabled>
     <main role="main">
       <Example />
+      <HooksExample />
       <Placeholder />
       <Placeholder />
       <Placeholder />

@@ -6,10 +6,14 @@ export {
 export { default as ObserveViewport } from './ObserveViewport';
 export {
   useScroll,
+  useScrollEffect,
   useDimensions,
+  useDimensionsEffect,
   useViewport,
+  useViewportEffect,
   useLayoutSnapshot,
   useRect,
+  useRectEffect,
 } from './hooks';
 export { IRect, IScroll, IDimensions } from './types';
 
