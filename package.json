@@ -1,6 +1,6 @@
 {
   "name": "react-viewport-utils",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "description": "Utility components for working with the viewport in react",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
