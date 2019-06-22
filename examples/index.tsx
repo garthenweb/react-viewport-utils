@@ -8,6 +8,7 @@ import {
   useScroll,
   useLayoutSnapshot,
   useDimensions,
+  useRect,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
@@ -40,10 +41,17 @@ const DisplayViewport = React.memo(() => {
     }
     return div.current.getBoundingClientRect().top + scroll.y;
   });
+  const rect = useRect(div);
   return (
     <div ref={div}>
-      x: {x}, y: {y}, documentHeight: {documentHeight}, clientWidth:{' '}
-      {clientWidth}, element offsetTop: {offsetTop}
+      x: {x}, y: {y}
+      <br />
+      documentHeight: {documentHeight}
+      <br />
+      clientWidth: {clientWidth}, element offsetTop: {offsetTop}
+      <br />
+      rect.top: {rect ? rect.top : 'null'}, rect.bottom:{' '}
+      {rect ? rect.bottom : 'null'}
     </div>
   );
 });

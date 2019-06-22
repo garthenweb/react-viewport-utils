@@ -1,7 +1,13 @@
-import { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  RefObject,
+} from 'react';
 
 import { ViewportContext } from './ViewportProvider';
-import { IViewport, IScroll, IDimensions, PriorityType } from './types';
+import { IViewport, IScroll, IDimensions, PriorityType, IRect } from './types';
 import { warnNoContextAvailable } from './utils';
 
 interface IViewPortEffectOptions extends IFullOptions {
@@ -89,9 +95,19 @@ export const useLayoutSnapshot = <T = any>(
     recalculateLayoutBeforeUpdate,
   });
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setSnapshot(recalculateLayoutBeforeUpdate(getCurrentViewport()));
   }, []);
 
   return state;
+};
+
+export const useRect = (
+  ref: RefObject<HTMLElement>,
+  options?: IFullOptions,
+): IRect | null => {
+  return useLayoutSnapshot(
+    () => (ref.current ? ref.current.getBoundingClientRect() : null),
+    options,
+  );
 };

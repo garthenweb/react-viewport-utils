@@ -9,6 +9,7 @@ export {
   useDimensions,
   useViewport,
   useLayoutSnapshot,
+  useRect,
 } from './hooks';
 export { IRect, IScroll, IDimensions } from './types';
 
