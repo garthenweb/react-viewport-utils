@@ -86,18 +86,16 @@ render(
 
 ## Hooks: `useViewport`, `useScroll`, `useDimensions`, `useLayoutSnapshot`
 
-[Hooks](https://reactjs.org/docs/hooks-intro.html) are probably the easiest way to update your components but as of now needs to be consumed with care because this API and hooks in general are in early stage and thus are may contain bugs or will undergo breaking changes. As always, please report bugs if you find some.
-
 **!!! Hooks require a `ViewportProvider` as a parent and only work with react v16.7.0 !!!**
 
 ### API
 
-| Property | Type | Required? | Description |
+| Argument | Type | Required? | Description |
 |:---|:---|:---:|:---|
-| disableScrollUpdates | boolean |  | Disables updates to scroll events (only for `useViewport` and `useLayoutSnapshot`) |
-| disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport` and `useLayoutSnapshot`) |
-| deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
-| priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
+| options.disableScrollUpdates | boolean |  | Disables updates to scroll events (only for `useViewport` and `useLayoutSnapshot`) |
+| options.disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport` and `useLayoutSnapshot`) |
+| options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
+| options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
 
 ### Example
 
@@ -117,6 +115,44 @@ function Component() {
       Window Size: ${dimensions.innerWidth}x${dimensions.innerHeight}
     </div>
   );
+}
+```
+
+## Hook Effects: `useViewportEffect`, `useScrollEffect`, `useDimensionsEffect`
+
+Hook effects allow to trigger side effects on change without updating the component.
+
+**!!! Hooks require a `ViewportProvider` as a parent and only work with react v16.7.0 !!!**
+
+### API
+
+| Argument | Type | Required? | Description |
+|:---|:---|:---:|:---|
+| effect | (IViewport \| IScroll \| IDimensions) => void | x | Disables updates to scroll events (only for `useViewport`) |
+| options.disableScrollUpdates | boolean |  | Disables updates to scroll events (only for `useViewport`) |
+| options.disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport`) |
+| options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
+| options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
+| options.recalculateLayoutBeforeUpdate | function |  | Enables a way to calculate layout information for all components as a badge before the effect call. Contains `IViewport`, `IScroll` or `IDimensions` as the first argument, dependent of the used hook. See [recalculateLayoutBeforeUpdate](../concepts/recalculateLayoutBeforeUpdate.md) |
+
+### Example
+
+``` javascript
+import * as React from 'react';
+import { useScrollEffect, useViewportEffect } from 'react-viewport-utils';
+
+function Component() {
+  const ref = React.useRef()
+  useScrollEffect((scroll) => {
+    console.log(scroll);
+  });
+  useViewportEffect((viewport, elementWidth) => {
+    console.log(viewport, top);
+  }, {
+    recalculateLayoutBeforeUpdate: () => ref.current ? ref.current.getBoundingClientRect().width : null
+  });
+
+  return <div ref={ref} />;
 }
 ```
 

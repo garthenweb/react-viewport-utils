@@ -36,3 +36,15 @@ For scroll events the `scroll` object is exposed which contains the following pr
 |:---|:---|:---|
 | scroll | IScroll | See IScroll type above |
 | dimensions | IDimensions | See IDimensions type above |
+
+
+## IRect
+
+| Property | Type | Description |
+|:---|:---|:---|
+| top | number | Top position of the element, relative to the viewport |
+| right | number | Right position of the element, relative to the viewport |
+| bottom | number | Bottom position of the element, relative to the viewport |
+| left | number | Left position of the element, relative to the viewport |
+| width | number | Width of the element |
+| height | number | Height of the element |
