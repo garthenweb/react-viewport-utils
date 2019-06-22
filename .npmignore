@@ -13,3 +13,4 @@ tsconfig.test.json
 tslint.json
 .travis.yml
 jest.config.js
+dev-tools
