@@ -9,11 +9,7 @@
     "sourceMap": true,
     "jsx": "react",
     "forceConsistentCasingInFileNames": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
+    "strict": true,
     "noUnusedLocals": true,
     "alwaysStrict": true,
     "allowSyntheticDefaultImports": true

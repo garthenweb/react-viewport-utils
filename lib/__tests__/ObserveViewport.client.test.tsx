@@ -36,7 +36,7 @@ const App = ({
 
 describe('ObserveViewport', () => {
   beforeEach(() => {
-    const eventMap = {
+    const eventMap: any = {
       scroll: jest.fn(),
     };
     jest.spyOn(window, 'addEventListener').mockImplementation((event, cb) => {
