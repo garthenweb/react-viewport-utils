@@ -3,7 +3,7 @@ delete window.requestAnimationFrame;
 jest.useFakeTimers();
 
 import React from 'react';
-import { render, cleanup, fireEvent } from 'react-testing-library';
+import { render, cleanup, fireEvent } from '@testing-library/react';
 import { ViewportProvider, ObserveViewport } from '../index';
 
 const App = ({
