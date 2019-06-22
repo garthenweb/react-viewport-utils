@@ -32,6 +32,9 @@ interface IState extends IRect {
   isInitialized: boolean;
 }
 
+/**
+ * @deprecated Use useRect or useRectEffect instead as it provides better performance.
+ */
 export default class ObserveBoundingClientRect extends React.PureComponent<
   IProps,
   IState

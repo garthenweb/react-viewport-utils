@@ -60,7 +60,7 @@ The project aims to support recent releases of v8 and v10 and higher of NodeJS.
 * [`NEW useScroll`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
 * [`NEW useDimensions`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
 * [`NEW useLayoutSnapshot`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
-* [`ObserveBoundingClientRect`](docs/api/ObserveBoundingClientRect.md)
+* [`ObserveBoundingClientRect (deprecated)`](docs/api/ObserveBoundingClientRect.md)
 * [Types](docs/api/types.md)
 
 ### Concepts

@@ -1,8 +1,8 @@
-# ObserveBoundingClientRect
+# ObserveBoundingClientRect (deprecated)
 
 Observes for changes to the bounding client rect of a given reference.
 
-**!!! Be careful with this component. It can cause really bad performance if overused and needs a refactoring !!!**
+**!!! Be careful with this component, it can cause really bad performance if overused. Therefor it is deprecated and will be removed with the next mayor release, it is recommended to switch to the new useReact or useReactEffect hooks instead !!!**
 
 ``` javascript
 import * as React from 'react';
