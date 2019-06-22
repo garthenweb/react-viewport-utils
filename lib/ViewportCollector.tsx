@@ -149,7 +149,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   private dimensionsState: IDimensions;
   private lastSyncedScrollState: IScroll;
   private lastSyncedDimensionsState: IDimensions;
-  private tickId: NodeJS.Timeout;
+  private tickId?: number;
   private componentMightHaveUpdated: boolean;
   private resizeObserver: ResizeObserver | null;
 
@@ -158,7 +158,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.state = {
       parentProviderExists: false,
     };
-
+    this.componentMightHaveUpdated = false;
     this.scrollState = createEmptyScrollState();
     this.dimensionsState = createEmptyDimensionState();
     this.lastSyncedDimensionsState = { ...this.dimensionsState };
@@ -202,7 +202,9 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
     }
-    cancelAnimationFrame(this.tickId);
+    if (typeof this.tickId === 'number') {
+      cancelAnimationFrame(this.tickId);
+    }
   }
 
   tick = () => {

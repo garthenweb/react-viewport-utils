@@ -83,7 +83,7 @@ export default class ViewportProvider extends React.PureComponent<
     experimentalSchedulerEnabled: false;
   };
   private listeners: IListener[] = [];
-  private updateListenersTick: NodeJS.Timer;
+  private updateListenersTick?: NodeJS.Timer;
 
   constructor(props: IProps) {
     super(props);
@@ -93,7 +93,9 @@ export default class ViewportProvider extends React.PureComponent<
   }
 
   componentWillUnmount() {
-    clearTimeout(this.updateListenersTick);
+    if (typeof this.updateListenersTick === 'number') {
+      clearTimeout(this.updateListenersTick);
+    }
   }
 
   triggerUpdateToListeners = (
@@ -172,7 +174,9 @@ export default class ViewportProvider extends React.PureComponent<
   };
 
   updateHasListenersState() {
-    clearTimeout(this.updateListenersTick);
+    if (typeof this.updateListenersTick === 'number') {
+      clearTimeout(this.updateListenersTick);
+    }
     this.updateListenersTick = setTimeout(() => {
       this.setState({
         hasListeners: this.listeners.length !== 0,

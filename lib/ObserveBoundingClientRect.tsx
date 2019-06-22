@@ -36,7 +36,7 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
   IProps,
   IState
 > {
-  private tickId: number;
+  private tickId?: number;
 
   constructor(props: IProps) {
     super(props);
@@ -76,7 +76,9 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
   }
 
   componentWillUnmount() {
-    cancelAnimationFrame(this.tickId);
+    if (typeof this.tickId === 'number') {
+      cancelAnimationFrame(this.tickId);
+    }
   }
 
   tick(updater: Function) {
