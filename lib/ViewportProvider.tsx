@@ -105,8 +105,14 @@ export default class ViewportProvider extends React.PureComponent<
   ) => {
     const { isIdle } = Object.assign({ isIdle: false }, options);
     let updatableListeners = this.listeners.filter(
-      ({ notifyScroll, notifyDimensions, notifyOnlyWhenIdle }) => {
-        if (notifyOnlyWhenIdle() !== isIdle) {
+      ({
+        notifyScroll,
+        notifyDimensions,
+        notifyOnlyWhenIdle,
+        skippedIterations,
+      }) => {
+        const needsUpdate = skippedIterations > 0;
+        if (notifyOnlyWhenIdle() !== isIdle && !needsUpdate) {
           return false;
         }
         const updateForScroll = notifyScroll() && scrollDidUpdate;
