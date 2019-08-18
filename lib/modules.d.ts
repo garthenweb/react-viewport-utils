@@ -66,4 +66,4 @@ interface DOMRectReadOnly {
   toJSON: () => any;
 }
 
-declare module "@testing-library/react"
+declare module '@testing-library/react';

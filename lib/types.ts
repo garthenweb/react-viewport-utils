@@ -46,7 +46,7 @@ export interface IViewportChangeOptions {
   notifyDimensions: () => boolean;
   notifyOnlyWhenIdle: () => boolean;
   priority: () => PriorityType;
-  recalculateLayoutBeforeUpdate?: (viewport: IViewport) => any;
+  recalculateLayoutBeforeUpdate?: (viewport: IViewport) => unknown;
 }
 
 export interface IViewportCollectorUpdateOptions {

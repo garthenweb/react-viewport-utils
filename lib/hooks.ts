@@ -21,10 +21,8 @@ interface IEffectOptions<T> extends IOptions {
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => T;
 }
 
-type HandleViewportChangeType = (viewport: IViewport, snapshot: any) => void;
-
-export const useViewportEffect = <T = any>(
-  handleViewportChange: HandleViewportChangeType,
+export const useViewportEffect = <T>(
+  handleViewportChange: (viewport: IViewport, snapshot: T) => void,
   options: IViewPortEffectOptions<T> = {},
 ) => {
   const {
@@ -58,7 +56,7 @@ export const useViewport = (options: IFullOptions = {}): IViewport => {
   return state;
 };
 
-export const useScrollEffect = <T = any>(
+export const useScrollEffect = <T = unknown>(
   effect: (scroll: IScroll, snapshot: T) => void,
   options: IEffectOptions<T> = {},
 ) => {
@@ -80,7 +78,7 @@ export const useScroll = (options: IOptions = {}): IScroll => {
   return scroll;
 };
 
-export const useDimensionsEffect = <T = any>(
+export const useDimensionsEffect = <T = unknown>(
   effect: (scroll: IDimensions, snapshot: T) => void,
   options: IEffectOptions<T> = {},
 ) => {
@@ -124,7 +122,7 @@ export const useRect = (
   );
 };
 
-export const useLayoutSnapshot = <T = any>(
+export const useLayoutSnapshot = <T = unknown>(
   recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
   options: IFullOptions = {},
 ): null | T => {

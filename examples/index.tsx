@@ -181,5 +181,5 @@ setInterval(() => {
       </main>
     </ViewportProvider>,
     document.getElementById('root'),
-  )
-}, 1000)
+  );
+}, 1000);

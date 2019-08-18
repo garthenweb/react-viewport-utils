@@ -108,7 +108,7 @@ export const warnNoContextAvailable = (location: string) => {
   if (process.env.NODE_ENV === 'production') {
     return;
   }
-  const fromHook = location.startsWith('use')
+  const fromHook = location.startsWith('use');
   if (fromHook) {
     console.warn(
       `react-viewport-utils: ${location} hook is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the component using the hook, e.g. directly in the ReactDOM.render call:
@@ -130,8 +130,7 @@ ReactDOM.render(
   document.getElementById('root')
 );`,
     );
-    return
-
+    return;
   }
   console.warn(
     `react-viewport-utils: ${location} component is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the <ObserveViewport> component, e.g. directly in the ReactDOM.render call:

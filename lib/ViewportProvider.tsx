@@ -30,18 +30,18 @@ const getCurrentDefaultViewport = (() => {
       defaultValue = {
         scroll: getClientScroll(),
         dimensions: getClientDimensions(),
-      }
+      };
     }
-    return defaultValue
-  }
+    return defaultValue;
+  };
 })();
 
 export const ViewportContext = React.createContext({
-  removeViewportChangeListener: (handler: TViewportChangeHandler) => { },
+  removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
   addViewportChangeListener: (
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
-  ) => { },
+  ) => {},
   getCurrentViewport: getCurrentDefaultViewport,
   hasRootProviderAsParent: false,
   version: '__VERSION__',
@@ -84,7 +84,7 @@ const shouldSkipIteration = (
 export default class ViewportProvider extends React.PureComponent<
   IProps,
   { hasListeners: boolean }
-  > {
+> {
   static defaultProps: {
     experimentalSchedulerEnabled: false;
   };
@@ -145,7 +145,7 @@ export default class ViewportProvider extends React.PureComponent<
         if (recalculateLayoutBeforeUpdate) {
           const getDuration = createPerformanceMarker();
           const layoutState = recalculateLayoutBeforeUpdate(state);
-          return [layoutState, getDuration()];
+          return [layoutState, getDuration()] as const;
         }
         return null;
       },

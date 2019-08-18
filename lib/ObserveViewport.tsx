@@ -28,8 +28,8 @@ interface IState extends IChildProps {}
 
 interface IProps {
   children?: (props: IChildProps) => React.ReactNode;
-  onUpdate?: (props: IChildProps, layoutSnapshot: any) => void;
-  recalculateLayoutBeforeUpdate?: (props: IChildProps) => any;
+  onUpdate?: (props: IChildProps, layoutSnapshot: unknown) => void;
+  recalculateLayoutBeforeUpdate?: (props: IChildProps) => unknown;
   disableScrollUpdates: boolean;
   disableDimensionsUpdates: boolean;
   deferUpdateUntilIdle: boolean;
@@ -98,7 +98,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     cancelAnimationFrame(this.tickId);
   }
 
-  handleViewportUpdate = (viewport: IViewport, layoutSnapshot: any) => {
+  handleViewportUpdate = (viewport: IViewport, layoutSnapshot: unknown) => {
     const scroll = this.props.disableScrollUpdates ? null : viewport.scroll;
     const dimensions = this.props.disableDimensionsUpdates
       ? null
