@@ -23,12 +23,18 @@ interface IListener extends IViewportChangeOptions {
   skippedIterations: number;
 }
 
-const getCurrentDefaultViewport = (): IViewport => {
-  return {
-    scroll: getClientScroll(),
-    dimensions: getClientDimensions(),
-  };
-};
+const getCurrentDefaultViewport = (() => {
+  let defaultValue: IViewport;
+  return (): IViewport => {
+    if (!defaultValue) {
+      defaultValue = {
+        scroll: getClientScroll(),
+        dimensions: getClientDimensions(),
+      }
+    }
+    return defaultValue
+  }
+})();
 
 export const ViewportContext = React.createContext({
   removeViewportChangeListener: (handler: TViewportChangeHandler) => { },
