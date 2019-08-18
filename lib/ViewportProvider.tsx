@@ -31,11 +31,11 @@ const getCurrentDefaultViewport = (): IViewport => {
 };
 
 export const ViewportContext = React.createContext({
-  removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
+  removeViewportChangeListener: (handler: TViewportChangeHandler) => { },
   addViewportChangeListener: (
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
-  ) => {},
+  ) => { },
   getCurrentViewport: getCurrentDefaultViewport,
   hasRootProviderAsParent: false,
   version: '__VERSION__',
@@ -78,7 +78,7 @@ const shouldSkipIteration = (
 export default class ViewportProvider extends React.PureComponent<
   IProps,
   { hasListeners: boolean }
-> {
+  > {
   static defaultProps: {
     experimentalSchedulerEnabled: false;
   };
@@ -190,35 +190,36 @@ export default class ViewportProvider extends React.PureComponent<
     }, 0);
   }
 
+  private collector = React.createRef<ViewportCollector>();
+  private contextValue = {
+    addViewportChangeListener: this.addViewportChangeListener,
+    removeViewportChangeListener: this.removeViewportChangeListener,
+    getCurrentViewport: () => {
+      if (!this.collector.current) {
+        return getCurrentDefaultViewport();
+      }
+      return this.collector.current.getPropsFromState();
+    },
+    hasRootProviderAsParent: true,
+    version: '__VERSION__',
+  };
+
   renderChildren = (props: { hasRootProviderAsParent: boolean }) => {
     if (props.hasRootProviderAsParent) {
       return this.props.children;
     }
-    const collector = React.createRef<ViewportCollector>();
-    const value = {
-      addViewportChangeListener: this.addViewportChangeListener,
-      removeViewportChangeListener: this.removeViewportChangeListener,
-      getCurrentViewport: () => {
-        if (!collector.current) {
-          return getCurrentDefaultViewport();
-        }
-        return collector.current.getPropsFromState();
-      },
-      hasRootProviderAsParent: true,
-      version: '__VERSION__',
-    };
     return (
       <React.Fragment>
         {this.state.hasListeners && (
           <ViewportCollector
-            ref={collector}
+            ref={this.collector}
             onUpdate={this.triggerUpdateToListeners}
             onIdledUpdate={(state, updates) =>
               this.triggerUpdateToListeners(state, updates, { isIdle: true })
             }
           />
         )}
-        <ViewportContext.Provider value={value}>
+        <ViewportContext.Provider value={this.contextValue}>
           {this.props.children}
         </ViewportContext.Provider>
       </React.Fragment>

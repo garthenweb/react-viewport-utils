@@ -168,3 +168,18 @@ render(
   </ViewportProvider>,
   document.getElementById('root'),
 );
+
+setInterval(() => {
+  render(
+    <ViewportProvider experimentalSchedulerEnabled>
+      <main role="main">
+        <Example />
+        <HooksExample />
+        <Placeholder />
+        <Placeholder />
+        <Placeholder />
+      </main>
+    </ViewportProvider>,
+    document.getElementById('root'),
+  )
+}, 1000)
