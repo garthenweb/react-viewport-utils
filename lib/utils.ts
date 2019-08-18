@@ -108,21 +108,45 @@ export const warnNoContextAvailable = (location: string) => {
   if (process.env.NODE_ENV === 'production') {
     return;
   }
-  const type = location.startsWith('use') ? 'hook' : 'component';
+  const fromHook = location.startsWith('use')
+  if (fromHook) {
+    console.warn(
+      `react-viewport-utils: ${location} hook is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the component using the hook, e.g. directly in the ReactDOM.render call:
+
+import * as ReactDOM from 'react-dom';
+import { ViewportProvider, ${location} } from 'react-viewport-utils';
+
+const MyComponent = () => {
+  ${location}()
+  ...
+}
+
+ReactDOM.render(
+  <ViewportProvider>
+    <main role="main">
+      <MyComponent />
+    </main>
+  </ViewportProvider>,
+  document.getElementById('root')
+);`,
+    );
+    return
+
+  }
   console.warn(
-    `react-viewport-utils: ${location} ${type} is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the <ObserveViewport> component, e.g. directly in the ReactDOM.render call:
+    `react-viewport-utils: ${location} component is not able to connect to a <ViewportProvider>. Therefore it cannot detect updates from the viewport and will not work as expected. To resolve this issue please add a <ViewportProvider> as a parent of the <ObserveViewport> component, e.g. directly in the ReactDOM.render call:
 
 import * as ReactDOM from 'react-dom';
 import { ViewportProvider, ObserveViewport } from 'react-viewport-utils';
 ReactDOM.render(
-<ViewportProvider>
-<main role="main">
-<ObserveViewport>
-  {({ scroll, dimensions }) => ...}
-</ObserveViewport>
-</main>
-</ViewportProvider>,
-document.getElementById('root')
+  <ViewportProvider>
+    <main role="main">
+      <ObserveViewport>
+        {({ scroll, dimensions }) => ...}
+      </ObserveViewport>
+    </main>
+  </ViewportProvider>,
+  document.getElementById('root')
 );`,
   );
 };
