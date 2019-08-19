@@ -34,6 +34,8 @@ interface IProps {
   disableDimensionsUpdates: boolean;
   deferUpdateUntilIdle: boolean;
   priority: PriorityType;
+  displayName?: string;
+  debuggerComponentType?: 'connectViewport';
 }
 
 interface IContext {
@@ -161,12 +163,14 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       notifyDimensions: () => !this.props.disableDimensionsUpdates,
       notifyOnlyWhenIdle: () => this.props.deferUpdateUntilIdle,
       priority: () => this.props.priority,
+      displayName: () => this.props.displayName,
       recalculateLayoutBeforeUpdate: (viewport: IViewport) => {
         if (this.props.recalculateLayoutBeforeUpdate) {
           return this.props.recalculateLayoutBeforeUpdate(viewport);
         }
         return null;
       },
+      type: this.props.debuggerComponentType || 'ObserveViewport',
     });
 
     if (this.props.children) {

@@ -17,8 +17,12 @@ import {
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
 import StickyGroupProvider from './StickyGroup';
+import { DevTools, useWindowListeners, Bridge } from '../dev-tools/lib/index';
 
 import './styles.css';
+
+window.__REACT_VIEWPORT_UTILS_BRIDGE__ =
+  window.__REACT_VIEWPORT_UTILS_BRIDGE__ || new Bridge();
 
 const Placeholder = () => <div className="placeholder" />;
 const ViewportHeader = connectViewport({ omit: ['scroll'] })<{ a: string }>(
@@ -146,7 +150,7 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
 }
 
 const HooksExample = () => {
-  const ref = React.useRef<HTMLDivElement>();
+  const ref = React.useRef<HTMLDivElement>(null);
   useScrollEffect(scroll => console.log('hook:scroll effect', scroll));
   useDimensionsEffect(dimensions =>
     console.log('hook:dimensions effect', dimensions),
@@ -156,30 +160,26 @@ const HooksExample = () => {
   return <div ref={ref} />;
 };
 
-render(
-  <ViewportProvider experimentalSchedulerEnabled>
-    <main role="main">
-      <Example />
-      <HooksExample />
-      <Placeholder />
-      <Placeholder />
-      <Placeholder />
-    </main>
-  </ViewportProvider>,
-  document.getElementById('root'),
-);
+const Container = () => {
+  const listeners = useWindowListeners();
+  return (
+    <React.Fragment>
+      <DevTools listeners={listeners} className="devTools" />
+      <ViewportProvider experimentalSchedulerEnabled>
+        <main role="main">
+          <Example />
+          <HooksExample />
+          <Placeholder />
+          <Placeholder />
+          <Placeholder />
+        </main>
+      </ViewportProvider>
+    </React.Fragment>
+  );
+};
+
+render(<Container />, document.getElementById('root'));
 
 setInterval(() => {
-  render(
-    <ViewportProvider experimentalSchedulerEnabled>
-      <main role="main">
-        <Example />
-        <HooksExample />
-        <Placeholder />
-        <Placeholder />
-        <Placeholder />
-      </main>
-    </ViewportProvider>,
-    document.getElementById('root'),
-  );
+  render(<Container />, document.getElementById('root'));
 }, 1000);

@@ -10,7 +10,7 @@
     "precompile": "rm -rf dist",
     "compile": "rollup -c",
     "test": "jest",
-    "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx}\"",
+    "fmt": "prettier --write \"lib/*.{ts,tsx}\" \"dev-tools/lib/*.{ts,tsx}\" \"examples/*.{ts,tsx}\"",
     "prepublish": "npm run compile",
     "postversion": "git push && git push --tags"
   },

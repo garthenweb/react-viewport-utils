@@ -34,6 +34,8 @@ export default function connect(options: IOptions = {}) {
             disableScrollUpdates={shouldOmitScroll}
             disableDimensionsUpdates={shouldOmitDimensions}
             deferUpdateUntilIdle={deferUpdateUntilIdle}
+            displayName={ConnectViewport.displayName}
+            debuggerComponentType="connectViewport"
           >
             {({ scroll, dimensions }) => (
               <WrappedComponent

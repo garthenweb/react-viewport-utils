@@ -1,6 +1,17 @@
+import { Bridge } from '../dev-tools/lib/index';
+declare module '@testing-library/react';
+
 // @see https://gist.github.com/strothj/708afcf4f01dd04de8f49c92e88093c3
-interface Window {
-  ResizeObserver: ResizeObserver;
+declare global {
+  interface Window {
+    ResizeObserver: ResizeObserver;
+    requestIdleCallback: (
+      callback: (deadline: RequestIdleCallbackDeadline) => void,
+      opts?: RequestIdleCallbackOptions,
+    ) => RequestIdleCallbackHandle;
+    cancelIdleCallback: (handle: RequestIdleCallbackHandle) => void;
+    __REACT_VIEWPORT_UTILS_BRIDGE__?: Bridge;
+  }
 }
 
 /**
@@ -66,4 +77,11 @@ interface DOMRectReadOnly {
   toJSON: () => any;
 }
 
-declare module '@testing-library/react';
+type RequestIdleCallbackHandle = any;
+type RequestIdleCallbackOptions = {
+  timeout: number;
+};
+type RequestIdleCallbackDeadline = {
+  readonly didTimeout: boolean;
+  timeRemaining: () => number;
+};

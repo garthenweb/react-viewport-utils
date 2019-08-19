@@ -1,6 +1,7 @@
 * {
   padding: 0;
   margin: 0;
+  font-family: sans-serif;
 }
 
 .header {
@@ -21,4 +22,12 @@
   height: 500px;
   background: black;
   border-bottom: 5px solid red;
+}
+
+.devTools {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
 }

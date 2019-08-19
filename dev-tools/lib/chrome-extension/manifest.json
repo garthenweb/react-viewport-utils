@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "name": "React Viewport Utils",
+  "description": "Debugger for the react-viewport-utils library",
+  "author": "Jannick Garthen",
+
+  "version": "1.0.0",
+  "minimum_chrome_version": "28",
+
+  "devtools_page": "devtools.html",
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "permissions": [
+    "activeTab",
+    "http://*/",
+    "https://*/"
+  ]
+}

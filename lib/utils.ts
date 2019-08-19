@@ -195,3 +195,8 @@ export const createPerformanceMarker = () => {
   const start = now();
   return () => now() - start;
 };
+
+export const uniqueId = (() => {
+  let i = 0;
+  return () => String(i++);
+})();

@@ -4,8 +4,20 @@ import { ViewportContext } from './ViewportProvider';
 import { IViewport, IScroll, IDimensions, PriorityType, IRect } from './types';
 import { warnNoContextAvailable } from './utils';
 
+export type HookType =
+  | 'useScroll'
+  | 'useScrollEffect'
+  | 'useDimensions'
+  | 'useDimensionsEffect'
+  | 'useViewport'
+  | 'useViewportEffect'
+  | 'useLayoutSnapshot'
+  | 'useRect'
+  | 'useRectEffect';
+
 interface IViewPortEffectOptions<T> extends IFullOptions {
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => T;
+  type: HookType;
 }
 
 interface IFullOptions extends IOptions {
@@ -16,6 +28,7 @@ interface IFullOptions extends IOptions {
 interface IOptions {
   deferUpdateUntilIdle?: boolean;
   priority?: PriorityType;
+  displayName?: string;
 }
 interface IEffectOptions<T> extends IOptions {
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => T;
@@ -23,7 +36,7 @@ interface IEffectOptions<T> extends IOptions {
 
 export const useViewportEffect = <T>(
   handleViewportChange: (viewport: IViewport, snapshot: T) => void,
-  options: IViewPortEffectOptions<T> = {},
+  options?: IViewPortEffectOptions<T>,
 ) => {
   const {
     addViewportChangeListener,
@@ -38,20 +51,45 @@ export const useViewportEffect = <T>(
 
   useEffect(() => {
     addViewportChangeListener(handleViewportChange, {
-      notifyScroll: () => !options.disableScrollUpdates,
-      notifyDimensions: () => !options.disableDimensionsUpdates,
-      notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
-      priority: () => options.priority || 'normal',
-      recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
+      notifyScroll: () => !options || !options.disableScrollUpdates,
+      notifyDimensions: () => !options || !options.disableDimensionsUpdates,
+      notifyOnlyWhenIdle: () =>
+        Boolean(options && options.deferUpdateUntilIdle),
+      priority: () => (options && options.priority) || 'normal',
+      recalculateLayoutBeforeUpdate:
+        options && options.recalculateLayoutBeforeUpdate,
+      displayName: () => options && options.displayName,
+      type: (options && options.type) || 'useViewportEffect',
     });
     return () => removeViewportChangeListener(handleViewportChange);
   }, [addViewportChangeListener, removeViewportChangeListener]);
 };
 
-export const useViewport = (options: IFullOptions = {}): IViewport => {
+const usePrivateViewport = <T = unknown>(
+  options: IViewPortEffectOptions<T>,
+): IViewport => {
   const { getCurrentViewport } = useContext(ViewportContext);
   const [state, setViewport] = useState(getCurrentViewport());
   useViewportEffect(viewport => setViewport(viewport), options);
+
+  return state;
+};
+
+const usePrivateLayoutSnapshot = <T = unknown>(
+  recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
+  options: IViewPortEffectOptions<T>,
+): null | T => {
+  const { getCurrentViewport } = useContext(ViewportContext);
+  const [state, setSnapshot] = useState<null | T>(null);
+  useViewportEffect((_, snapshot: T) => setSnapshot(snapshot), {
+    type: 'useLayoutSnapshot',
+    ...options,
+    recalculateLayoutBeforeUpdate,
+  });
+
+  useEffect(() => {
+    setSnapshot(recalculateLayoutBeforeUpdate(getCurrentViewport()));
+  }, []);
 
   return state;
 };
@@ -64,14 +102,16 @@ export const useScrollEffect = <T = unknown>(
     (viewport, snapshot: T) => effect(viewport.scroll, snapshot),
     {
       disableDimensionsUpdates: true,
+      type: 'useScrollEffect',
       ...options,
     },
   );
 };
 
 export const useScroll = (options: IOptions = {}): IScroll => {
-  const { scroll } = useViewport({
+  const { scroll } = usePrivateViewport({
     disableDimensionsUpdates: true,
+    type: 'useScroll',
     ...options,
   });
 
@@ -86,14 +126,16 @@ export const useDimensionsEffect = <T = unknown>(
     (viewport, snapshot: T) => effect(viewport.dimensions, snapshot),
     {
       disableScrollUpdates: true,
+      type: 'useDimensionsEffect',
       ...options,
     },
   );
 };
 
 export const useDimensions = (options: IOptions = {}): IDimensions => {
-  const { dimensions } = useViewport({
+  const { dimensions } = usePrivateViewport({
     disableScrollUpdates: true,
+    type: 'useDimensions',
     ...options,
   });
 
@@ -107,6 +149,7 @@ export const useRectEffect = (
 ) => {
   useViewportEffect((_, snapshot) => effect(snapshot), {
     ...options,
+    type: 'useRectEffect',
     recalculateLayoutBeforeUpdate: () =>
       ref.current ? ref.current.getBoundingClientRect() : null,
   });
@@ -116,9 +159,12 @@ export const useRect = (
   ref: RefObject<HTMLElement>,
   options?: IFullOptions,
 ): IRect | null => {
-  return useLayoutSnapshot(
+  return usePrivateLayoutSnapshot(
     () => (ref.current ? ref.current.getBoundingClientRect() : null),
-    options,
+    {
+      ...options,
+      type: 'useRect',
+    },
   );
 };
 
@@ -126,16 +172,15 @@ export const useLayoutSnapshot = <T = unknown>(
   recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
   options: IFullOptions = {},
 ): null | T => {
-  const { getCurrentViewport } = useContext(ViewportContext);
-  const [state, setSnapshot] = useState<null | T>(null);
-  useViewportEffect((_, snapshot: T) => setSnapshot(snapshot), {
+  return usePrivateLayoutSnapshot(recalculateLayoutBeforeUpdate, {
     ...options,
-    recalculateLayoutBeforeUpdate,
+    type: 'useLayoutSnapshot',
   });
+};
 
-  useEffect(() => {
-    setSnapshot(recalculateLayoutBeforeUpdate(getCurrentViewport()));
-  }, []);
-
-  return state;
+export const useViewport = (options: IFullOptions = {}): IViewport => {
+  return usePrivateViewport({
+    ...options,
+    type: 'useViewport',
+  });
 };

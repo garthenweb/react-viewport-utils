@@ -6,6 +6,7 @@ import {
   IViewport,
   IViewportCollectorUpdateOptions,
 } from './types';
+import { uniqueId } from './utils';
 import ViewportCollector, {
   getClientDimensions,
   getClientScroll,
@@ -16,11 +17,20 @@ interface IProps {
   experimentalSchedulerEnabled?: boolean;
 }
 
-interface IListener extends IViewportChangeOptions {
+export interface IListener extends IViewportChangeOptions {
+  id: string;
   handler: TViewportChangeHandler;
   iterations: number;
+  averageLayoutCost: number;
   averageExecutionCost: number;
   skippedIterations: number;
+  minLayoutCost: number;
+  maxLayoutCost: number;
+  lastLayoutCost: number;
+  minExecutionCost: number;
+  maxExecutionCost: number;
+  lastExecutionCost: number;
+  totalSkippedIterations: number;
 }
 
 const getCurrentDefaultViewport = (() => {
@@ -133,12 +143,16 @@ export default class ViewportProvider extends React.PureComponent<
           const skip = shouldSkipIteration(listener, budget);
           if (skip) {
             listener.skippedIterations++;
+            listener.totalSkippedIterations++;
             return false;
           }
           listener.skippedIterations = 0;
           return true;
         });
       }
+    }
+    if (updatableListeners.length === 0) {
+      return;
     }
     const layouts = updatableListeners.map(
       ({ recalculateLayoutBeforeUpdate }) => {
@@ -152,18 +166,41 @@ export default class ViewportProvider extends React.PureComponent<
     );
 
     updatableListeners.forEach((listener, index) => {
-      const { handler, averageExecutionCost, iterations } = listener;
+      const {
+        handler,
+        averageLayoutCost,
+        averageExecutionCost,
+        iterations,
+      } = listener;
       const [layout, layoutCost] = layouts[index] || [null, 0];
 
       const getDuration = createPerformanceMarker();
       handler(state, layout);
       const totalCost = layoutCost + getDuration();
-      const diff = totalCost - averageExecutionCost;
+      const layoutDiff = layoutCost - averageLayoutCost;
+      const executionDiff = totalCost - averageExecutionCost;
       const i = iterations + 1;
 
-      listener.averageExecutionCost = averageExecutionCost + diff / i;
+      listener.minLayoutCost = listener.minLayoutCost
+        ? Math.min(listener.minLayoutCost, layoutCost)
+        : layoutCost;
+      listener.maxLayoutCost = Math.max(listener.maxLayoutCost, layoutCost);
+      listener.averageLayoutCost = averageLayoutCost + layoutDiff / i;
+      listener.lastLayoutCost = layoutCost;
+      listener.minExecutionCost = listener.minExecutionCost
+        ? Math.min(listener.minExecutionCost, totalCost)
+        : totalCost;
+      listener.maxExecutionCost = Math.max(
+        listener.maxExecutionCost,
+        totalCost,
+      );
+      listener.averageExecutionCost = averageExecutionCost + executionDiff / i;
+      listener.lastExecutionCost = totalCost;
+
       listener.iterations = i;
     });
+
+    this.updateBridge();
   };
 
   addViewportChangeListener = (
@@ -173,8 +210,17 @@ export default class ViewportProvider extends React.PureComponent<
     this.listeners.push({
       handler,
       iterations: 0,
+      minLayoutCost: 0,
+      maxLayoutCost: 0,
+      lastLayoutCost: 0,
+      averageLayoutCost: 0,
       averageExecutionCost: 0,
+      minExecutionCost: 0,
+      maxExecutionCost: 0,
+      lastExecutionCost: 0,
       skippedIterations: 0,
+      totalSkippedIterations: 0,
+      id: uniqueId(),
       ...options,
     });
     this.updateHasListenersState();
@@ -193,6 +239,8 @@ export default class ViewportProvider extends React.PureComponent<
       this.setState({
         hasListeners: this.listeners.length !== 0,
       });
+
+      this.updateBridge();
     }, 0);
   }
 
@@ -209,6 +257,15 @@ export default class ViewportProvider extends React.PureComponent<
     hasRootProviderAsParent: true,
     version: '__VERSION__',
   };
+
+  updateBridge() {
+    if (
+      typeof window !== 'undefined' &&
+      window.__REACT_VIEWPORT_UTILS_BRIDGE__
+    ) {
+      window.__REACT_VIEWPORT_UTILS_BRIDGE__.update(this.listeners);
+    }
+  }
 
   renderChildren = (props: { hasRootProviderAsParent: boolean }) => {
     if (props.hasRootProviderAsParent) {

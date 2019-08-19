@@ -1,3 +1,5 @@
+import { HookType } from './hooks';
+
 export interface IDimensions {
   width: number;
   height: number;
@@ -47,6 +49,15 @@ export interface IViewportChangeOptions {
   notifyOnlyWhenIdle: () => boolean;
   priority: () => PriorityType;
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => unknown;
+  displayName: () => string | undefined;
+  type:
+    | HookType
+    | 'ObserveViewport'
+    | 'connectViewport'
+    | 'useScroll'
+    | 'useDimensions'
+    | 'useViewport'
+    | 'useLayoutSnapshot';
 }
 
 export interface IViewportCollectorUpdateOptions {

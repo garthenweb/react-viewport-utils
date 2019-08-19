@@ -15,7 +15,7 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "lib/**/*"
+    "lib/**/*", "dev-tools/lib/**/*", "examples/**/*"
   ],
   "exclude": [
     "node_modules",
