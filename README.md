@@ -70,7 +70,7 @@ The project aims to support recent releases of v8 and v10 and higher of NodeJS.
 
 ### Concepts
 
-* [`NEW` Experimental Scheduler](docs/concepts/scheduler.md)
+* [Experimental Scheduler](docs/concepts/scheduler.md)
 * [recalculateLayoutBeforeUpdate](docs/concepts/recalculateLayoutBeforeUpdate.md)
 * [Defer Events](docs/concepts/defer_events.md)
 
