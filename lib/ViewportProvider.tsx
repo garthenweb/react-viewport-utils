@@ -10,7 +10,7 @@ import ViewportCollector, {
   getClientDimensions,
   getClientScroll,
 } from './ViewportCollector';
-import { createPerformanceMarker } from './utils';
+import { createPerformanceMarker, now } from './utils';
 
 interface IProps {
   experimentalSchedulerEnabled?: boolean;
@@ -23,18 +23,20 @@ interface IListener extends IViewportChangeOptions {
   skippedIterations: number;
 }
 
-const getCurrentDefaultViewport = (() => {
+const createFallbackViewportRequester = () => {
   let defaultValue: IViewport;
+  let lastAccess = 0;
   return (): IViewport => {
-    if (!defaultValue) {
+    if (!defaultValue || now() - lastAccess > 1000) {
       defaultValue = {
         scroll: getClientScroll(),
         dimensions: getClientDimensions(),
       };
+      lastAccess = now();
     }
     return defaultValue;
   };
-})();
+};
 
 export const ViewportContext = React.createContext({
   removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
@@ -42,7 +44,7 @@ export const ViewportContext = React.createContext({
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
   ) => {},
-  getCurrentViewport: getCurrentDefaultViewport,
+  getCurrentViewport: createFallbackViewportRequester(),
   hasRootProviderAsParent: false,
   version: '__VERSION__',
 });
@@ -197,12 +199,13 @@ export default class ViewportProvider extends React.PureComponent<
   }
 
   private collector = React.createRef<ViewportCollector>();
+  private getCurrentDefaultViewport = createFallbackViewportRequester();
   private contextValue = {
     addViewportChangeListener: this.addViewportChangeListener,
     removeViewportChangeListener: this.removeViewportChangeListener,
     getCurrentViewport: () => {
       if (!this.collector.current) {
-        return getCurrentDefaultViewport();
+        return this.getCurrentDefaultViewport();
       }
       return this.collector.current.getPropsFromState();
     },

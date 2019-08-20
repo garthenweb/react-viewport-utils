@@ -187,7 +187,7 @@ export const cancelAnimationFrame = ((): ((handle: number) => void) => {
   return clearTimeout;
 })();
 
-const now =
+export const now =
   typeof performance !== 'undefined' && performance.now
     ? performance.now.bind(performance)
     : Date.now;
