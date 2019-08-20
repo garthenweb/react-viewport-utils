@@ -31,12 +31,11 @@ export const useViewportEffect = <T>(
     hasRootProviderAsParent,
   } = useContext(ViewportContext);
 
-  if (!hasRootProviderAsParent) {
-    warnNoContextAvailable('useViewport');
-    return;
-  }
-
   useEffect(() => {
+    if (!hasRootProviderAsParent) {
+      warnNoContextAvailable('useViewport');
+      return;
+    }
     addViewportChangeListener(handleViewportChange, {
       notifyScroll: () => !options.disableScrollUpdates,
       notifyDimensions: () => !options.disableDimensionsUpdates,
@@ -45,7 +44,7 @@ export const useViewportEffect = <T>(
       recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
     });
     return () => removeViewportChangeListener(handleViewportChange);
-  }, [addViewportChangeListener, removeViewportChangeListener]);
+  }, [addViewportChangeListener || null, removeViewportChangeListener || null]);
 };
 
 export const useViewport = (options: IFullOptions = {}): IViewport => {
