@@ -10,7 +10,12 @@ import ViewportCollector, {
   getClientDimensions,
   getClientScroll,
 } from './ViewportCollector';
-import { createPerformanceMarker, now } from './utils';
+import {
+  createPerformanceMarker,
+  now,
+  requestAnimationFrame,
+  cancelAnimationFrame,
+} from './utils';
 
 interface IProps {
   experimentalSchedulerEnabled?: boolean;
@@ -19,6 +24,7 @@ interface IProps {
 interface IListener extends IViewportChangeOptions {
   handler: TViewportChangeHandler;
   iterations: number;
+  initialized: boolean;
   averageExecutionCost: number;
   skippedIterations: number;
 }
@@ -92,6 +98,7 @@ export default class ViewportProvider extends React.PureComponent<
   };
   private listeners: IListener[] = [];
   private updateListenersTick?: NodeJS.Timer;
+  private initializeListenersTick?: number;
 
   constructor(props: IProps) {
     super(props);
@@ -109,19 +116,26 @@ export default class ViewportProvider extends React.PureComponent<
   triggerUpdateToListeners = (
     state: IViewport,
     { scrollDidUpdate, dimensionsDidUpdate }: IViewportCollectorUpdateOptions,
-    options?: { isIdle: boolean },
+    options?: { isIdle?: boolean; shouldInitialize?: boolean },
   ) => {
-    const { isIdle } = Object.assign({ isIdle: false }, options);
+    const { isIdle, shouldInitialize } = Object.assign(
+      { isIdle: false, shouldInitialize: false },
+      options,
+    );
     let updatableListeners = this.listeners.filter(
       ({
         notifyScroll,
         notifyDimensions,
         notifyOnlyWhenIdle,
         skippedIterations,
+        initialized,
       }) => {
         const needsUpdate = skippedIterations > 0;
         if (notifyOnlyWhenIdle() !== isIdle && !needsUpdate) {
           return false;
+        }
+        if (shouldInitialize && !initialized) {
+          return true;
         }
         const updateForScroll = notifyScroll() && scrollDidUpdate;
         const updateForDimensions = notifyDimensions() && dimensionsDidUpdate;
@@ -132,7 +146,9 @@ export default class ViewportProvider extends React.PureComponent<
       if (!isIdle) {
         const budget = 16 / updatableListeners.length;
         updatableListeners = updatableListeners.filter(listener => {
-          const skip = shouldSkipIteration(listener, budget);
+          const skip = listener.initialized
+            ? shouldSkipIteration(listener, budget)
+            : false;
           if (skip) {
             listener.skippedIterations++;
             return false;
@@ -165,6 +181,7 @@ export default class ViewportProvider extends React.PureComponent<
 
       listener.averageExecutionCost = averageExecutionCost + diff / i;
       listener.iterations = i;
+      listener.initialized = true;
     });
   };
 
@@ -177,25 +194,47 @@ export default class ViewportProvider extends React.PureComponent<
       iterations: 0,
       averageExecutionCost: 0,
       skippedIterations: 0,
+      initialized: false,
       ...options,
     });
-    this.updateHasListenersState();
+    this.handleListenerUpdate();
   };
 
   removeViewportChangeListener = (h: TViewportChangeHandler) => {
     this.listeners = this.listeners.filter(({ handler }) => handler !== h);
-    this.updateHasListenersState();
+    this.handleListenerUpdate();
   };
 
-  updateHasListenersState() {
+  handleListenerUpdate() {
     if (typeof this.updateListenersTick === 'number') {
       clearTimeout(this.updateListenersTick);
     }
+    if (typeof this.initializeListenersTick === 'number') {
+      cancelAnimationFrame(this.initializeListenersTick);
+    }
     this.updateListenersTick = setTimeout(() => {
-      this.setState({
-        hasListeners: this.listeners.length !== 0,
-      });
-    }, 0);
+      const nextState = this.listeners.length !== 0;
+      if (this.state.hasListeners !== nextState) {
+        this.setState({
+          hasListeners: this.listeners.length !== 0,
+        });
+      }
+    }, 1);
+    this.initializeListenersTick = requestAnimationFrame(() => {
+      if (this.collector.current && this.listeners.some(l => !l.initialized)) {
+        this.triggerUpdateToListeners(
+          this.collector.current.getPropsFromState(),
+          {
+            dimensionsDidUpdate: false,
+            scrollDidUpdate: false,
+          },
+          {
+            isIdle: false,
+            shouldInitialize: true,
+          },
+        );
+      }
+    });
   }
 
   private collector = React.createRef<ViewportCollector>();

@@ -39,12 +39,6 @@ const DisplayViewport = React.memo(() => {
   const { documentHeight, clientWidth } = useDimensions({
     priority: 'low',
   });
-  const offsetTop = useLayoutSnapshot<number>(({ scroll }) => {
-    if (!div.current) {
-      return 0;
-    }
-    return div.current.getBoundingClientRect().top + scroll.y;
-  });
   const rect = useRect(div);
   return (
     <div ref={div}>
@@ -52,11 +46,33 @@ const DisplayViewport = React.memo(() => {
       <br />
       documentHeight: {documentHeight}
       <br />
-      clientWidth: {clientWidth}, element offsetTop: {offsetTop}
+      clientWidth: {clientWidth}
       <br />
       rect.top: {rect ? rect.top : 'null'}, rect.bottom:{' '}
       {rect ? rect.bottom : 'null'}
     </div>
+  );
+});
+
+const LayoutSnapshot = () => {
+  const div = React.useRef(null);
+  const offsetTop = useLayoutSnapshot<number>(({ scroll }) => {
+    if (!div.current) {
+      return 0;
+    }
+    return div.current.getBoundingClientRect().top + scroll.y;
+  });
+  console.log('hook:layout snapshot', offsetTop);
+  return <div ref={div} />;
+};
+
+const LayoutOutside = React.memo(() => {
+  const [active, setActive] = React.useState(true);
+  return (
+    <>
+      <button onClick={() => setActive(!active)}>change active</button>
+      {active && <LayoutSnapshot />}
+    </>
   );
 });
 
@@ -164,6 +180,7 @@ render(
       <Placeholder />
       <Placeholder />
       <Placeholder />
+      <LayoutOutside />
     </main>
   </ViewportProvider>,
   document.getElementById('root'),
@@ -178,6 +195,7 @@ setInterval(() => {
         <Placeholder />
         <Placeholder />
         <Placeholder />
+        <LayoutOutside />
       </main>
     </ViewportProvider>,
     document.getElementById('root'),
