@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, RefObject } from 'react';
+import { useContext, useEffect, useState, RefObject, useRef } from 'react';
 
 import { ViewportContext } from './ViewportProvider';
 import { IViewport, IScroll, IDimensions, PriorityType, IRect } from './types';
@@ -14,12 +14,23 @@ interface IFullOptions extends IOptions {
 }
 
 interface IOptions {
+  [key: string]: unknown;
   deferUpdateUntilIdle?: boolean;
   priority?: PriorityType;
 }
 interface IEffectOptions<T> extends IOptions {
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => T;
 }
+
+const useOptions = <T>(o: IViewPortEffectOptions<T>) => {
+  const optionsRef = useRef<IViewPortEffectOptions<T>>(Object.create(null));
+  for (const key of Object.keys(optionsRef.current)) {
+    delete optionsRef.current[key];
+  }
+  Object.assign(optionsRef.current, o);
+
+  return optionsRef.current;
+};
 
 export const useViewportEffect = <T>(
   handleViewportChange: (viewport: IViewport, snapshot: T) => void,
@@ -30,6 +41,7 @@ export const useViewportEffect = <T>(
     removeViewportChangeListener,
     hasRootProviderAsParent,
   } = useContext(ViewportContext);
+  const memoOptions = useOptions(options);
 
   useEffect(() => {
     if (!hasRootProviderAsParent) {
@@ -37,11 +49,11 @@ export const useViewportEffect = <T>(
       return;
     }
     addViewportChangeListener(handleViewportChange, {
-      notifyScroll: () => !options.disableScrollUpdates,
-      notifyDimensions: () => !options.disableDimensionsUpdates,
-      notifyOnlyWhenIdle: () => Boolean(options.deferUpdateUntilIdle),
-      priority: () => options.priority || 'normal',
-      recalculateLayoutBeforeUpdate: options.recalculateLayoutBeforeUpdate,
+      notifyScroll: () => !memoOptions.disableScrollUpdates,
+      notifyDimensions: () => !memoOptions.disableDimensionsUpdates,
+      notifyOnlyWhenIdle: () => Boolean(memoOptions.deferUpdateUntilIdle),
+      priority: () => memoOptions.priority || 'normal',
+      recalculateLayoutBeforeUpdate: memoOptions.recalculateLayoutBeforeUpdate,
     });
     return () => removeViewportChangeListener(handleViewportChange);
   }, [addViewportChangeListener || null, removeViewportChangeListener || null]);
