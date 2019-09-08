@@ -70,10 +70,10 @@ export const getClientScroll = (
   } = prevScrollState;
 
   nextScrollState.isScrollingLeft = isScrollingLeft(x, nextScrollState);
-  nextScrollState.isScrollingRight = !nextScrollState.isScrollingLeft;
+  nextScrollState.isScrollingRight = isScrollingRight(x, nextScrollState);
 
   nextScrollState.isScrollingUp = isScrollingUp(y, nextScrollState);
-  nextScrollState.isScrollingDown = !nextScrollState.isScrollingUp;
+  nextScrollState.isScrollingDown = isScrollingDown(y, nextScrollState);
 
   nextScrollState.xTurn =
     nextScrollState.isScrollingLeft === prevIsScrollingLeft ? prevXTurn : x;
@@ -102,6 +102,19 @@ const isScrollingLeft = (x: number, prev: IScroll) => {
   }
 };
 
+const isScrollingRight = (x: number, prev: IScroll) => {
+  switch (true) {
+    case x > prev.x:
+      return true;
+    case x < prev.x:
+      return false;
+    case x === prev.x:
+      return prev.isScrollingRight;
+    default:
+      throw new Error('Could not calculate isScrollingRight');
+  }
+};
+
 const isScrollingUp = (y: number, prev: IScroll) => {
   switch (true) {
     case y < prev.y:
@@ -111,7 +124,20 @@ const isScrollingUp = (y: number, prev: IScroll) => {
     case y === prev.y:
       return prev.isScrollingUp;
     default:
-      throw new Error('Could not calculate yDir');
+      throw new Error('Could not calculate isScrollingUp');
+  }
+};
+
+const isScrollingDown = (y: number, prev: IScroll) => {
+  switch (true) {
+    case y > prev.y:
+      return true;
+    case y < prev.y:
+      return false;
+    case y === prev.y:
+      return prev.isScrollingDown;
+    default:
+      throw new Error('Could not calculate isScrollingDown');
   }
 };
 
