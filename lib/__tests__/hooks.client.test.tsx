@@ -2,10 +2,10 @@
 delete window.requestAnimationFrame;
 jest.useFakeTimers();
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { act } from 'react-dom/test-utils';
 import { render, cleanup, fireEvent } from '@testing-library/react';
-import { ViewportProvider, useViewport } from '../index';
+import { ViewportProvider, useViewport, useLayoutSnapshot } from '../index';
 
 const scrollTo = (x: number, y: number) => {
   window.scrollTo(x, y);
@@ -35,6 +35,8 @@ describe('hooks', () => {
   afterEach(() => {
     cleanup();
     jest.clearAllTimers();
+    (window as any).scrollX = 0;
+    (window as any).scrollY = 0;
   });
 
   describe('useViewport', () => {
@@ -122,6 +124,73 @@ describe('hooks', () => {
 
       scrollTo(0, 3000);
       expect(getByText('scroll: 0,3000')).toBeDefined();
+    });
+  });
+
+  describe('useLayoutSnapshot', () => {
+    it('should update snapshot on scroll', () => {
+      const App = () => {
+        const ref = useRef<HTMLDivElement>(null);
+        const snapshot = useLayoutSnapshot(({ scroll }) => {
+          if (ref.current) {
+            return `${ref.current.dataset.info},${scroll.y}`;
+          }
+          return null;
+        });
+        return (
+          <div ref={ref} data-info="pony">
+            {snapshot}
+          </div>
+        );
+      };
+      const { getByText } = render(
+        <ViewportProvider>
+          <App />
+        </ViewportProvider>,
+      );
+      scrollTo(0, 1000);
+      act(() => {
+        jest.advanceTimersByTime(20);
+      });
+      expect(getByText('pony,1000')).toBeDefined();
+    });
+
+    it('should update snapshot on dependency change', () => {
+      const App = ({ info }: { info: string }) => {
+        const ref = useRef<HTMLDivElement>(null);
+        const snapshot = useLayoutSnapshot(
+          ({ scroll }) => {
+            if (ref.current) {
+              return `${ref.current.dataset.info},${scroll.y}`;
+            }
+            return null;
+          },
+          [info],
+        );
+        return (
+          <div ref={ref} data-info={info}>
+            {snapshot}
+          </div>
+        );
+      };
+      const { getByText, rerender } = render(
+        <ViewportProvider>
+          <App info="pony" />
+        </ViewportProvider>,
+      );
+      act(() => {
+        jest.advanceTimersByTime(20);
+      });
+      expect(getByText('pony,0')).toBeDefined();
+      rerender(
+        <ViewportProvider>
+          <App info="foo" />
+        </ViewportProvider>,
+      );
+      act(() => {
+        jest.advanceTimersByTime(20);
+      });
+      expect(getByText('foo,0')).toBeDefined();
     });
   });
 });

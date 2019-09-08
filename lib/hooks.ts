@@ -1,4 +1,11 @@
-import { useContext, useEffect, useState, RefObject, useRef } from 'react';
+import {
+  useContext,
+  useEffect,
+  useState,
+  RefObject,
+  useRef,
+  DependencyList,
+} from 'react';
 
 import { ViewportContext } from './ViewportProvider';
 import { IViewport, IScroll, IDimensions, PriorityType, IRect } from './types';
@@ -22,25 +29,28 @@ interface IEffectOptions<T> extends IOptions {
   recalculateLayoutBeforeUpdate?: (viewport: IViewport) => T;
 }
 
-const useOptions = <T>(o: IViewPortEffectOptions<T>) => {
-  const optionsRef = useRef<IViewPortEffectOptions<T>>(Object.create(null));
-  for (const key of Object.keys(optionsRef.current)) {
-    delete optionsRef.current[key];
-  }
-  Object.assign(optionsRef.current, o);
-
-  return optionsRef.current;
-};
-
-export const useViewportEffect = <T>(
+export function useViewportEffect<T = unknown>(
   handleViewportChange: (viewport: IViewport, snapshot: T) => void,
-  options: IViewPortEffectOptions<T> = {},
-) => {
+  deps?: DependencyList,
+): void;
+
+export function useViewportEffect<T = unknown>(
+  handleViewportChange: (viewport: IViewport, snapshot: T) => void,
+  options?: IViewPortEffectOptions<T>,
+  deps?: DependencyList,
+): void;
+
+export function useViewportEffect<T>(
+  handleViewportChange: (viewport: IViewport, snapshot: T) => void,
+  second?: any,
+  third?: any,
+) {
   const {
     addViewportChangeListener,
     removeViewportChangeListener,
     hasRootProviderAsParent,
   } = useContext(ViewportContext);
+  const { options, deps } = sortArgs(second, third);
   const memoOptions = useOptions(options);
 
   useEffect(() => {
@@ -56,8 +66,12 @@ export const useViewportEffect = <T>(
       recalculateLayoutBeforeUpdate: memoOptions.recalculateLayoutBeforeUpdate,
     });
     return () => removeViewportChangeListener(handleViewportChange);
-  }, [addViewportChangeListener || null, removeViewportChangeListener || null]);
-};
+  }, [
+    addViewportChangeListener || null,
+    removeViewportChangeListener || null,
+    ...deps,
+  ]);
+}
 
 export const useViewport = (options: IFullOptions = {}): IViewport => {
   const { getCurrentViewport } = useContext(ViewportContext);
@@ -67,18 +81,32 @@ export const useViewport = (options: IFullOptions = {}): IViewport => {
   return state;
 };
 
-export const useScrollEffect = <T = unknown>(
+export function useScrollEffect<T = unknown>(
   effect: (scroll: IScroll, snapshot: T) => void,
-  options: IEffectOptions<T> = {},
-) => {
+  deps?: DependencyList,
+): void;
+
+export function useScrollEffect<T = unknown>(
+  effect: (scroll: IScroll, snapshot: T) => void,
+  options: IEffectOptions<T>,
+  deps?: DependencyList,
+): void;
+
+export function useScrollEffect<T = unknown>(
+  effect: (scroll: IScroll, snapshot: T) => void,
+  second?: any,
+  third?: any,
+) {
+  const { options, deps } = sortArgs(second, third);
   useViewportEffect(
     (viewport, snapshot: T) => effect(viewport.scroll, snapshot),
     {
       disableDimensionsUpdates: true,
       ...options,
     },
+    deps,
   );
-};
+}
 
 export const useScroll = (options: IOptions = {}): IScroll => {
   const { scroll } = useViewport({
@@ -89,18 +117,32 @@ export const useScroll = (options: IOptions = {}): IScroll => {
   return scroll;
 };
 
-export const useDimensionsEffect = <T = unknown>(
-  effect: (scroll: IDimensions, snapshot: T) => void,
-  options: IEffectOptions<T> = {},
-) => {
+export function useDimensionsEffect<T = unknown>(
+  effect: (dimensions: IDimensions, snapshot: T) => void,
+  deps?: DependencyList,
+): void;
+
+export function useDimensionsEffect<T = unknown>(
+  effect: (dimensions: IDimensions, snapshot: T) => void,
+  options: IEffectOptions<T>,
+  deps?: DependencyList,
+): void;
+
+export function useDimensionsEffect<T = unknown>(
+  effect: (dimensions: IDimensions, snapshot: T) => void,
+  second: any,
+  third?: any,
+) {
+  const { options, deps } = sortArgs(second, third);
   useViewportEffect(
     (viewport, snapshot: T) => effect(viewport.dimensions, snapshot),
     {
       disableScrollUpdates: true,
       ...options,
     },
+    deps,
   );
-};
+}
 
 export const useDimensions = (options: IOptions = {}): IDimensions => {
   const { dimensions } = useViewport({
@@ -116,11 +158,15 @@ export const useRectEffect = (
   ref: RefObject<HTMLElement>,
   options?: IFullOptions,
 ) => {
-  useViewportEffect((_, snapshot) => effect(snapshot), {
-    ...options,
-    recalculateLayoutBeforeUpdate: () =>
-      ref.current ? ref.current.getBoundingClientRect() : null,
-  });
+  useViewportEffect(
+    (_, snapshot) => effect(snapshot),
+    {
+      ...options,
+      recalculateLayoutBeforeUpdate: () =>
+        ref.current ? ref.current.getBoundingClientRect() : null,
+    },
+    [ref.current],
+  );
 };
 
 export const useRect = (
@@ -130,18 +176,61 @@ export const useRect = (
   return useLayoutSnapshot(
     () => (ref.current ? ref.current.getBoundingClientRect() : null),
     options,
+    [ref.current],
   );
 };
 
-export const useLayoutSnapshot = <T = unknown>(
+export function useLayoutSnapshot<T = unknown>(
   recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
-  options: IFullOptions = {},
-): null | T => {
+  deps?: DependencyList,
+): null | T;
+
+export function useLayoutSnapshot<T = unknown>(
+  recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
+  options?: IFullOptions,
+  deps?: DependencyList,
+): null | T;
+
+export function useLayoutSnapshot<T = unknown>(
+  recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
+  second?: any,
+  third?: any,
+): null | T {
+  const { options, deps } = sortArgs(second, third);
   const [state, setSnapshot] = useState<null | T>(null);
-  useViewportEffect((_, snapshot: T) => setSnapshot(snapshot), {
-    ...options,
-    recalculateLayoutBeforeUpdate,
-  });
+  useViewportEffect(
+    (_, snapshot: T) => setSnapshot(snapshot),
+    {
+      ...options,
+      recalculateLayoutBeforeUpdate,
+    },
+    deps,
+  );
 
   return state;
+}
+
+const useOptions = <T>(o: IViewPortEffectOptions<T>) => {
+  const optionsRef = useRef<IViewPortEffectOptions<T>>(Object.create(null));
+  for (const key of Object.keys(optionsRef.current)) {
+    delete optionsRef.current[key];
+  }
+  Object.assign(optionsRef.current, o);
+
+  return optionsRef.current;
+};
+
+const sortArgs = (
+  first: DependencyList | IOptions,
+  second?: DependencyList,
+) => {
+  let options = {};
+  if (first && !Array.isArray(first)) {
+    options = first;
+  }
+  let deps = second || [];
+  if (first && Array.isArray(first)) {
+    deps = first;
+  }
+  return { deps, options };
 };

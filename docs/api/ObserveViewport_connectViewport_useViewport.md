@@ -134,6 +134,7 @@ Hook effects allow to trigger side effects on change without updating the compon
 | options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
 | options.recalculateLayoutBeforeUpdate | function |  | Enables a way to calculate layout information for all components as a badge before the effect call. Contains `IViewport`, `IScroll` or `IDimensions` as the first argument, dependent of the used hook. See [recalculateLayoutBeforeUpdate](../concepts/recalculateLayoutBeforeUpdate.md) |
+| deps | array |  | Array with dependencies. In case a value inside the array changes, this will force an update to the effect function |
 
 ### Example
 

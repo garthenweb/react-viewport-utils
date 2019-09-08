@@ -56,6 +56,8 @@ describe('ObserveViewport', () => {
     cleanup();
     (window.addEventListener as jest.Mock).mockRestore();
     jest.clearAllTimers();
+    (window as any).scrollX = 0;
+    (window as any).scrollY = 0;
   });
 
   it('should trigger initial scroll value', () => {
