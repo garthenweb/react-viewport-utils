@@ -99,21 +99,12 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   }
 
   handleViewportUpdate = (viewport: IViewport, layoutSnapshot: unknown) => {
-    const scroll = this.props.disableScrollUpdates ? null : viewport.scroll;
-    const dimensions = this.props.disableDimensionsUpdates
-      ? null
-      : viewport.dimensions;
-    const nextViewport = {
-      scroll: scroll,
-      dimensions: dimensions,
-    };
-
     if (this.props.onUpdate) {
-      this.props.onUpdate(nextViewport, layoutSnapshot);
+      this.props.onUpdate(viewport, layoutSnapshot);
     }
 
     if (this.props.children) {
-      this.syncState(nextViewport);
+      this.syncState(viewport);
     }
   };
 
