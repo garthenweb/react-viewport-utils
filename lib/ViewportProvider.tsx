@@ -252,8 +252,21 @@ export default class ViewportProvider extends React.PureComponent<
     version: '__VERSION__',
   };
 
-  renderChildren = (props: { hasRootProviderAsParent: boolean }) => {
+  renderChildren = (props: {
+    hasRootProviderAsParent: boolean;
+    version: string;
+  }) => {
     if (props.hasRootProviderAsParent) {
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        props.version !== '__VERSION__'
+      ) {
+        console.warn(
+          `react-viewport-utils: Two different versions of the react-viewport-utils library are used in the same react tree. This can lead to unexpected results as the versions might not be compatible.
+The <ViewportProvider> of version ${props.version} is currently used, another <ViewportProvider> of version __VERSION__ was detected but is ignored.
+This is most probably due to some dependencies that use different versions of the react-viewport-utils library. You can check if an update is possible.`,
+        );
+      }
       return this.props.children;
     }
     return (
