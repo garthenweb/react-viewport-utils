@@ -4,6 +4,7 @@ node_modules/
 examples-dist/
 .vscode/
 .cache/
+coverage/
 .rpt2_cache/
 .editorconfig
 .prettierrc

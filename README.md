@@ -7,6 +7,7 @@ A set of low level utility components for react to make working with the viewpor
 ![](https://img.shields.io/david/garthenweb/react-viewport-utils.svg)
 [![](https://img.shields.io/bundlephobia/minzip/react-viewport-utils.svg)](https://bundlephobia.com/result?p=react-viewport-utils)
 [![Build Status](https://travis-ci.org/garthenweb/react-viewport-utils.svg?branch=master)](https://travis-ci.org/garthenweb/react-viewport-utils)
+[![Coverage Status](https://coveralls.io/repos/github/garthenweb/react-viewport-utils/badge.svg?branch=master)](https://coveralls.io/github/garthenweb/react-viewport-utils?branch=master)
 
 See the example folder for more information about what you can build with it.
 
