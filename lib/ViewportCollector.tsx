@@ -176,7 +176,8 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   private lastSyncedScrollState: IScroll;
   private lastSyncedDimensionsState: IDimensions;
   private tickId?: number;
-  private componentMightHaveUpdated: boolean;
+  private scrollMightHaveUpdated: boolean;
+  private resizeMightHaveUpdated: boolean;
   private resizeObserver: ResizeObserver | null;
 
   constructor(props: IProps) {
@@ -184,7 +185,8 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.state = {
       parentProviderExists: false,
     };
-    this.componentMightHaveUpdated = false;
+    this.scrollMightHaveUpdated = false;
+    this.resizeMightHaveUpdated = false;
     this.scrollState = createEmptyScrollState();
     this.dimensionsState = createEmptyDimensionState();
     this.lastSyncedDimensionsState = { ...this.dimensionsState };
@@ -213,7 +215,6 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
 
     this.handleScroll();
     this.handleResize();
-    this.tickId = requestAnimationFrame(this.tick);
   }
 
   componentWillUnmount() {
@@ -235,22 +236,27 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
 
   tick = () => {
     if (this) {
-      if (this.componentMightHaveUpdated) {
+      if (this.scrollMightHaveUpdated || this.resizeMightHaveUpdated) {
         this.syncState();
+        this.scrollMightHaveUpdated = false;
+        this.resizeMightHaveUpdated = false;
       }
-      this.componentMightHaveUpdated = false;
-      this.tickId = requestAnimationFrame(this.tick);
+      this.tickId = undefined;
     }
   };
 
   handleScroll = () => {
-    Object.assign(this.scrollState, getClientScroll(this.scrollState));
-    this.componentMightHaveUpdated = true;
+    this.scrollMightHaveUpdated = true;
+    if (!this.tickId) {
+      this.tickId = requestAnimationFrame(this.tick);
+    }
   };
 
   handleResize = () => {
-    Object.assign(this.dimensionsState, getClientDimensions());
-    this.componentMightHaveUpdated = true;
+    this.resizeMightHaveUpdated = true;
+    if (!this.tickId) {
+      this.tickId = requestAnimationFrame(this.tick);
+    }
   };
 
   handleResizeDebounce = simpleDebounce(this.handleResize, 88);
@@ -266,14 +272,21 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   );
 
   syncState = () => {
-    const scrollDidUpdate = !shallowEqualScroll(
-      this.lastSyncedScrollState,
-      this.scrollState,
-    );
-    const dimensionsDidUpdate = !shallowEqualDimensions(
-      this.lastSyncedDimensionsState,
-      this.dimensionsState,
-    );
+    if (this.scrollMightHaveUpdated) {
+      Object.assign(this.scrollState, getClientScroll(this.scrollState));
+    }
+    if (this.resizeMightHaveUpdated) {
+      Object.assign(this.dimensionsState, getClientDimensions());
+    }
+    const scrollDidUpdate =
+      this.scrollMightHaveUpdated &&
+      !shallowEqualScroll(this.lastSyncedScrollState, this.scrollState);
+    const dimensionsDidUpdate =
+      this.resizeMightHaveUpdated &&
+      !shallowEqualDimensions(
+        this.lastSyncedDimensionsState,
+        this.dimensionsState,
+      );
 
     if (scrollDidUpdate) {
       this.lastSyncedScrollState = { ...this.scrollState };
