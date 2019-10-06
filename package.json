@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "start": "rm -rf ./.cache && parcel ./examples/index.html --out-dir='examples-dist'",
     "precompile": "rm -rf dist",
