@@ -173,7 +173,10 @@ const HooksExample = () => {
 };
 
 render(
-  <ViewportProvider experimentalSchedulerEnabled>
+  <ViewportProvider
+    experimentalSchedulerEnabled
+    experimentalSchedulerLayoutCalculatorEnabled
+  >
     <main role="main">
       <Example />
       <HooksExample />
@@ -188,7 +191,10 @@ render(
 
 setInterval(() => {
   render(
-    <ViewportProvider experimentalSchedulerEnabled>
+    <ViewportProvider
+      experimentalSchedulerEnabled
+      experimentalSchedulerLayoutCalculatorEnabled
+    >
       <main role="main">
         <Example />
         <HooksExample />

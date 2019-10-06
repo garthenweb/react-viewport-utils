@@ -19,6 +19,7 @@ import {
 
 interface IProps {
   experimentalSchedulerEnabled?: boolean;
+  experimentalSchedulerLayoutCalculatorEnabled?: boolean;
 }
 
 interface IListener extends IViewportChangeOptions {
@@ -95,6 +96,7 @@ export default class ViewportProvider extends React.PureComponent<
 > {
   static defaultProps: {
     experimentalSchedulerEnabled: false;
+    experimentalSchedulerLayoutCalculatorEnabled: false;
   };
   private listeners: IListener[] = [];
   private updateListenersTick?: NodeJS.Timer;
@@ -118,6 +120,7 @@ export default class ViewportProvider extends React.PureComponent<
     { scrollDidUpdate, dimensionsDidUpdate }: IViewportCollectorUpdateOptions,
     options?: { isIdle?: boolean; shouldInitialize?: boolean },
   ) => {
+    const getOverallDuration = createPerformanceMarker();
     const { isIdle, shouldInitialize } = Object.assign(
       { isIdle: false, shouldInitialize: false },
       options,
@@ -168,7 +171,7 @@ export default class ViewportProvider extends React.PureComponent<
         return null;
       },
     );
-
+    let overallJSHandlerTotalCost = 0;
     updatableListeners.forEach((listener, index) => {
       const { handler, averageExecutionCost, iterations } = listener;
       const [layout, layoutCost] = layouts[index] || [null, 0];
@@ -182,7 +185,23 @@ export default class ViewportProvider extends React.PureComponent<
       listener.averageExecutionCost = averageExecutionCost + diff / i;
       listener.iterations = i;
       listener.initialized = true;
+      overallJSHandlerTotalCost += totalCost;
     });
+    if (
+      this.props.experimentalSchedulerLayoutCalculatorEnabled &&
+      updatableListeners.length
+    ) {
+      setTimeout(() => {
+        const diffPerHandler =
+          (getOverallDuration() - overallJSHandlerTotalCost) /
+          updatableListeners.length;
+        updatableListeners.forEach(listener => {
+          listener.averageExecutionCost =
+            listener.averageExecutionCost +
+            diffPerHandler / listener.iterations;
+        });
+      }, 0);
+    }
   };
 
   addViewportChangeListener = (
