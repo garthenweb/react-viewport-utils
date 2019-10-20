@@ -15,6 +15,7 @@ export {
   useRect,
   useRectEffect,
 } from './hooks';
+export { requestAnimationFrame, cancelAnimationFrame } from './utils';
 export { IRect, IScroll, IDimensions } from './types';
 
 export const VERSION = '__VERSION__';
