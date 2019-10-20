@@ -47,6 +47,7 @@ const createFallbackViewportRequester = () => {
 
 export const ViewportContext = React.createContext({
   removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
+  scheduleReinitializeChangeHandler: (handler: TViewportChangeHandler) => {},
   addViewportChangeListener: (
     handler: TViewportChangeHandler,
     options: IViewportChangeOptions,
@@ -219,6 +220,14 @@ export default class ViewportProvider extends React.PureComponent<
     this.handleListenerUpdate();
   };
 
+  scheduleReinitializeChangeHandler = (h: TViewportChangeHandler) => {
+    const listener = this.listeners.find(({ handler }) => handler === h);
+    if (listener && listener.initialized) {
+      listener.initialized = false;
+      this.handleListenerUpdate();
+    }
+  };
+
   removeViewportChangeListener = (h: TViewportChangeHandler) => {
     this.listeners = this.listeners.filter(({ handler }) => handler !== h);
     this.handleListenerUpdate();
@@ -261,6 +270,7 @@ export default class ViewportProvider extends React.PureComponent<
   private contextValue = {
     addViewportChangeListener: this.addViewportChangeListener,
     removeViewportChangeListener: this.removeViewportChangeListener,
+    scheduleReinitializeChangeHandler: this.scheduleReinitializeChangeHandler,
     getCurrentViewport: () => {
       if (!this.collector.current) {
         return this.getCurrentDefaultViewport();

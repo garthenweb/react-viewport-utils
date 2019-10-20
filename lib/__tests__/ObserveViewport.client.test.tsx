@@ -1,5 +1,6 @@
 // force fallback to setTimeout
 delete window.requestAnimationFrame;
+delete window.cancelAnimationFrame;
 jest.useFakeTimers();
 
 import React from 'react';
