@@ -114,6 +114,9 @@ export default class ViewportProvider extends React.PureComponent<
     if (typeof this.updateListenersTick === 'number') {
       clearTimeout(this.updateListenersTick);
     }
+    if (typeof this.initializeListenersTick === 'number') {
+      cancelAnimationFrame(this.initializeListenersTick);
+    }
   }
 
   triggerUpdateToListeners = (
@@ -234,35 +237,38 @@ export default class ViewportProvider extends React.PureComponent<
   };
 
   handleListenerUpdate() {
-    if (typeof this.updateListenersTick === 'number') {
-      clearTimeout(this.updateListenersTick);
+    if (this.updateListenersTick === undefined) {
+      this.updateListenersTick = setTimeout(() => {
+        const nextState = this.listeners.length !== 0;
+        if (this.state.hasListeners !== nextState) {
+          this.setState({
+            hasListeners: this.listeners.length !== 0,
+          });
+        }
+        this.updateListenersTick = undefined;
+      }, 1);
     }
-    if (typeof this.initializeListenersTick === 'number') {
-      cancelAnimationFrame(this.initializeListenersTick);
+    if (this.initializeListenersTick === undefined) {
+      this.initializeListenersTick = requestAnimationFrame(() => {
+        if (
+          this.collector.current &&
+          this.listeners.some(l => !l.initialized)
+        ) {
+          this.triggerUpdateToListeners(
+            this.collector.current.getPropsFromState(),
+            {
+              dimensionsDidUpdate: false,
+              scrollDidUpdate: false,
+            },
+            {
+              isIdle: false,
+              shouldInitialize: true,
+            },
+          );
+        }
+        this.initializeListenersTick = undefined;
+      });
     }
-    this.updateListenersTick = setTimeout(() => {
-      const nextState = this.listeners.length !== 0;
-      if (this.state.hasListeners !== nextState) {
-        this.setState({
-          hasListeners: this.listeners.length !== 0,
-        });
-      }
-    }, 1);
-    this.initializeListenersTick = requestAnimationFrame(() => {
-      if (this.collector.current && this.listeners.some(l => !l.initialized)) {
-        this.triggerUpdateToListeners(
-          this.collector.current.getPropsFromState(),
-          {
-            dimensionsDidUpdate: false,
-            scrollDidUpdate: false,
-          },
-          {
-            isIdle: false,
-            shouldInitialize: true,
-          },
-        );
-      }
-    });
   }
 
   private collector = React.createRef<ViewportCollector>();

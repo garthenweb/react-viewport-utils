@@ -57,7 +57,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     handler: TViewportChangeHandler,
   ) => void;
 
-  private tickId: number;
+  private tickId?: number;
 
   static defaultProps: IProps = {
     disableScrollUpdates: false,
@@ -94,7 +94,9 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
     this.removeViewportChangeListener = undefined;
     this.scheduleReinitializeChangeHandler = undefined;
-    cancelAnimationFrame(this.tickId);
+    if (typeof this.tickId === 'number') {
+      cancelAnimationFrame(this.tickId);
+    }
   }
 
   handleViewportUpdate = (viewport: IViewport, layoutSnapshot: unknown) => {
@@ -108,10 +110,12 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   };
 
   syncState(nextViewport: IState) {
-    cancelAnimationFrame(this.tickId);
-    this.tickId = requestAnimationFrame(() => {
-      this.setState(nextViewport);
-    });
+    if (this.tickId === undefined) {
+      this.tickId = requestAnimationFrame(() => {
+        this.setState(nextViewport);
+        this.tickId = undefined;
+      });
+    }
   }
 
   get optionNotifyScroll(): boolean {
