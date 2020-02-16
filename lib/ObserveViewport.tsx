@@ -49,7 +49,6 @@ interface Context {
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
-  private getCurrentViewport?: () => Viewport;
   private removeViewportChangeListener?: (
     handler: ViewportChangeHandler,
   ) => void;
@@ -155,7 +154,6 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
 
     this.removeViewportChangeListener = removeViewportChangeListener;
-    this.getCurrentViewport = getCurrentViewport;
     this.scheduleReinitializeChangeHandler = scheduleReinitializeChangeHandler;
     addViewportChangeListener(this.handleViewportUpdate, {
       notifyScroll: () => !this.props.disableScrollUpdates,
