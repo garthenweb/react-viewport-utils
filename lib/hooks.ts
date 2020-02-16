@@ -63,7 +63,10 @@ export function useViewportEffect<T>(
       notifyDimensions: () => !memoOptions.disableDimensionsUpdates,
       notifyOnlyWhenIdle: () => Boolean(memoOptions.deferUpdateUntilIdle),
       priority: () => memoOptions.priority || 'normal',
-      recalculateLayoutBeforeUpdate: memoOptions.recalculateLayoutBeforeUpdate,
+      recalculateLayoutBeforeUpdate: (...args: any) =>
+        memoOptions.recalculateLayoutBeforeUpdate
+          ? memoOptions.recalculateLayoutBeforeUpdate(...args)
+          : null,
     });
     return () => removeViewportChangeListener(handleViewportChange);
   }, [
