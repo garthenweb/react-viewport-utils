@@ -162,27 +162,31 @@ export const warnNoResizeObserver = () => {
 type RequestAnimationFrameType = (callback: FrameRequestCallback) => number;
 
 export const requestAnimationFrame = ((): RequestAnimationFrameType => {
-  const fallback = (callback: FrameRequestCallback) =>
-    (setTimeout(callback, 1000 / 60) as unknown) as number;
   if (typeof window !== 'undefined') {
-    return (
+    const nativeRAF =
       window.requestAnimationFrame ||
       window.webkitRequestAnimationFrame ||
-      (<any>window).mozRequestAnimationFrame ||
-      fallback
-    );
+      (<any>window).mozRequestAnimationFrame;
+    if (nativeRAF) {
+      return nativeRAF.bind(window);
+    }
   }
-  return fallback;
+  return function requestAnimationFrameFallback(
+    callback: FrameRequestCallback,
+  ): number {
+    return (setTimeout(callback, 1000 / 60) as unknown) as number;
+  };
 })();
 
 export const cancelAnimationFrame = ((): ((handle: number) => void) => {
   if (typeof window !== 'undefined') {
-    return (
+    const nativeCAF =
       window.cancelAnimationFrame ||
       window.webkitCancelAnimationFrame ||
-      (<any>window).webkitCancelRequestAnimationFrame ||
-      clearTimeout
-    );
+      (<any>window).webkitCancelRequestAnimationFrame;
+    if (nativeCAF) {
+      return nativeCAF.bind(window);
+    }
   }
   return clearTimeout;
 })();
@@ -190,7 +194,7 @@ export const cancelAnimationFrame = ((): ((handle: number) => void) => {
 export const now =
   typeof performance !== 'undefined' && performance.now
     ? performance.now.bind(performance)
-    : Date.now;
+    : Date.now.bind(Date);
 export const createPerformanceMarker = () => {
   const start = now();
   return () => now() - start;
