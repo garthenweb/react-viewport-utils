@@ -20,6 +20,9 @@ export {
   Rect as IRect,
   Scroll as IScroll,
   Dimensions as IDimensions,
+  Rect,
+  Scroll,
+  Dimensions,
 } from './types';
 
 export const VERSION = '__VERSION__';
