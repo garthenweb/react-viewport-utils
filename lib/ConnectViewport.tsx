@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { IScroll, IDimensions } from './index';
 import ObserveViewport from './ObserveViewport';
+import { PriorityType } from './types';
 
 interface IInjectedProps {
   scroll?: IScroll | null;
@@ -13,6 +14,7 @@ type TPropStrings = 'scroll' | 'dimensions';
 interface IOptions {
   omit?: TPropStrings[];
   deferUpdateUntilIdle?: boolean;
+  priority?: PriorityType;
 }
 
 export default function connect(options: IOptions = {}) {
@@ -34,6 +36,7 @@ export default function connect(options: IOptions = {}) {
             disableScrollUpdates={shouldOmitScroll}
             disableDimensionsUpdates={shouldOmitDimensions}
             deferUpdateUntilIdle={deferUpdateUntilIdle}
+            priority={options.priority}
           >
             {({ scroll, dimensions }) => (
               <WrappedComponent

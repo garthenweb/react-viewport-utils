@@ -54,6 +54,7 @@ This is just a wrapper for the `ObserveViewport` to implement the HOC pattern.
 |:---|:---|:---:|:---|
 | omit | `['scroll', 'dimensions']` |  | Allows to disable scroll or dimensions events for the higher order component |
 | deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md). |
+| options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
 
 ## Example
 
