@@ -58,6 +58,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   ) => void;
 
   private tickId?: number;
+  private nextViewport?: IViewport;
 
   static defaultProps: IProps = {
     disableScrollUpdates: false,
@@ -109,11 +110,15 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
   };
 
-  syncState(nextViewport: IState) {
+  syncState(nextViewport: IViewport) {
+    this.nextViewport = nextViewport;
     if (this.tickId === undefined) {
       this.tickId = requestAnimationFrame(() => {
-        this.setState(nextViewport);
+        if (this.nextViewport) {
+          this.setState(this.nextViewport);
+        }
         this.tickId = undefined;
+        this.nextViewport = undefined;
       });
     }
   }
