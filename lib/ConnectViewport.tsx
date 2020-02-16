@@ -4,15 +4,15 @@ import { IScroll, IDimensions } from './index';
 import ObserveViewport from './ObserveViewport';
 import { PriorityType } from './types';
 
-interface IInjectedProps {
+interface InjectedProps {
   scroll?: IScroll | null;
   dimensions?: IDimensions | null;
 }
 
-type TPropStrings = 'scroll' | 'dimensions';
+type OmitValues = 'scroll' | 'dimensions';
 
 interface IOptions {
-  omit?: TPropStrings[];
+  omit?: OmitValues[];
   deferUpdateUntilIdle?: boolean;
   priority?: PriorityType;
 }
@@ -23,7 +23,7 @@ export default function connect(options: IOptions = {}) {
   const shouldOmitScroll = omit.indexOf('scroll') !== -1;
   const shouldOmitDimensions = omit.indexOf('dimensions') !== -1;
   return <P extends object>(
-    WrappedComponent: React.ComponentType<P & IInjectedProps>,
+    WrappedComponent: React.ComponentType<P & InjectedProps>,
   ): React.ComponentClass<P> => {
     const displayName =
       WrappedComponent.displayName || WrappedComponent.name || 'Component';

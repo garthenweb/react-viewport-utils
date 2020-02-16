@@ -1,6 +1,6 @@
-import { IRect, IScroll, IDimensions, OnUpdateType } from './types';
+import { Rect, Scroll, Dimensions, OnUpdateType } from './types';
 
-export const shallowEqualScroll = (a: IScroll, b: IScroll) => {
+export const shallowEqualScroll = (a: Scroll, b: Scroll) => {
   if (a === b) {
     return true;
   }
@@ -18,7 +18,7 @@ export const shallowEqualScroll = (a: IScroll, b: IScroll) => {
   );
 };
 
-export const shallowEqualRect = (a: IRect, b: IRect) => {
+export const shallowEqualRect = (a: Rect, b: Rect) => {
   if (a === b) {
     return true;
   }
@@ -33,7 +33,7 @@ export const shallowEqualRect = (a: IRect, b: IRect) => {
   );
 };
 
-export const shallowEqualDimensions = (a: IDimensions, b: IDimensions) => {
+export const shallowEqualDimensions = (a: Dimensions, b: Dimensions) => {
   if (a === b) {
     return true;
   }

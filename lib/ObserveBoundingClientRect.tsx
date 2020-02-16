@@ -5,14 +5,14 @@ import {
   requestAnimationFrame,
   cancelAnimationFrame,
 } from './utils';
-import { IRect } from './types';
+import { Rect } from './types';
 
-interface IProps {
+interface Props {
   /**
    * Called every time when an update is detected. Same as
    * using `onUpdate` but it requires to render a node.
    */
-  children?: (rect: IRect | null) => React.ReactNode;
+  children?: (rect: Rect | null) => React.ReactNode;
   /**
    * The reference to the node that should be observed
    */
@@ -20,15 +20,15 @@ interface IProps {
   /**
    * Called once a node is mounted for the first time.
    */
-  onInit?: (rect: IRect) => void;
+  onInit?: (rect: Rect) => void;
   /**
    * Called every time when an update is detected. Same as
    * using `children` but it does not allow to render a node.
    */
-  onUpdate?: (rect: IRect) => void;
+  onUpdate?: (rect: Rect) => void;
 }
 
-interface IState extends IRect {
+interface IState extends Rect {
   isInitialized: boolean;
 }
 
@@ -36,12 +36,12 @@ interface IState extends IRect {
  * @deprecated Use useRect or useRectEffect instead as it provides better performance.
  */
 export default class ObserveBoundingClientRect extends React.PureComponent<
-  IProps,
+  Props,
   IState
 > {
   private tickId?: number;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       top: 0,
@@ -58,7 +58,7 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
     this.tick(this.syncState);
   }
 
-  componentDidUpdate(prevProps: IProps, prevState: IState) {
+  componentDidUpdate(prevProps: Props, prevState: IState) {
     const rect = this.getRectFromState();
     const prevRect = this.getRectFromState(prevState);
     if (!rect) {
@@ -91,7 +91,7 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
     });
   }
 
-  getRectFromState(state: IState = this.state): IRect | null {
+  getRectFromState(state: IState = this.state): Rect | null {
     if (!state.isInitialized) {
       return null;
     }
@@ -106,7 +106,7 @@ export default class ObserveBoundingClientRect extends React.PureComponent<
     };
   }
 
-  getRectFromNode(): IRect | null {
+  getRectFromNode(): Rect | null {
     const { node } = this.props;
     if (!node || !node.current) {
       return null;

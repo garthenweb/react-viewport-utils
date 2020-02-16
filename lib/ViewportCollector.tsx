@@ -12,9 +12,9 @@ import {
   cancelAnimationFrame,
 } from './utils';
 
-import { IDimensions, IScroll, IViewport, OnUpdateType } from './types';
+import { Dimensions, Scroll, Viewport, OnUpdateType } from './types';
 
-export const getClientDimensions = (): IDimensions => {
+export const getClientDimensions = (): Dimensions => {
   if (typeof document === 'undefined' || !document.documentElement) {
     return createEmptyDimensionState();
   }
@@ -55,7 +55,7 @@ const getNodeScroll = (elem = window) => {
 };
 
 export const getClientScroll = (
-  prevScrollState: IScroll = createEmptyScrollState(),
+  prevScrollState: Scroll = createEmptyScrollState(),
 ) => {
   if (typeof window === 'undefined') {
     return createEmptyScrollState();
@@ -89,7 +89,7 @@ export const getClientScroll = (
   return nextScrollState;
 };
 
-const isScrollingLeft = (x: number, prev: IScroll) => {
+const isScrollingLeft = (x: number, prev: Scroll) => {
   switch (true) {
     case x < prev.x:
       return true;
@@ -102,7 +102,7 @@ const isScrollingLeft = (x: number, prev: IScroll) => {
   }
 };
 
-const isScrollingRight = (x: number, prev: IScroll) => {
+const isScrollingRight = (x: number, prev: Scroll) => {
   switch (true) {
     case x > prev.x:
       return true;
@@ -115,7 +115,7 @@ const isScrollingRight = (x: number, prev: IScroll) => {
   }
 };
 
-const isScrollingUp = (y: number, prev: IScroll) => {
+const isScrollingUp = (y: number, prev: Scroll) => {
   switch (true) {
     case y < prev.y:
       return true;
@@ -128,7 +128,7 @@ const isScrollingUp = (y: number, prev: IScroll) => {
   }
 };
 
-const isScrollingDown = (y: number, prev: IScroll) => {
+const isScrollingDown = (y: number, prev: Scroll) => {
   switch (true) {
     case y > prev.y:
       return true;
@@ -154,7 +154,7 @@ export const createEmptyScrollState = () => ({
   yDTurn: 0,
 });
 
-export const createEmptyDimensionState = (): IDimensions => ({
+export const createEmptyDimensionState = (): Dimensions => ({
   width: 0,
   height: 0,
   clientWidth: 0,
@@ -171,10 +171,10 @@ interface IProps {
 }
 
 export default class ViewportCollector extends React.PureComponent<IProps> {
-  private scrollState: IScroll;
-  private dimensionsState: IDimensions;
-  private lastSyncedScrollState: IScroll;
-  private lastSyncedDimensionsState: IDimensions;
+  private scrollState: Scroll;
+  private dimensionsState: Dimensions;
+  private lastSyncedScrollState: Scroll;
+  private lastSyncedDimensionsState: Dimensions;
   private tickId?: number;
   private scrollMightHaveUpdated: boolean;
   private resizeMightHaveUpdated: boolean;
@@ -262,13 +262,13 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   handleResizeDebounce = simpleDebounce(this.handleResize, 88);
 
   getPublicScroll = memoize(
-    (scroll: IScroll): IScroll => ({ ...scroll }),
-    ([a]: [IScroll], [b]: [IScroll]) => shallowEqualScroll(a, b),
+    (scroll: Scroll): Scroll => ({ ...scroll }),
+    ([a]: [Scroll], [b]: [Scroll]) => shallowEqualScroll(a, b),
   );
 
   getPublicDimensions = memoize(
-    (dimensions: IDimensions): IDimensions => ({ ...dimensions }),
-    ([a]: [IDimensions], [b]: [IDimensions]) => shallowEqualDimensions(a, b),
+    (dimensions: Dimensions): Dimensions => ({ ...dimensions }),
+    ([a]: [Dimensions], [b]: [Dimensions]) => shallowEqualDimensions(a, b),
   );
 
   syncState = () => {
@@ -315,7 +315,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     }
   }, 166);
 
-  getPropsFromState(): IViewport {
+  getPropsFromState(): Viewport {
     return {
       scroll: this.getPublicScroll(this.lastSyncedScrollState),
       dimensions: this.getPublicDimensions(this.lastSyncedDimensionsState),

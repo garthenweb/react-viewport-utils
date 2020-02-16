@@ -1,4 +1,4 @@
-export interface IDimensions {
+export interface Dimensions {
   width: number;
   height: number;
   clientWidth: number;
@@ -9,7 +9,7 @@ export interface IDimensions {
   documentHeight: number;
 }
 
-export interface IScroll {
+export interface Scroll {
   x: number;
   y: number;
   xTurn: number;
@@ -22,7 +22,7 @@ export interface IScroll {
   isScrollingRight: boolean;
 }
 
-export interface IRect {
+export interface Rect {
   top: number;
   right: number;
   bottom: number;
@@ -31,32 +31,32 @@ export interface IRect {
   width: number;
 }
 
-export interface IViewport {
-  scroll: IScroll;
-  dimensions: IDimensions;
+export interface Viewport {
+  scroll: Scroll;
+  dimensions: Dimensions;
 }
 
-export type TViewportChangeHandler = (
-  viewport: IViewport,
+export type ViewportChangeHandler = (
+  viewport: Viewport,
   layoutSnapshot: any,
 ) => void;
 
-export interface IViewportChangeOptions {
+export interface ViewportChangeOptions {
   notifyScroll: () => boolean;
   notifyDimensions: () => boolean;
   notifyOnlyWhenIdle: () => boolean;
   priority: () => PriorityType;
-  recalculateLayoutBeforeUpdate?: (viewport: IViewport) => unknown;
+  recalculateLayoutBeforeUpdate?: (viewport: Viewport) => unknown;
 }
 
-export interface IViewportCollectorUpdateOptions {
+export interface ViewportCollectorUpdateOptions {
   scrollDidUpdate: boolean;
   dimensionsDidUpdate: boolean;
 }
 
 export type OnUpdateType = (
-  props: IViewport,
-  options: IViewportCollectorUpdateOptions,
+  props: Viewport,
+  options: ViewportCollectorUpdateOptions,
 ) => void;
 
 export type PriorityType = 'highest' | 'high' | 'normal' | 'low';

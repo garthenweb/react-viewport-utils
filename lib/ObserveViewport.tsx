@@ -6,11 +6,11 @@ import {
   createEmptyScrollState,
 } from './ViewportCollector';
 import {
-  IScroll,
-  IDimensions,
-  IViewport,
-  TViewportChangeHandler,
-  IViewportChangeOptions,
+  Scroll,
+  Dimensions,
+  Viewport,
+  ViewportChangeHandler,
+  ViewportChangeOptions,
   PriorityType,
 } from './types';
 import {
@@ -20,8 +20,8 @@ import {
 } from './utils';
 
 export interface IChildProps {
-  scroll: IScroll | null;
-  dimensions: IDimensions | null;
+  scroll: Scroll | null;
+  dimensions: Dimensions | null;
 }
 
 interface IState extends IChildProps {}
@@ -36,29 +36,29 @@ interface IProps {
   priority: PriorityType;
 }
 
-interface IContext {
+interface Context {
   addViewportChangeListener: (
-    handler: TViewportChangeHandler,
-    options: IViewportChangeOptions,
+    handler: ViewportChangeHandler,
+    options: ViewportChangeOptions,
   ) => void;
-  removeViewportChangeListener: (handler: TViewportChangeHandler) => void;
-  scheduleReinitializeChangeHandler: (handler: TViewportChangeHandler) => void;
+  removeViewportChangeListener: (handler: ViewportChangeHandler) => void;
+  scheduleReinitializeChangeHandler: (handler: ViewportChangeHandler) => void;
   hasRootProviderAsParent: boolean;
-  getCurrentViewport: () => IViewport;
+  getCurrentViewport: () => Viewport;
   version: string;
 }
 
 export default class ObserveViewport extends React.Component<IProps, IState> {
-  private getCurrentViewport?: () => IViewport;
+  private getCurrentViewport?: () => Viewport;
   private removeViewportChangeListener?: (
-    handler: TViewportChangeHandler,
+    handler: ViewportChangeHandler,
   ) => void;
   private scheduleReinitializeChangeHandler?: (
-    handler: TViewportChangeHandler,
+    handler: ViewportChangeHandler,
   ) => void;
 
   private tickId?: number;
-  private nextViewport?: IViewport;
+  private nextViewport?: Viewport;
 
   static defaultProps: IProps = {
     disableScrollUpdates: false,
@@ -100,7 +100,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
   }
 
-  handleViewportUpdate = (viewport: IViewport, layoutSnapshot: unknown) => {
+  handleViewportUpdate = (viewport: Viewport, layoutSnapshot: unknown) => {
     if (this.props.onUpdate) {
       this.props.onUpdate(viewport, layoutSnapshot);
     }
@@ -110,7 +110,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     }
   };
 
-  syncState(nextViewport: IViewport) {
+  syncState(nextViewport: Viewport) {
     this.nextViewport = nextViewport;
     if (this.tickId === undefined) {
       this.tickId = requestAnimationFrame(() => {
@@ -137,7 +137,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     scheduleReinitializeChangeHandler,
     hasRootProviderAsParent,
     getCurrentViewport,
-  }: IContext): React.ReactNode => {
+  }: Context): React.ReactNode => {
     if (!hasRootProviderAsParent) {
       warnNoContextAvailable('ObserveViewport');
       return null;
@@ -162,7 +162,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
       notifyDimensions: () => !this.props.disableDimensionsUpdates,
       notifyOnlyWhenIdle: () => this.props.deferUpdateUntilIdle,
       priority: () => this.props.priority,
-      recalculateLayoutBeforeUpdate: (viewport: IViewport) => {
+      recalculateLayoutBeforeUpdate: (viewport: Viewport) => {
         if (this.props.recalculateLayoutBeforeUpdate) {
           return this.props.recalculateLayoutBeforeUpdate(viewport);
         }

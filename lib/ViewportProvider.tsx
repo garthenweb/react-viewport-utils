@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import {
-  TViewportChangeHandler,
-  IViewportChangeOptions,
-  IViewport,
-  IViewportCollectorUpdateOptions,
+  ViewportChangeHandler,
+  ViewportChangeOptions,
+  Viewport,
+  ViewportCollectorUpdateOptions,
 } from './types';
 import ViewportCollector, {
   getClientDimensions,
@@ -17,13 +17,13 @@ import {
   cancelAnimationFrame,
 } from './utils';
 
-interface IProps {
+interface Props {
   experimentalSchedulerEnabled?: boolean;
   experimentalSchedulerLayoutCalculatorEnabled?: boolean;
 }
 
-interface IListener extends IViewportChangeOptions {
-  handler: TViewportChangeHandler;
+interface Listener extends ViewportChangeOptions {
+  handler: ViewportChangeHandler;
   iterations: number;
   initialized: boolean;
   averageExecutionCost: number;
@@ -31,9 +31,9 @@ interface IListener extends IViewportChangeOptions {
 }
 
 const createFallbackViewportRequester = () => {
-  let defaultValue: IViewport;
+  let defaultValue: Viewport;
   let lastAccess = 0;
-  return (): IViewport => {
+  return (): Viewport => {
     if (!defaultValue || now() - lastAccess > 1000) {
       defaultValue = {
         scroll: getClientScroll(),
@@ -46,11 +46,11 @@ const createFallbackViewportRequester = () => {
 };
 
 export const ViewportContext = React.createContext({
-  removeViewportChangeListener: (handler: TViewportChangeHandler) => {},
-  scheduleReinitializeChangeHandler: (handler: TViewportChangeHandler) => {},
+  removeViewportChangeListener: (handler: ViewportChangeHandler) => {},
+  scheduleReinitializeChangeHandler: (handler: ViewportChangeHandler) => {},
   addViewportChangeListener: (
-    handler: TViewportChangeHandler,
-    options: IViewportChangeOptions,
+    handler: ViewportChangeHandler,
+    options: ViewportChangeOptions,
   ) => {},
   getCurrentViewport: createFallbackViewportRequester(),
   hasRootProviderAsParent: false,
@@ -71,7 +71,7 @@ const maxIterations = (priority: 'highest' | 'high' | 'normal' | 'low') => {
 };
 
 const shouldSkipIteration = (
-  { priority: getPriority, averageExecutionCost, skippedIterations }: IListener,
+  { priority: getPriority, averageExecutionCost, skippedIterations }: Listener,
   budget: number,
 ): boolean => {
   const priority = getPriority();
@@ -92,18 +92,18 @@ const shouldSkipIteration = (
 };
 
 export default class ViewportProvider extends React.PureComponent<
-  IProps,
+  Props,
   { hasListeners: boolean }
 > {
   static defaultProps: {
     experimentalSchedulerEnabled: false;
     experimentalSchedulerLayoutCalculatorEnabled: false;
   };
-  private listeners: IListener[] = [];
+  private listeners: Listener[] = [];
   private updateListenersTick?: NodeJS.Timer;
   private initializeListenersTick?: number;
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       hasListeners: false,
@@ -120,8 +120,8 @@ export default class ViewportProvider extends React.PureComponent<
   }
 
   triggerUpdateToListeners = (
-    state: IViewport,
-    { scrollDidUpdate, dimensionsDidUpdate }: IViewportCollectorUpdateOptions,
+    state: Viewport,
+    { scrollDidUpdate, dimensionsDidUpdate }: ViewportCollectorUpdateOptions,
     options?: { isIdle?: boolean; shouldInitialize?: boolean },
   ) => {
     const getOverallDuration = createPerformanceMarker();
@@ -209,8 +209,8 @@ export default class ViewportProvider extends React.PureComponent<
   };
 
   addViewportChangeListener = (
-    handler: TViewportChangeHandler,
-    options: IViewportChangeOptions,
+    handler: ViewportChangeHandler,
+    options: ViewportChangeOptions,
   ) => {
     this.listeners.push({
       handler,
@@ -223,7 +223,7 @@ export default class ViewportProvider extends React.PureComponent<
     this.handleListenerUpdate();
   };
 
-  scheduleReinitializeChangeHandler = (h: TViewportChangeHandler) => {
+  scheduleReinitializeChangeHandler = (h: ViewportChangeHandler) => {
     const listener = this.listeners.find(({ handler }) => handler === h);
     if (listener && listener.initialized) {
       listener.initialized = false;
@@ -231,7 +231,7 @@ export default class ViewportProvider extends React.PureComponent<
     }
   };
 
-  removeViewportChangeListener = (h: TViewportChangeHandler) => {
+  removeViewportChangeListener = (h: ViewportChangeHandler) => {
     this.listeners = this.listeners.filter(({ handler }) => handler !== h);
     this.handleListenerUpdate();
   };
