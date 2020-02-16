@@ -18,6 +18,7 @@ In case you need full control over the element, I recommend using the [ResizeObs
 | options.disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport`) |
 | options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
+| deps | array |  | Array with dependencies. In case a value inside the array changes, this will force an update on the rect |
 
 ### Example
 
@@ -56,6 +57,7 @@ Same as the `useRect` hook but as an effect, therefore it does not return anythi
 | options.disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport`) |
 | options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
+| deps | array |  | Array with dependencies. In case a value inside the array changes, this will force an update to the effect function |
 
 ### Example
 

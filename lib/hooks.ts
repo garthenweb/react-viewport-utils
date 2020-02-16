@@ -153,11 +153,26 @@ export const useDimensions = (options: IOptions = {}): IDimensions => {
   return dimensions;
 };
 
-export const useRectEffect = (
+export function useRectEffect(
   effect: (rect: IRect | null) => void,
   ref: RefObject<HTMLElement>,
-  options?: IFullOptions,
-) => {
+  deps?: DependencyList,
+): void;
+
+export function useRectEffect(
+  effect: (rect: IRect | null) => void,
+  ref: RefObject<HTMLElement>,
+  options: IFullOptions,
+  deps?: DependencyList,
+): void;
+
+export function useRectEffect(
+  effect: (rect: IRect | null) => void,
+  ref: RefObject<HTMLElement>,
+  third?: any,
+  fourth?: any,
+) {
+  const { options, deps } = sortArgs(third, fourth);
   useViewportEffect(
     (_, snapshot) => effect(snapshot),
     {
@@ -165,20 +180,33 @@ export const useRectEffect = (
       recalculateLayoutBeforeUpdate: () =>
         ref.current ? ref.current.getBoundingClientRect() : null,
     },
-    [ref.current],
+    [ref.current, ...deps],
   );
-};
+}
 
-export const useRect = (
+export function useRect(
   ref: RefObject<HTMLElement>,
-  options?: IFullOptions,
-): IRect | null => {
+  deps?: DependencyList,
+): void;
+
+export function useRect(
+  ref: RefObject<HTMLElement>,
+  options: IFullOptions,
+  deps?: DependencyList,
+): void;
+
+export function useRect(
+  ref: RefObject<HTMLElement>,
+  second: any,
+  third?: any,
+): IRect | null {
+  const { options, deps } = sortArgs(second, third);
   return useLayoutSnapshot(
     () => (ref.current ? ref.current.getBoundingClientRect() : null),
     options,
-    [ref.current],
+    [ref.current, ...deps],
   );
-};
+}
 
 export function useLayoutSnapshot<T = unknown>(
   recalculateLayoutBeforeUpdate: (viewport: IViewport) => T,
