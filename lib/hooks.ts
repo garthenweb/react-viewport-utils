@@ -187,13 +187,13 @@ export function useRectEffect(
 export function useRect(
   ref: RefObject<HTMLElement>,
   deps?: DependencyList,
-): void;
+): Rect | null;
 
 export function useRect(
   ref: RefObject<HTMLElement>,
   options: FullOptions,
   deps?: DependencyList,
-): void;
+): Rect | null;
 
 export function useRect(
   ref: RefObject<HTMLElement>,
