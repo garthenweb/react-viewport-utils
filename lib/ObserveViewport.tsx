@@ -19,17 +19,17 @@ import {
   cancelAnimationFrame,
 } from './utils';
 
-export interface IChildProps {
+interface ChildProps {
   scroll: Scroll | null;
   dimensions: Dimensions | null;
 }
 
-interface IState extends IChildProps {}
+interface State extends ChildProps {}
 
-interface IProps {
-  children?: (props: IChildProps) => React.ReactNode;
-  onUpdate?: (props: IChildProps, layoutSnapshot: unknown) => void;
-  recalculateLayoutBeforeUpdate?: (props: IChildProps) => unknown;
+interface Props {
+  children?: (props: ChildProps) => React.ReactNode;
+  onUpdate?: (props: ChildProps, layoutSnapshot: unknown) => void;
+  recalculateLayoutBeforeUpdate?: (props: ChildProps) => unknown;
   disableScrollUpdates: boolean;
   disableDimensionsUpdates: boolean;
   deferUpdateUntilIdle: boolean;
@@ -48,7 +48,7 @@ interface Context {
   version: string;
 }
 
-export default class ObserveViewport extends React.Component<IProps, IState> {
+export default class ObserveViewport extends React.Component<Props, State> {
   private removeViewportChangeListener?: (
     handler: ViewportChangeHandler,
   ) => void;
@@ -59,14 +59,14 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
   private tickId?: number;
   private nextViewport?: Viewport;
 
-  static defaultProps: IProps = {
+  static defaultProps: Props = {
     disableScrollUpdates: false,
     disableDimensionsUpdates: false,
     deferUpdateUntilIdle: false,
     priority: 'normal',
   };
 
-  constructor(props: IProps) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       scroll: createEmptyScrollState(),
@@ -74,7 +74,7 @@ export default class ObserveViewport extends React.Component<IProps, IState> {
     };
   }
 
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate(prevProps: Props) {
     const dimensionsBecameActive =
       !this.props.disableDimensionsUpdates &&
       prevProps.disableDimensionsUpdates;
