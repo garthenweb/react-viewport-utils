@@ -179,6 +179,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   private scrollMightHaveUpdated: boolean;
   private resizeMightHaveUpdated: boolean;
   private resizeObserver: ResizeObserver | null;
+  public syncedStateOnce: boolean;
 
   constructor(props: IProps) {
     super(props);
@@ -192,6 +193,7 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
     this.lastSyncedDimensionsState = { ...this.dimensionsState };
     this.lastSyncedScrollState = { ...this.scrollState };
     this.resizeObserver = null;
+    this.syncedStateOnce = false;
   }
 
   componentDidMount() {
@@ -272,6 +274,9 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
   );
 
   syncState = () => {
+    if (!this.syncedStateOnce) {
+      this.syncedStateOnce = true;
+    }
     if (this.scrollMightHaveUpdated) {
       Object.assign(this.scrollState, getClientScroll(this.scrollState));
     }

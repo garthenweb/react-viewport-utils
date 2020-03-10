@@ -252,6 +252,7 @@ export default class ViewportProvider extends React.PureComponent<
       this.initializeListenersTick = requestAnimationFrame(() => {
         if (
           this.collector.current &&
+          this.collector.current.syncedStateOnce &&
           this.listeners.some(l => !l.initialized)
         ) {
           this.triggerUpdateToListeners(
@@ -278,10 +279,10 @@ export default class ViewportProvider extends React.PureComponent<
     removeViewportChangeListener: this.removeViewportChangeListener,
     scheduleReinitializeChangeHandler: this.scheduleReinitializeChangeHandler,
     getCurrentViewport: () => {
-      if (!this.collector.current) {
-        return this.getCurrentDefaultViewport();
+      if (this.collector.current && this.collector.current.syncedStateOnce) {
+        return this.collector.current.getPropsFromState();
       }
-      return this.collector.current.getPropsFromState();
+      return this.getCurrentDefaultViewport();
     },
     hasRootProviderAsParent: true,
     version: '__VERSION__',
