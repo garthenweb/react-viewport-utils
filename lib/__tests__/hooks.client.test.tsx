@@ -1,4 +1,9 @@
+/**
+ * @jest-environment jsdom
+ */
+
 // force fallback to setTimeout
+// @ts-ignore
 delete window.requestAnimationFrame;
 jest.useFakeTimers();
 

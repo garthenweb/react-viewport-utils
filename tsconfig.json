@@ -2,6 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "declarationDir": "./dist",
+    "moduleResolution": "Node",
     "module": "es6",
     "outDir": "./dist",
     "target": "es5",

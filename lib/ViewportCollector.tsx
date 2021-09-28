@@ -265,12 +265,13 @@ export default class ViewportCollector extends React.PureComponent<IProps> {
 
   getPublicScroll = memoize(
     (scroll: Scroll): Scroll => ({ ...scroll }),
-    ([a]: [Scroll], [b]: [Scroll]) => shallowEqualScroll(a, b),
+    ([a]: Array<Scroll>, [b]: Array<Scroll>) => shallowEqualScroll(a, b),
   );
 
   getPublicDimensions = memoize(
     (dimensions: Dimensions): Dimensions => ({ ...dimensions }),
-    ([a]: [Dimensions], [b]: [Dimensions]) => shallowEqualDimensions(a, b),
+    ([a]: Array<Dimensions>, [b]: Array<Dimensions>) =>
+      shallowEqualDimensions(a, b),
   );
 
   syncState = () => {
