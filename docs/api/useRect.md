@@ -51,7 +51,7 @@ Same as the `useRect` hook but as an effect, therefore it does not return anythi
 
 | Argument | Type | Required? | Description |
 |:---|:---|:---:|:---|
-| effect | (rect: IRect \| null) => void | x | The side effect that should be performed |
+| effect | (rect: Rect \| null) => void | x | The side effect that should be performed |
 | ref | React.RefObject\<HTMLElement> | x | The reference to an element that should be observed |
 | options.disableScrollUpdates | boolean |  | Disables updates to scroll events (only for `useViewport`) |
 | options.disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport`) |

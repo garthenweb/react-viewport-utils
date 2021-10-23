@@ -10,9 +10,9 @@ Render props are easy to implement in the most situations but the event handler 
 
 | Property | Type | Required? | Description |
 |:---|:---|:---:|:---|
-| onUpdate | function |  | Triggers as soon as a viewport update was detected. Contains the `IViewport` as the first argument and the last return of `recalculateLayoutBeforeUpdate` as the second argument |
-| recalculateLayoutBeforeUpdate | function |  | Enables a way to calculate layout information for all components as a badge before the onUpdate call. Contains the `IViewport` as the first argument. See [recalculateLayoutBeforeUpdate](../concepts/recalculateLayoutBeforeUpdate.md) |
-| children | function |  | Like `onUpdate` but expects to return that will be rendered on the page. Contains the `IViewport` as the first argument. |
+| onUpdate | function |  | Triggers as soon as a viewport update was detected. Contains the `Viewport` as the first argument and the last return of `recalculateLayoutBeforeUpdate` as the second argument |
+| recalculateLayoutBeforeUpdate | function |  | Enables a way to calculate layout information for all components as a badge before the onUpdate call. Contains the `Viewport` as the first argument. See [recalculateLayoutBeforeUpdate](../concepts/recalculateLayoutBeforeUpdate.md) |
+| children | function |  | Like `onUpdate` but expects to return that will be rendered on the page. Contains the `Viewport` as the first argument. |
 | deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
 | disableScrollUpdates | boolean |  | Disables updates to scroll events |
@@ -129,12 +129,12 @@ Hook effects allow to trigger side effects on change without updating the compon
 
 | Argument | Type | Required? | Description |
 |:---|:---|:---:|:---|
-| effect | (IViewport \| IScroll \| IDimensions) => void | x | Disables updates to scroll events (only for `useViewport`) |
+| effect | (Viewport \| Scroll \| Dimensions) => void | x | Disables updates to scroll events (only for `useViewport`) |
 | options.disableScrollUpdates | boolean |  | Disables updates to scroll events (only for `useViewport`) |
 | options.disableDimensionsUpdates | boolean |  | Disables updates to dimensions events (only for `useViewport`) |
 | options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
-| options.recalculateLayoutBeforeUpdate | function |  | Enables a way to calculate layout information for all components as a badge before the effect call. Contains `IViewport`, `IScroll` or `IDimensions` as the first argument, dependent of the used hook. See [recalculateLayoutBeforeUpdate](../concepts/recalculateLayoutBeforeUpdate.md) |
+| options.recalculateLayoutBeforeUpdate | function |  | Enables a way to calculate layout information for all components as a badge before the effect call. Contains `Viewport`, `Scroll` or `Dimensions` as the first argument, dependent of the used hook. See [recalculateLayoutBeforeUpdate](../concepts/recalculateLayoutBeforeUpdate.md) |
 | deps | array |  | Array with dependencies. In case a value inside the array changes, this will force an update to the effect function |
 
 ### Example

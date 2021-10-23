@@ -15,7 +15,7 @@ The scheduler is for now disabled by default and needs to be activated on the `V
 **!!! This is an experimental API and its implementation might change in the future !!!**
 
 ``` javascript
-const handleUpdate = ({ scroll, dimensions }: IViewport) {
+const handleUpdate = ({ scroll, dimensions }: Viewport) {
   console.log(scroll, dimensions);
 }
 
