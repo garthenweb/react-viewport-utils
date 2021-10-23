@@ -4,6 +4,7 @@ node_modules/
 examples-dist/
 .vscode/
 .cache/
+.parcel-cache/
 coverage/
 .rpt2_cache/
 .editorconfig
