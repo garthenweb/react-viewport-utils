@@ -1,6 +1,6 @@
 {
   "name": "react-viewport-utils",
-  "version": "1.12.1",
+  "version": "2.0.0",
   "description": "Utility components for working with the viewport in react",
   "main": "dist/commonjs.js",
   "module": "dist/esmodule.js",
