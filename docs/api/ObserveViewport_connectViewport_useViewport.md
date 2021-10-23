@@ -98,6 +98,12 @@ render(
 | options.deferUpdateUntilIdle | boolean |  | Defers to trigger updates until the collector is idle. See [Defer Events](../concepts/defer_events.md) |
 | options.priority | `'low'`, `'normal'`, `'high'`, `'highest'` |  | Allows to set a priority of the update. See [Defer Events](../concepts/scheduler.md) |
 
+## Hooks: `useMutableViewport`
+
+**!!! Hooks require a `ViewportProvider` as a parent and only work with react v16.7.0 !!!**
+
+Exposes the current viewport state as a mutable and readonly object. It will not trigger updates when the value on the viewport change but allows to access the current and most up to date information at any time without any negative performance impact.
+
 ### Example
 
 ``` javascript
@@ -105,16 +111,17 @@ import * as React from 'react';
 import { useScroll, useDimensions } from 'react-viewport-utils';
 
 function Component() {
-  const scroll = useScroll();
-  const dimensions = useDimensions({
-    deferUpdateUntilIdle: true,
-  });
+  const ref = React.useRef()
+  const mutableViewport = useMutableViewport();
+  useRectEffect((rect) => {
+    console.log(
+      'Is element above the current scroll position?',
+      mutableViewport.scroll.y > rect.bottom
+    )
+  }, ref)
 
   return (
-    <div>
-      Scroll Position: ${scroll.x}x${scroll.y}<br />
-      Window Size: ${dimensions.innerWidth}x${dimensions.innerHeight}
-    </div>
+    <div ref={ref} />
   );
 }
 ```

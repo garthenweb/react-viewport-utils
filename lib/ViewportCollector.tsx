@@ -171,8 +171,8 @@ interface IProps {
 }
 
 export default class ViewportCollector extends React.PureComponent<IProps> {
-  private scrollState: Scroll;
-  private dimensionsState: Dimensions;
+  public scrollState: Scroll;
+  public dimensionsState: Dimensions;
   private lastSyncedScrollState: Scroll;
   private lastSyncedDimensionsState: Dimensions;
   private tickId?: number;

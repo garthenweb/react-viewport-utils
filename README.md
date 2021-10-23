@@ -58,6 +58,7 @@ The project aims to support recent releases of v8 and v10 and higher of NodeJS.
 * [`ObserveViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#render-props-event-handler-observeviewport)
 * [`connectViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#hoc-connectviewport)
 * [`useViewport`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
+* [`useMutableViewport`](https://github.com/garthenweb/react-viewport-utils/blob/master/docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-usemutableviewport)
 * [`useScroll`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
 * [`useDimensions`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)
 * [`useLayoutSnapshot`](docs/api/ObserveViewport_connectViewport_useViewport.md#hooks-useviewport-usescroll-usedimensions-useLayoutSnapshot)

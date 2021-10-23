@@ -7,6 +7,8 @@ import {
   ViewportCollectorUpdateOptions,
 } from './types';
 import ViewportCollector, {
+  createEmptyDimensionState,
+  createEmptyScrollState,
   getClientDimensions,
   getClientScroll,
 } from './ViewportCollector';
@@ -53,6 +55,10 @@ export const ViewportContext = React.createContext({
     options: ViewportChangeOptions,
   ) => {},
   getCurrentViewport: createFallbackViewportRequester(),
+  getMutableViewportState: (): Readonly<Viewport> => ({
+    dimensions: createEmptyDimensionState(),
+    scroll: createEmptyScrollState(),
+  }),
   hasRootProviderAsParent: false,
   version: '_VERS_',
 });
@@ -102,11 +108,28 @@ export default class ViewportProvider extends React.PureComponent<
   private listeners: Listener[] = [];
   private updateListenersTick?: NodeJS.Timer;
   private initializeListenersTick?: number;
+  private mutableViewportState: Viewport;
 
   constructor(props: Props) {
     super(props);
     this.state = {
       hasListeners: false,
+    };
+    const getDimensions = () => {
+      return (
+        this.collector.current?.dimensionsState ?? createEmptyDimensionState()
+      );
+    };
+    const getScroll = () => {
+      return this.collector.current?.scrollState ?? createEmptyScrollState();
+    };
+    this.mutableViewportState = {
+      get scroll() {
+        return getScroll();
+      },
+      get dimensions() {
+        return getDimensions();
+      },
     };
   }
 
@@ -152,7 +175,7 @@ export default class ViewportProvider extends React.PureComponent<
     if (this.props.experimentalSchedulerEnabled) {
       if (!isIdle) {
         const budget = 16 / updatableListeners.length;
-        updatableListeners = updatableListeners.filter(listener => {
+        updatableListeners = updatableListeners.filter((listener) => {
           const skip = listener.initialized
             ? shouldSkipIteration(listener, budget)
             : false;
@@ -199,7 +222,7 @@ export default class ViewportProvider extends React.PureComponent<
         const diffPerHandler =
           (getOverallDuration() - overallJSHandlerTotalCost) /
           updatableListeners.length;
-        updatableListeners.forEach(listener => {
+        updatableListeners.forEach((listener) => {
           listener.averageExecutionCost =
             listener.averageExecutionCost +
             diffPerHandler / listener.iterations;
@@ -253,7 +276,7 @@ export default class ViewportProvider extends React.PureComponent<
         if (
           this.collector.current &&
           this.collector.current.syncedStateOnce &&
-          this.listeners.some(l => !l.initialized)
+          this.listeners.some((l) => !l.initialized)
         ) {
           this.triggerUpdateToListeners(
             this.collector.current.getPropsFromState(),
@@ -284,6 +307,7 @@ export default class ViewportProvider extends React.PureComponent<
       }
       return this.getCurrentDefaultViewport();
     },
+    getMutableViewportState: () => this.mutableViewportState,
     hasRootProviderAsParent: true,
     version: '_VERS_',
   };
@@ -293,10 +317,7 @@ export default class ViewportProvider extends React.PureComponent<
     version: string;
   }) => {
     if (props.hasRootProviderAsParent) {
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        props.version !== '_VERS_'
-      ) {
+      if (process.env.NODE_ENV !== 'production' && props.version !== '_VERS_') {
         console.warn(
           `react-viewport-utils: Two different versions of the react-viewport-utils library are used in the same react tree. This can lead to unexpected results as the versions might not be compatible.
 The <ViewportProvider> of version ${props.version} is currently used, another <ViewportProvider> of version _VERS_ was detected but is ignored.

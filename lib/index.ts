@@ -12,6 +12,7 @@ export {
   useLayoutSnapshot,
   useRect,
   useRectEffect,
+  useMutableViewport,
 } from './hooks';
 export { requestAnimationFrame, cancelAnimationFrame } from './utils';
 export type {

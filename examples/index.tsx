@@ -13,6 +13,7 @@ import {
   useDimensionsEffect,
   useViewportEffect,
   useRectEffect,
+  useMutableViewport,
 } from '../lib/index';
 import StickyScrollUp from './StickyScrollUp';
 import Sticky from './Sticky';
@@ -126,7 +127,7 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
           <div className="placeholder" ref={this.container2} />
           <ObserveViewport
             disableDimensionsUpdates
-            onUpdate={props => {
+            onUpdate={(props) => {
               console.log('ObserveViewport: update scroll only', props.scroll);
             }}
           />
@@ -145,7 +146,7 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
           <ObserveViewport
             deferUpdateUntilIdle
             disableScrollUpdates
-            onUpdate={props => {
+            onUpdate={(props) => {
               console.log(
                 'ObserveViewport: update dimensions lazy',
                 props.dimensions,
@@ -163,12 +164,22 @@ class Example extends React.PureComponent<{}, { disabled: boolean }> {
 
 const HooksExample = () => {
   const ref = React.useRef<HTMLDivElement>();
-  useScrollEffect(scroll => console.log('hook:scroll effect', scroll));
-  useDimensionsEffect(dimensions =>
+  useScrollEffect((scroll) => console.log('hook:scroll effect', scroll));
+  useDimensionsEffect((dimensions) =>
     console.log('hook:dimensions effect', dimensions),
   );
-  useViewportEffect(viewport => console.log('hook:viewport effect', viewport));
-  useRectEffect(rect => console.log('hook:rect effect', rect), ref);
+  useViewportEffect((viewport) =>
+    console.log('hook:viewport effect', viewport),
+  );
+  useRectEffect((rect) => console.log('hook:rect effect', rect), ref);
+  const viewport = useMutableViewport();
+
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      console.log('hook:mutableViewport', viewport);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [viewport]);
   return <div ref={ref} />;
 };
 

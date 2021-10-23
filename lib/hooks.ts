@@ -266,3 +266,10 @@ const sortArgs = (
   }
   return { deps, options };
 };
+
+/**
+ * Exposes the current viewport state as a mutable and readonly object. It will not trigger updates when the value on the viewport change but allows to access the current and most up to date information at any time without any negative performance impact.
+ */
+export const useMutableViewport = () => {
+  return useContext(ViewportContext).getMutableViewportState();
+};
