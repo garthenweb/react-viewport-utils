@@ -1,11 +1,9 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "declarationDir": "./dist",
     "moduleResolution": "Node",
     "module": "es6",
     "outDir": "./dist",
-    "target": "es5",
     "lib": ["es6", "dom"],
     "sourceMap": true,
     "jsx": "react",
@@ -13,13 +11,13 @@
     "strict": true,
     "noUnusedLocals": true,
     "alwaysStrict": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"]
   },
   "include": [
-    "lib/**/*"
+    "lib"
   ],
   "exclude": [
-    "node_modules",
     "dist",
     "examples-dist",
     ".cache"

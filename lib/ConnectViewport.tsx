@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import { IScroll, IDimensions } from './index';
+import { Scroll, Dimensions } from './types';
 import ObserveViewport from './ObserveViewport';
 import { PriorityType } from './types';
 
 interface InjectedProps {
-  scroll?: IScroll | null;
-  dimensions?: IDimensions | null;
+  scroll?: Scroll | null;
+  dimensions?: Dimensions | null;
 }
 
 type OmitValues = 'scroll' | 'dimensions';

@@ -6,5 +6,5 @@ matrix:
     - node_js: "10"
     - node_js: "8"
 
-script: "npm test -- --coverage"
+script: "yarn test -- --coverage"
 after_success: cat ./coverage/lcov.info | npx coveralls

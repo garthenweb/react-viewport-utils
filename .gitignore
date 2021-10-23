@@ -1,7 +1,7 @@
 node_modules/
 examples-dist/
 dist/
-.cache/
+.parcel-cache/
 .rpt2_cache/
 .vscode/
 coverage/

@@ -31,6 +31,19 @@ export interface Rect {
   width: number;
 }
 
+/**
+ * @deprecated Better use Dimensions
+ */
+export interface IDimensions extends Dimensions {}
+/**
+ * @deprecated Better use Scroll
+ */
+export interface IScroll extends Scroll {}
+/**
+ * @deprecated Better use Rect
+ */
+export interface IRect extends Rect {}
+
 export interface Viewport {
   scroll: Scroll;
   dimensions: Dimensions;

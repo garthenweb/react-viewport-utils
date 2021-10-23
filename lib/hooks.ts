@@ -63,7 +63,7 @@ export function useViewportEffect<T>(
       notifyDimensions: () => !memoOptions.disableDimensionsUpdates,
       notifyOnlyWhenIdle: () => Boolean(memoOptions.deferUpdateUntilIdle),
       priority: () => memoOptions.priority || 'normal',
-      recalculateLayoutBeforeUpdate: (...args: any) =>
+      recalculateLayoutBeforeUpdate: (...args) =>
         memoOptions.recalculateLayoutBeforeUpdate
           ? memoOptions.recalculateLayoutBeforeUpdate(...args)
           : null,
@@ -79,7 +79,7 @@ export function useViewportEffect<T>(
 export const useViewport = (options: FullOptions = {}): Viewport => {
   const { getCurrentViewport } = useContext(ViewportContext);
   const [state, setViewport] = useState(getCurrentViewport());
-  useViewportEffect(viewport => setViewport(viewport), options);
+  useViewportEffect((viewport) => setViewport(viewport), options);
 
   return state;
 };

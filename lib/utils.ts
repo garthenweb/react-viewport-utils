@@ -165,7 +165,7 @@ export const requestAnimationFrame = ((): RequestAnimationFrameType => {
   if (typeof window !== 'undefined') {
     const nativeRAF =
       window.requestAnimationFrame ||
-      window.webkitRequestAnimationFrame ||
+      (<any>window).webkitRequestAnimationFrame ||
       (<any>window).mozRequestAnimationFrame;
     if (nativeRAF) {
       return nativeRAF.bind(window);
@@ -182,7 +182,7 @@ export const cancelAnimationFrame = ((): ((handle: number) => void) => {
   if (typeof window !== 'undefined') {
     const nativeCAF =
       window.cancelAnimationFrame ||
-      window.webkitCancelAnimationFrame ||
+      (<any>window).webkitCancelAnimationFrame ||
       (<any>window).webkitCancelRequestAnimationFrame;
     if (nativeCAF) {
       return nativeCAF.bind(window);

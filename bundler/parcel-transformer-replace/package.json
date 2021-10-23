@@ -1,0 +1,11 @@
+{
+  "name": "parcel-transformer-replace",
+  "version": "1.0.0",
+  "main": "./transformer.js",
+  "dependencies": {
+    "@parcel/plugin": "^2.0.0"
+  },
+  "engines": {
+    "parcel": "^2.0.0"
+  }
+}

@@ -14,13 +14,13 @@ export {
   useRectEffect,
 } from './hooks';
 export { requestAnimationFrame, cancelAnimationFrame } from './utils';
-export {
-  Rect as IRect,
-  Scroll as IScroll,
-  Dimensions as IDimensions,
+export type {
   Rect,
   Scroll,
   Dimensions,
+  IRect,
+  IScroll,
+  IDimensions,
 } from './types';
 
-export const VERSION = '__VERSION__';
+export const VERSION = '_VERS_';
