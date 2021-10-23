@@ -40,7 +40,7 @@ For detection of some resize events the `ResizeObserver` API is used internally 
 
 ### Browsers
 
-The goal is to support the most recent versions of all major browsers (Internet Explorer, Edge, Safari, Chrome and Firefox).
+The goal is to support the most recent versions of all major browsers (Edge, Safari, Chrome and Firefox).
 
 We try to be downward compatible with older browsers when possible to at least not throw errors, but older versions will not be test at all.
 
