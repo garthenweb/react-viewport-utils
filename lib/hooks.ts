@@ -3,6 +3,7 @@ import {
   useEffect,
   useState,
   RefObject,
+  MutableRefObject,
   useRef,
   DependencyList,
 } from 'react';
@@ -156,22 +157,22 @@ export const useDimensions = (options: IOptions = {}): Dimensions => {
   return dimensions;
 };
 
-export function useRectEffect(
+export function useRectEffect<T extends HTMLElement>(
   effect: (rect: Rect | null) => void,
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<T> | MutableRefObject<T>,
   deps?: DependencyList,
 ): void;
 
-export function useRectEffect(
+export function useRectEffect<T extends HTMLElement>(
   effect: (rect: Rect | null) => void,
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<T> | MutableRefObject<T>,
   options: FullOptions,
   deps?: DependencyList,
 ): void;
 
-export function useRectEffect(
+export function useRectEffect<T extends HTMLElement>(
   effect: (rect: Rect | null) => void,
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<T> | MutableRefObject<T>,
   third?: any,
   fourth?: any,
 ) {
@@ -187,19 +188,19 @@ export function useRectEffect(
   );
 }
 
-export function useRect(
-  ref: RefObject<HTMLElement>,
+export function useRect<T extends HTMLElement>(
+  ref: RefObject<T> | MutableRefObject<T>,
   deps?: DependencyList,
 ): Rect | null;
 
-export function useRect(
-  ref: RefObject<HTMLElement>,
+export function useRect<T extends HTMLElement>(
+  ref: RefObject<T> | MutableRefObject<T>,
   options: FullOptions,
   deps?: DependencyList,
 ): Rect | null;
 
-export function useRect(
-  ref: RefObject<HTMLElement>,
+export function useRect<T extends HTMLElement>(
+  ref: RefObject<T> | MutableRefObject<T>,
   second: any,
   third?: any,
 ): Rect | null {
