@@ -67,7 +67,6 @@ The project aims to support recent releases of v8 and v10 and higher of NodeJS.
 * [`useDimensionsEffect`](docs/api/ObserveViewport_connectViewport_useViewport.md#hook-effects-useViewportEffect-useScrollEffect-useDimensionsEffect)
 * [`useRect`](docs/api/useRect.md#useRect)
 * [`useRectEffect`](docs/api/useRect.md#useRectEffect)
-* [`DEPRECATED ObserveBoundingClientRect`](docs/api/ObserveBoundingClientRect.md)
 * [Types](docs/api/types.md)
 
 ### Concepts

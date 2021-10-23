@@ -6,7 +6,6 @@ import ReactDOMServer from 'react-dom/server';
 import {
   ViewportProvider,
   connectViewport,
-  ObserveBoundingClientRect,
   ObserveViewport,
 } from '../index';
 import {
@@ -14,6 +13,7 @@ import {
   useScroll,
   useDimensions,
   useLayoutSnapshot,
+  useMutableViewport,
 } from '../hooks';
 
 describe('server side rendering', () => {
@@ -25,16 +25,13 @@ describe('server side rendering', () => {
       useDimensions();
       useViewport();
       useLayoutSnapshot(() => null);
+      useMutableViewport()
       return <div ref={ref} />;
     };
-    const ref = React.createRef<any>();
     return ReactDOMServer.renderToString(
       <ViewportProvider>
         <TestConnectViewport />
         <TestHooks />
-        <ObserveBoundingClientRect node={ref}>
-          {() => <div ref={ref} />}
-        </ObserveBoundingClientRect>
         <ObserveViewport>{() => null}</ObserveViewport>
       </ViewportProvider>,
     );
@@ -45,6 +42,6 @@ describe('server side rendering', () => {
   });
 
   it('should render components as if they would have been disabled', () => {
-    expect(render()).toBe('<div></div><div></div>');
+    expect(render()).toBe('<div></div>');
   });
 });
