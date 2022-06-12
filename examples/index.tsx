@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { render } from 'react-dom';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 import {
   ViewportProvider,
@@ -155,14 +155,19 @@ const HooksExample = () => {
 
   React.useEffect(() => {
     const id = setInterval(() => {
-      console.log('hook:mutableViewport', viewport);
+      console.log('hook:mutableViewport', {
+        scroll: viewport.scroll,
+        dimensions: viewport.dimensions,
+      });
     }, 1000);
     return () => clearInterval(id);
   }, [viewport]);
   return <div ref={ref} />;
 };
 
-render(
+const root = createRoot(document.getElementById('root'));
+
+root.render(
   <ViewportProvider
     experimentalSchedulerEnabled
     experimentalSchedulerLayoutCalculatorEnabled
@@ -176,11 +181,10 @@ render(
       <LayoutOutside />
     </main>
   </ViewportProvider>,
-  document.getElementById('root'),
 );
 
 setInterval(() => {
-  render(
+  root.render(
     <ViewportProvider
       experimentalSchedulerEnabled
       experimentalSchedulerLayoutCalculatorEnabled
@@ -194,6 +198,5 @@ setInterval(() => {
         <LayoutOutside />
       </main>
     </ViewportProvider>,
-    document.getElementById('root'),
   );
 }, 1000);

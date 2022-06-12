@@ -10,7 +10,7 @@
   "scripts": {
     "start": "parcel ./examples/index.html --dist-dir='examples-dist'",
     "precompile": "rm -rf dist",
-    "compile": "parcel build",
+    "compile": "parcel build ",
     "test": "jest",
     "fmt": "prettier --write \"lib/*.{ts,tsx}\"  \"examples/*.{ts,tsx}\"",
     "prepublish": "npm run compile",
@@ -24,8 +24,9 @@
     "url": "https://github.com/garthenweb/react-viewport-utils/issues"
   },
   "engines": {
-    "node": "^8.9.0 || >= 10.13.0"
+    "node": ">=16.0.0"
   },
+  "browserslist": "Chrome 80, Firefox 80, Safari 13",
   "author": "Jannick Garthen <jannick.garthen@gmail.com>",
   "keywords": [
     "react",
@@ -41,29 +42,31 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@parcel/config-default": "^2.0.0",
-    "@parcel/packager-ts": "^2.0.0",
-    "@parcel/transformer-typescript-types": "^2.0.0",
-    "@testing-library/react": "^12.1.1",
-    "@types/jest": "^27.0.2",
-    "@types/node": "^16.10.1",
-    "@types/react": "^17.0.24",
-    "@types/react-dom": "^17.0.9",
-    "concurrently": "^6.2.2",
+    "@parcel/config-default": "^2.6.0",
+    "@parcel/resolver-default": "^2.6.0",
+    "@parcel/packager-ts": "^2.6.0",
+    "@parcel/transformer-typescript-types": "^2.6.0",
+    "@testing-library/react": "^13.3.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^17.0.42",
+    "@types/react": "^18.0.12",
+    "@types/react-dom": "^18.0.5",
+    "caniuse-lite": "^1.0.30001352",
     "coveralls": "^3.1.1",
-    "jest": "^27.2.3",
-    "parcel": "^2.0.0",
+    "jest": "^27.5.1",
+    "parcel": "^2.6.0",
     "parcel-transformer-replace": "link:./bundler/parcel-transformer-replace",
-    "prettier": "^2.4.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "ts-jest": "^27.0.5",
-    "typescript": "^4.4.3"
+    "prettier": "^2.6.2",
+    "process": "^0.11.10",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.7.3"
   },
   "dependencies": {
     "memoize-one": "^5.1.1 || ^6.0.0"
   },
   "peerDependencies": {
-    "react": "^16.3.0 || >= 17.0.0"
+    "react": "^16.3.0 || ^17.0.0 || ^18.0.0"
   }
 }
