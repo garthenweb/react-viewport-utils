@@ -22,6 +22,7 @@ import {
 interface Props {
   experimentalSchedulerEnabled?: boolean;
   experimentalSchedulerLayoutCalculatorEnabled?: boolean;
+  children?: React.ReactNode;
 }
 
 interface Listener extends ViewportChangeOptions {
